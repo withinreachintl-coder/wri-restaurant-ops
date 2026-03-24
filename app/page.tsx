@@ -52,9 +52,12 @@ export default function Home() {
           <div className="space-y-4">
             <div className="text-3xl font-bold text-gray-900">$19/month</div>
             <p className="text-gray-600">14-day free trial • No credit card required • Cancel anytime</p>
-            <button className="mt-4 px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            <a 
+              href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
+              className="inline-block mt-4 px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
               Start Free Trial
-            </button>
+            </a>
           </div>
         </div>
 
