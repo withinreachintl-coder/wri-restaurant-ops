@@ -1,4 +1,4 @@
-// lib/checklists.ts - Checklist management functions
+// lib/checklists.ts - Checklist management functions with tier limits
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
@@ -22,6 +22,25 @@ export type Checklist = {
   created_at: string
   updated_at: string
   items?: ChecklistItem[]
+}
+
+// Free tier item limit per checklist
+const FREE_TIER_ITEM_LIMIT = 10
+
+/**
+ * Check if org is on paid plan
+ */
+async function isOrgPaid(orgId: string): Promise<boolean> {
+  const supabase = createClientComponentClient()
+  
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('subscription_status, subscription_tier')
+    .eq('id', orgId)
+    .single()
+
+  // If subscription_status is 'active' or subscription_tier is 'paid', they're paid
+  return org?.subscription_status === 'active' || org?.subscription_tier === 'paid'
 }
 
 /**
@@ -68,22 +87,45 @@ export async function getChecklist(type: ChecklistType): Promise<Checklist | nul
 }
 
 /**
- * Add new checklist item
+ * Add new checklist item (enforces free tier limit)
  */
 export async function addChecklistItem(
   checklistId: string,
   text: string,
   photoRequired: boolean = false
-): Promise<ChecklistItem | null> {
+): Promise<{ success: boolean; item?: ChecklistItem; error?: string }> {
   const supabase = createClientComponentClient()
 
-  // Get max order_index and add 1
+  // Get checklist to find org_id
+  const { data: checklist } = await supabase
+    .from('checklists')
+    .select('org_id')
+    .eq('id', checklistId)
+    .single()
+
+  if (!checklist) {
+    return { success: false, error: 'Checklist not found' }
+  }
+
+  // Check if org is on paid plan
+  const isPaid = await isOrgPaid(checklist.org_id)
+
+  // Count existing items
   const { data: existingItems } = await supabase
     .from('checklist_items')
-    .select('order_index')
+    .select('id, order_index')
     .eq('checklist_id', checklistId)
     .order('order_index', { ascending: false })
-    .limit(1)
+
+  const currentCount = existingItems?.length || 0
+
+  // Enforce free tier limit
+  if (!isPaid && currentCount >= FREE_TIER_ITEM_LIMIT) {
+    return {
+      success: false,
+      error: `Free accounts are limited to ${FREE_TIER_ITEM_LIMIT} items per checklist. Upgrade to add more items.`
+    }
+  }
 
   const nextOrderIndex = existingItems?.[0]?.order_index + 1 || 1
 
@@ -100,10 +142,10 @@ export async function addChecklistItem(
 
   if (error) {
     console.error('Error adding item:', error)
-    return null
+    return { success: false, error: 'Failed to add item' }
   }
 
-  return data
+  return { success: true, item: data }
 }
 
 /**
@@ -231,4 +273,44 @@ export async function moveItemDown(checklistId: string, itemId: string): Promise
     [newOrder[currentIndex + 1], newOrder[currentIndex]]
 
   return reorderChecklistItems(checklistId, newOrder.map(item => item.id))
+}
+
+/**
+ * Check if user can add more items (for UI feedback)
+ */
+export async function canAddMoreItems(checklistId: string): Promise<{ canAdd: boolean; currentCount: number; limit: number | null; message?: string }> {
+  const supabase = createClientComponentClient()
+
+  // Get checklist to find org_id
+  const { data: checklist } = await supabase
+    .from('checklists')
+    .select('org_id')
+    .eq('id', checklistId)
+    .single()
+
+  if (!checklist) {
+    return { canAdd: false, currentCount: 0, limit: null, message: 'Checklist not found' }
+  }
+
+  // Check if org is on paid plan
+  const isPaid = await isOrgPaid(checklist.org_id)
+
+  // Count existing items
+  const { data: existingItems } = await supabase
+    .from('checklist_items')
+    .select('id')
+    .eq('checklist_id', checklistId)
+
+  const currentCount = existingItems?.length || 0
+
+  if (isPaid) {
+    return { canAdd: true, currentCount, limit: null }
+  }
+
+  const canAdd = currentCount < FREE_TIER_ITEM_LIMIT
+  const message = canAdd 
+    ? `${FREE_TIER_ITEM_LIMIT - currentCount} items remaining (free tier)`
+    : `Upgrade to add more than ${FREE_TIER_ITEM_LIMIT} items`
+
+  return { canAdd, currentCount, limit: FREE_TIER_ITEM_LIMIT, message }
 }
