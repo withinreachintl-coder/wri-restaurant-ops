@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WRI Restaurant Ops - Complete Project Plan</title>
+    <style>
+        @page {
+            margin: 1in;
+        }
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #003366;
+            font-size: 24pt;
+            text-align: center;
+            margin-bottom: 0.5em;
+            border-bottom: 3px solid #003366;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #003366;
+            font-size: 18pt;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #444;
+            font-size: 14pt;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+        h4 {
+            color: #666;
+            font-size: 12pt;
+            margin-top: 0.8em;
+            margin-bottom: 0.4em;
+        }
+        .metadata {
+            text-align: center;
+            color: #666;
+            font-size: 11pt;
+            margin-bottom: 2em;
+        }
+        .metadata p {
+            margin: 0.3em 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 2em 0;
+        }
+        ul, ol {
+            margin: 0.5em 0 0.5em 2em;
+        }
+        li {
+            margin: 0.3em 0;
+        }
+        .check {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .uncheck {
+            color: #666;
+        }
+        strong {
+            color: #000;
+        }
+        .code {
+            background: #f4f4f4;
+            border-left: 3px solid #003366;
+            padding: 10px;
+            margin: 1em 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        .section {
+            page-break-before: auto;
+            margin-bottom: 2em;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #003366;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>WRI Restaurant Ops - Daily Ops Checklist</h1>
+<h1 style="font-size: 18pt; border: none;">Complete Project Plan & Marketing Strategy</h1>
+
+<div class="metadata">
+    <p><strong>Document Version:</strong> 1.0</p>
+    <p><strong>Last Updated:</strong> March 25, 2026</p>
+    <p><strong>Project Owner:</strong> Keon</p>
+    <p><strong>Product:</strong> Daily Ops Checklist for Restaurants</p>
+    <p><strong>Price:</strong> $19/month</p>
+    <p><strong>URL:</strong> https://ops.wireach.tools</p>
+</div>
+
+<hr>
+
+<h2>Executive Summary</h2>
+
+<p>WRI Restaurant Ops is a mobile-first daily operations checklist app designed for restaurant managers, food trucks, and kitchen staff. It replaces paper checklists with a digital solution that includes photo verification, staff accountability, and customizable task lists.</p>
+
+<p><strong>Current Status:</strong> Infrastructure complete, core features built, ready for testing and launch preparation.</p>
+
+<p><strong>Target Market:</strong> Restaurant managers, food truck operators, QSR owners, kitchen managers</p>
+
+<p><strong>Unique Value Proposition:</strong></p>
+<ul>
+    <li>Customizable checklists per restaurant type (food truck vs full-service)</li>
+    <li>Photo verification for critical tasks (temperature checks, cleanliness)</li>
+    <li>Mobile-first design (works on any phone)</li>
+    <li>Simple pricing: $19/month, no contracts</li>
+</ul>
+
+<hr>
+
+<h2>Phase 1: What We've Built <span class="check">(✅ COMPLETE)</span></h2>
+
+<h3>Infrastructure Setup (March 2026)</h3>
+
+<h4>Supabase Backend</h4>
+<ul>
+    <li class="check">✅ PostgreSQL database hosted on Supabase</li>
+    <li class="check">✅ Authentication system (magic link email login)</li>
+    <li class="check">✅ Row-level security (RLS) policies for multi-tenant data isolation</li>
+    <li class="check">✅ Organizations table (multi-user support)</li>
+    <li class="check">✅ Users table with org relationships</li>
+    <li class="check">✅ Storage bucket for photos (public access)</li>
+</ul>
+
+<h4>Database Schema</h4>
+<ul>
+    <li class="check">✅ <code>checklists</code> table (Opening/Closing per org)</li>
+    <li class="check">✅ <code>checklist_items</code> table (customizable tasks with ordering)</li>
+    <li class="check">✅ <code>checklist_completions</code> table (daily sign-offs with photos)</li>
+    <li class="check">✅ Auto-seeding trigger (new orgs get default templates)</li>
+</ul>
+
+<p><strong>Default Templates:</strong></p>
+
+<p><strong>Opening Checklist:</strong> 12 items (3 require photos)</p>
+<ul>
+    <li>Temperature checks (cooler, freezer)</li>
+    <li>Prep station verification</li>
+    <li>Equipment testing</li>
+    <li>Hand wash stations</li>
+    <li>First aid kit</li>
+    <li>Register cash count</li>
+    <li>Supply restocking</li>
+    <li>Floor/bathroom checks</li>
+    <li>Staff assignments</li>
+    <li>Previous shift notes</li>
+</ul>
+
+<p><strong>Closing Checklist:</strong> 15 items (5 require photos)</p>
+<ul>
+    <li>Register cash count</li>
+    <li>End-of-day sales report</li>
+    <li>Equipment cleaning (photos required)</li>
+    <li>Surface sanitization (photos required)</li>
+    <li>Food labeling/dating (photos required)</li>
+    <li>Temperature logging (photos required)</li>
+    <li>Trash/floors/bathrooms</li>
+    <li>Restocking for next day</li>
+    <li>Lights/equipment off</li>
+    <li>Lock doors/set alarm</li>
+    <li>Manager sign-off</li>
+</ul>
+
+<h4>Authentication System</h4>
+<ul>
+    <li class="check">✅ Magic link login (no passwords)</li>
+    <li class="check">✅ Email-based authentication via Resend</li>
+    <li class="check">✅ Secure auth callback handling (OAuth + hash fragments)</li>
+    <li class="check">✅ Session management</li>
+    <li class="check">✅ Sender email: noreply@wireach.tools</li>
+</ul>
+
+<h4>Photo Upload System</h4>
+<ul>
+    <li class="check">✅ Real Supabase Storage integration</li>
+    <li class="check">✅ File validation (image/* only, 5MB max)</li>
+    <li class="check">✅ Unique filename generation</li>
+    <li class="check">✅ Upload progress indicators</li>
+    <li class="check">✅ Error handling (file too large, wrong type, upload failed)</li>
+    <li class="check">✅ Two upload modes: "Take Photo" (camera) + "Upload from Gallery"</li>
+    <li class="check">✅ Success states with "View" links</li>
+</ul>
+
+<h4>Editable Checklist Feature <span class="check">(JUST COMPLETED - March 25, 2026)</span></h4>
+<ul>
+    <li class="check">✅ Edit mode toggle in checklist UI</li>
+    <li class="check">✅ Add new checklist items</li>
+    <li class="check">✅ Rename existing items (inline editing)</li>
+    <li class="check">✅ Delete items (with confirmation)</li>
+    <li class="check">✅ Reorder items (↑ Up / ↓ Down arrows)</li>
+    <li class="check">✅ Free tier limit: 10 items per checklist</li>
+    <li class="check">✅ Paid tier: unlimited items</li>
+    <li class="check">✅ Upgrade prompt with link to billing page</li>
+</ul>
+
+<h4>Deployment</h4>
+<ul>
+    <li class="check">✅ Vercel hosting (auto-deploy from GitHub)</li>
+    <li class="check">✅ Custom domain: ops.wireach.tools</li>
+    <li class="check">✅ Environment variables configured</li>
+    <li class="check">✅ GitHub repository: withinreachintl-coder/wri-restaurant-ops</li>
+    <li class="check">✅ CI/CD pipeline working</li>
+</ul>
+
+<hr>
+
+<h2>Phase 2: Current Build Status (🔧 IN PROGRESS)</h2>
+
+<h3>What's Working</h3>
+<ol>
+    <li class="check">✅ Database schema and RLS policies</li>
+    <li class="check">✅ User authentication (magic links)</li>
+    <li class="check">✅ Checklist display (Opening/Closing toggle)</li>
+    <li class="check">✅ Task completion tracking (checkboxes, progress bar)</li>
+    <li class="check">✅ Photo upload component (real Supabase upload)</li>
+    <li class="check">✅ Photo validation and error handling</li>
+    <li class="check">✅ Edit mode (add/delete/rename/reorder items)</li>
+    <li class="check">✅ Free tier limits (10 items max)</li>
+    <li class="check">✅ Vercel deployment</li>
+</ol>
+
+<h3>What Needs Testing</h3>
+<ol>
+    <li><strong>Supabase Auth SMTP Configuration</strong>
+        <ul>
+            <li>Action: Configure smtp.resend.com in Supabase dashboard</li>
+            <li>Host: smtp.resend.com</li>
+            <li>Port: 465 (SSL) or 587 (TLS)</li>
+            <li>Username: resend</li>
+            <li>Password: [Resend API key]</li>
+            <li>Sender: noreply@wireach.tools</li>
+        </ul>
+    </li>
+    <li><strong>Database Migration</strong>
+        <ul>
+            <li>Action: Run <code>database/migrations/checklist-schema.sql</code> in Supabase SQL Editor</li>
+            <li>Creates: checklists, checklist_items, checklist_completions tables</li>
+            <li>Sets up: RLS policies, auto-seed trigger, default templates</li>
+        </ul>
+    </li>
+    <li><strong>End-to-End Testing</strong>
+        <ul>
+            <li>Magic link email delivery</li>
+            <li>Photo upload (camera + gallery)</li>
+            <li>Checklist completion flow</li>
+            <li>Edit mode functionality</li>
+            <li>Free tier limit enforcement</li>
+        </ul>
+    </li>
+</ol>
+
+<h3>Known Issues</h3>
+<p>None currently blocking launch</p>
+
+<hr>
+
+<h2>Phase 3: Full Build Plan Going Forward</h2>
+
+<h3>Priority 1: Pre-Launch Essentials (Week 1-2)</h3>
+
+<h4>1. Complete Testing & Bug Fixes</h4>
+<ul>
+    <li class="uncheck">☐ Run database migration in production Supabase</li>
+    <li class="uncheck">☐ Configure Supabase Auth SMTP settings</li>
+    <li class="uncheck">☐ Test magic link login end-to-end</li>
+    <li class="uncheck">☐ Test photo upload on mobile devices (iOS + Android)</li>
+    <li class="uncheck">☐ Test checklist completion with photos</li>
+    <li class="uncheck">☐ Test edit mode (add/delete/rename/reorder)</li>
+    <li class="uncheck">☐ Verify free tier limit (try adding 11th item)</li>
+    <li class="uncheck">☐ Cross-browser testing (Chrome, Safari, Firefox)</li>
+    <li class="uncheck">☐ Mobile responsiveness testing (various screen sizes)</li>
+</ul>
+
+<h4>2. Billing & Subscription System</h4>
+<ul>
+    <li class="uncheck">☐ Stripe integration
+        <ul>
+            <li>Create Stripe account</li>
+            <li>Set up $19/month subscription product</li>
+            <li>Configure webhook endpoints</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Payment UI
+        <ul>
+            <li>/billing page design</li>
+            <li>Subscription status display</li>
+            <li>Payment method management</li>
+            <li>Cancel subscription flow</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Database updates
+        <ul>
+            <li>Add subscription_status and subscription_tier to organizations table</li>
+            <li>Track trial period (7 days free?)</li>
+            <li>Handle subscription lifecycle events</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>3. Onboarding Flow</h4>
+<ul>
+    <li class="uncheck">☐ Welcome screen after signup</li>
+    <li class="uncheck">☐ Quick tutorial (4-5 screens)
+        <ul>
+            <li>"Complete daily tasks"</li>
+            <li>"Add photos for proof"</li>
+            <li>"Customize your checklist"</li>
+            <li>"Upgrade for unlimited items"</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Sample checklist (pre-filled for demo)</li>
+    <li class="uncheck">☐ Skip option for experienced users</li>
+</ul>
+
+<h4>4. Landing Page</h4>
+<ul>
+    <li class="uncheck">☐ Hero section
+        <ul>
+            <li>Headline: "Stop Using Paper Checklists"</li>
+            <li>Subheadline: "Digital daily ops for restaurants that actually work"</li>
+            <li>CTA: "Start Free Trial"</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Social proof
+        <ul>
+            <li>Screenshots (mobile mockups)</li>
+            <li>Testimonials (once we have customers)</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Features section
+        <ul>
+            <li>Photo verification</li>
+            <li>Customizable lists</li>
+            <li>Staff accountability</li>
+            <li>Mobile-first</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Pricing (simple: $19/mo, 7-day trial)</li>
+    <li class="uncheck">☐ FAQ section</li>
+</ul>
+
+<h3>Priority 2: Core Features (Week 3-4)</h3>
+
+<h4>5. Dashboard Improvements</h4>
+<ul>
+    <li class="uncheck">☐ Recent completions history
+        <ul>
+            <li>Show last 7 days of checklist completions</li>
+            <li>Staff member who completed</li>
+            <li>Photos thumbnails</li>
+            <li>Export to PDF option</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Statistics/insights
+        <ul>
+            <li>Completion rate over time</li>
+            <li>Most commonly missed items</li>
+            <li>Average completion time</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Quick actions
+        <ul>
+            <li>"Start Opening Checklist"</li>
+            <li>"Start Closing Checklist"</li>
+            <li>"View History"</li>
+            <li>"Edit Checklists"</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>6. Team Management</h4>
+<ul>
+    <li class="uncheck">☐ Add multiple users per organization</li>
+    <li class="uncheck">☐ Role system (Owner, Manager, Staff)
+        <ul>
+            <li>Owner: full access, billing</li>
+            <li>Manager: edit checklists, view history</li>
+            <li>Staff: complete checklists only</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Invite users via email</li>
+    <li class="uncheck">☐ User activity log</li>
+</ul>
+
+<h4>7. Completion History & Reporting</h4>
+<ul>
+    <li class="uncheck">☐ Completion log (filterable by date, staff, checklist type)</li>
+    <li class="uncheck">☐ Photo gallery view</li>
+    <li class="uncheck">☐ Export to PDF (daily summary)</li>
+    <li class="uncheck">☐ Email daily summary to owner/manager</li>
+    <li class="uncheck">☐ Search/filter completions</li>
+</ul>
+
+<h3>Priority 3: Nice-to-Have Features (Week 5-8)</h3>
+
+<h4>8. Enhanced Checklist Features</h4>
+<ul>
+    <li class="uncheck">☐ Drag-and-drop reordering (replace up/down arrows)</li>
+    <li class="uncheck">☐ Toggle photo_required per item in edit mode</li>
+    <li class="uncheck">☐ Checklist templates library
+        <ul>
+            <li>Food truck</li>
+            <li>QSR</li>
+            <li>Full-service restaurant</li>
+            <li>Bar/nightclub</li>
+            <li>Cafe</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Duplicate checklist functionality</li>
+    <li class="uncheck">☐ Import/export checklists (JSON)</li>
+</ul>
+
+<h4>9. Notifications & Reminders</h4>
+<ul>
+    <li class="uncheck">☐ Email reminders
+        <ul>
+            <li>"Don't forget to complete closing checklist"</li>
+            <li>Sent 1 hour before typical closing time</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ SMS reminders (optional, premium feature?)</li>
+    <li class="uncheck">☐ In-app notifications</li>
+    <li class="uncheck">☐ Configurable reminder schedule</li>
+</ul>
+
+<h4>10. Mobile App (Future)</h4>
+<ul>
+    <li class="uncheck">☐ Native iOS app (React Native or PWA?)</li>
+    <li class="uncheck">☐ Native Android app</li>
+    <li class="uncheck">☐ Push notifications</li>
+    <li class="uncheck">☐ Offline mode (sync when online)</li>
+</ul>
+
+<hr>
+
+<h2>Marketing Strategy</h2>
+
+<h3>Reddit Strategy</h3>
+
+<h4>Target Subreddits</h4>
+<ol>
+    <li><strong>r/restaurantowners</strong> (primary)
+        <ul>
+            <li>Members: ~25,000</li>
+            <li>Activity: High</li>
+            <li>Rules: No direct promotion without 15+ karma</li>
+            <li>Strategy: Helpful comments first, soft launch post later</li>
+        </ul>
+    </li>
+    <li><strong>r/KitchenConfidential</strong> (secondary)
+        <ul>
+            <li>Members: ~500,000</li>
+            <li>Activity: Very high</li>
+            <li>Audience: Kitchen staff, managers, chefs</li>
+            <li>Strategy: Memes + relatable pain points, soft product mentions</li>
+        </ul>
+    </li>
+    <li><strong>r/smallbusiness</strong> (tertiary)
+        <ul>
+            <li>Members: ~1.5M</li>
+            <li>Activity: High</li>
+            <li>Strategy: "Here's what I built" story post</li>
+        </ul>
+    </li>
+    <li><strong>r/Entrepreneur</strong> (tertiary)
+        <ul>
+            <li>Members: ~3M</li>
+            <li>Strategy: Validation post ("Would you pay for this?")</li>
+        </ul>
+    </li>
+</ol>
+
+<h4>Reddit Karma Building (ONGOING)</h4>
+<p><strong>Current Status:</strong> 2/3 comments posted on r/restaurantowners</p>
+<p><strong>Weekly Goal:</strong> 3-5 helpful comments per week</p>
+
+<p><strong>Comment Strategy:</strong></p>
+<ul>
+    <li>Answer questions about equipment, operations, staffing</li>
+    <li>Share insights (not product promotion)</li>
+    <li>Be genuinely helpful</li>
+    <li>Avoid mentioning product until 15+ karma</li>
+</ul>
+
+<p><strong>Launch Post Strategy (once 15+ karma):</strong></p>
+<ul>
+    <li>Title: "I built a mobile checklist app for restaurants after watching my friend struggle with paper checklists"</li>
+    <li>Format: Story + problem/solution + ask for feedback</li>
+    <li>Include: Screenshots, link to free trial</li>
+    <li>Timing: Tuesday or Wednesday, 9-11 AM EST</li>
+    <li>Engage: Reply to every comment within first hour</li>
+</ul>
+
+<h4>Content Ideas for Reddit</h4>
+<ol>
+    <li>"What's the most annoying part of closing duties?" (poll/discussion)</li>
+    <li>"Show me your closing checklist" (photo thread)</li>
+    <li>"Paper vs digital checklists - what works for you?"</li>
+    <li>"How do you hold staff accountable for daily tasks?"</li>
+    <li>"Temperature log nightmares - anyone else?"</li>
+</ol>
+
+<h3>Twitter/X Strategy</h3>
+
+<h4>Account Setup</h4>
+<ul>
+    <li>Handle: @WRIRestaurantOps (or @DailyOpsApp)</li>
+    <li>Bio: "Digital checklists for restaurants. Stop using paper. $19/mo. Built by restaurant people."</li>
+    <li>Profile pic: Clean logo</li>
+    <li>Header: Screenshot of app in use</li>
+</ul>
+
+<h4>7-Day Twitter Campaign (Pre-Launch)</h4>
+
+<p><strong>Day 1: Problem Tweet</strong></p>
+<div class="code">Restaurant owners:
+
+You're still using paper checklists in 2026.
+
+- They get lost
+- They get wet
+- Nobody reads them
+- You can't prove tasks were done
+
+There's a better way. 🧵</div>
+
+<p><strong>Day 2: Solution Tweet</strong></p>
+<div class="code">Introducing Daily Ops Checklist:
+
+✅ Opening & closing checklists
+📸 Photo verification (temps, cleanliness)
+📱 Works on any phone
+⚡ Customizable per restaurant
+💰 $19/month (no BS)
+
+Built for restaurant operators, by restaurant operators.
+
+[Screenshot]</div>
+
+<p><strong>Day 3: Feature Highlight</strong></p>
+<div class="code">"Did you check the walk-in temp?"
+
+"Yeah."
+
+"Can you prove it?"
+
+With Daily Ops, every critical task requires a photo.
+
+No more "I forgot" or "I think so."
+
+Just proof.
+
+[Demo GIF of photo upload]</div>
+
+<p><strong>Day 4: Pain Point</strong></p>
+<div class="code">3 AM health inspection flashback:
+
+Inspector: "Where's your temperature log?"
+
+You: *frantically searching for crumpled paper*
+
+Never again.
+
+Digital logs. Photo proof. Always accessible.
+
+Try it free: [link]</div>
+
+<p><strong>Day 5: Social Proof</strong></p>
+<div class="code">Food truck operators:
+
+Your checklist ≠ full-service restaurant checklist
+
+Daily Ops lets you customize every task.
+
+- Add items
+- Remove items
+- Reorder items
+- Mark which need photos
+
+Your restaurant. Your rules.
+
+[Screenshot of edit mode]</div>
+
+<p><strong>Day 6: Pricing</strong></p>
+<div class="code">$19/month.
+
+That's it.
+
+- No setup fees
+- No contracts
+- No "enterprise" BS
+- No hidden charges
+
+Just a checklist app that works.
+
+Free 7-day trial: [link]</div>
+
+<p><strong>Day 7: Launch</strong></p>
+<div class="code">🚀 Daily Ops Checklist is LIVE
+
+Stop using paper. Start using your phone.
+
+✅ Custom checklists
+📸 Photo verification
+👥 Team accountability
+📊 Completion history
+
+$19/mo. 7-day free trial.
+
+Restaurant operators: this is for you.
+
+👉 [link]</div>
+
+<h4>Ongoing Twitter Content Strategy</h4>
+
+<p><strong>Daily Posting Schedule:</strong></p>
+<ul>
+    <li><strong>Monday:</strong> Tips/tricks (restaurant operations)</li>
+    <li><strong>Tuesday:</strong> Customer story / use case</li>
+    <li><strong>Wednesday:</strong> Feature highlight</li>
+    <li><strong>Thursday:</strong> Industry news + commentary</li>
+    <li><strong>Friday:</strong> Meme / relatable pain point</li>
+    <li><strong>Saturday:</strong> Behind-the-scenes / product updates</li>
+    <li><strong>Sunday:</strong> Weekly recap / stats</li>
+</ul>
+
+<p><strong>Tweet Formats:</strong></p>
+<ol>
+    <li><strong>Thread starters</strong> (problem → solution)</li>
+    <li><strong>Quick tips</strong> (1-2 sentences + image)</li>
+    <li><strong>Polls</strong> ("What's your biggest pain point?")</li>
+    <li><strong>Screenshots</strong> (before/after, feature demos)</li>
+    <li><strong>Customer quotes</strong> (once we have them)</li>
+</ol>
+
+<p><strong>Engagement Strategy:</strong></p>
+<ul>
+    <li>Reply to every mention within 1 hour</li>
+    <li>Search for keywords: "restaurant checklist", "closing duties", "opening checklist"</li>
+    <li>Engage with restaurant industry influencers</li>
+    <li>Share customer wins</li>
+</ul>
+
+<p><strong>Hashtags:</strong></p>
+<ul>
+    <li>#RestaurantLife</li>
+    <li>#RestaurantManager</li>
+    <li>#FoodTruck</li>
+    <li>#QSR</li>
+    <li>#KitchenLife</li>
+    <li>#RestaurantOps</li>
+</ul>
+
+<h4>Twitter Advertising (Optional - Month 2+)</h4>
+<ul>
+    <li>Budget: $200-500/month</li>
+    <li>Target: Restaurant managers, owners, food service</li>
+    <li>Ad format: Promoted tweets (screenshots + CTA)</li>
+    <li>Retargeting: Website visitors who didn't sign up</li>
+</ul>
+
+<hr>
+
+<h2>Launch Plan: From Now to First Paying Customer</h2>
+
+<h3>Week 1: Testing & Polish (March 25-31, 2026)</h3>
+
+<p><strong>Monday-Tuesday (March 25-26):</strong></p>
+<ul>
+    <li class="check">✅ Complete editable checklist feature (DONE)</li>
+    <li class="uncheck">☐ Run database migration in production</li>
+    <li class="uncheck">☐ Configure Supabase Auth SMTP</li>
+    <li class="uncheck">☐ Test magic link login</li>
+    <li class="uncheck">☐ Test photo upload end-to-end</li>
+</ul>
+
+<p><strong>Wednesday-Thursday (March 27-28):</strong></p>
+<ul>
+    <li class="uncheck">☐ Mobile testing (iOS + Android browsers)</li>
+    <li class="uncheck">☐ Cross-browser testing (Chrome, Safari, Firefox)</li>
+    <li class="uncheck">☐ Fix any critical bugs found</li>
+    <li class="uncheck">☐ Create testing guide document</li>
+</ul>
+
+<p><strong>Friday-Sunday (March 29-31):</strong></p>
+<ul>
+    <li class="uncheck">☐ Build landing page (hero, features, pricing, FAQ)</li>
+    <li class="uncheck">☐ Create onboarding flow (4-5 screens)</li>
+    <li class="uncheck">☐ Design screenshots for marketing</li>
+    <li class="uncheck">☐ Write copy for all marketing materials</li>
+</ul>
+
+<h3>Week 2: Billing & Pre-Launch Marketing (April 1-7, 2026)</h3>
+
+<p><strong>Monday-Tuesday (April 1-2):</strong></p>
+<ul>
+    <li class="uncheck">☐ Set up Stripe account</li>
+    <li class="uncheck">☐ Create $19/month subscription product</li>
+    <li class="uncheck">☐ Build /billing page</li>
+    <li class="uncheck">☐ Integrate Stripe webhooks</li>
+    <li class="uncheck">☐ Test subscription flow end-to-end</li>
+</ul>
+
+<p><strong>Wednesday-Thursday (April 3-4):</strong></p>
+<ul>
+    <li class="uncheck">☐ Launch Twitter account</li>
+    <li class="uncheck">☐ Post Day 1 tweet (problem statement)</li>
+    <li class="uncheck">☐ Post Day 2 tweet (solution intro)</li>
+    <li class="uncheck">☐ Continue Reddit karma building (3-5 comments)</li>
+</ul>
+
+<p><strong>Friday-Sunday (April 5-7):</strong></p>
+<ul>
+    <li class="uncheck">☐ Post Twitter Days 3-5</li>
+    <li class="uncheck">☐ Create demo video (2 minutes, screen recording)</li>
+    <li class="uncheck">☐ Prepare Reddit launch post (draft + screenshots)</li>
+    <li class="uncheck">☐ Email 5-10 restaurant owner friends for beta testing</li>
+</ul>
+
+<h3>Week 3: Soft Launch (April 8-14, 2026)</h3>
+
+<p><strong>Monday (April 8):</strong></p>
+<ul>
+    <li class="uncheck">☐ Post Twitter Day 6 (pricing)</li>
+    <li class="uncheck">☐ Finalize Reddit post (check karma first)</li>
+    <li class="uncheck">☐ Send beta invites to friends</li>
+</ul>
+
+<p><strong>Tuesday (April 9):</strong></p>
+<ul>
+    <li class="uncheck">☐ <strong>LAUNCH DAY</strong> 🚀</li>
+    <li class="uncheck">☐ Post Twitter Day 7 (launch announcement)</li>
+    <li class="uncheck">☐ Post to r/restaurantowners (if 15+ karma)</li>
+    <li class="uncheck">☐ Post to r/smallbusiness ("I built this")</li>
+    <li class="uncheck">☐ Email beta testers with launch link</li>
+    <li class="uncheck">☐ Monitor comments/replies closely (respond within 30 min)</li>
+</ul>
+
+<p><strong>Wednesday-Thursday (April 10-11):</strong></p>
+<ul>
+    <li class="uncheck">☐ Engage with Reddit comments</li>
+    <li class="uncheck">☐ Reply to Twitter mentions</li>
+    <li class="uncheck">☐ Onboard first beta users</li>
+    <li class="uncheck">☐ Collect feedback</li>
+    <li class="uncheck">☐ Fix urgent bugs</li>
+</ul>
+
+<p><strong>Friday-Sunday (April 12-14):</strong></p>
+<ul>
+    <li class="uncheck">☐ Post daily Twitter content</li>
+    <li class="uncheck">☐ Continue Reddit karma building</li>
+    <li class="uncheck">☐ Email beta users for testimonials</li>
+    <li class="uncheck">☐ Make quick improvements based on feedback</li>
+</ul>
+
+<h3>Week 4: Iteration & Growth (April 15-21, 2026)</h3>
+
+<p><strong>Monday-Wednesday (April 15-17):</strong></p>
+<ul>
+    <li class="uncheck">☐ Implement top 3 feature requests (if quick wins)</li>
+    <li class="uncheck">☐ Add testimonials to landing page</li>
+    <li class="uncheck">☐ Create case study (if beta user sees value)</li>
+    <li class="uncheck">☐ Post success story on Twitter</li>
+</ul>
+
+<p><strong>Thursday-Friday (April 18-19):</strong></p>
+<ul>
+    <li class="uncheck">☐ Launch to r/KitchenConfidential (meme-based post)</li>
+    <li class="uncheck">☐ Post to r/Entrepreneur (validation post)</li>
+    <li class="uncheck">☐ Continue daily Twitter posting</li>
+    <li class="uncheck">☐ Engage with industry hashtags</li>
+</ul>
+
+<p><strong>Saturday-Sunday (April 20-21):</strong></p>
+<ul>
+    <li class="uncheck">☐ Measure Week 1 metrics:
+        <ul>
+            <li>Signups</li>
+            <li>Trial conversions</li>
+            <li>Churn rate</li>
+            <li>Reddit upvotes/comments</li>
+            <li>Twitter engagement</li>
+        </ul>
+    </li>
+    <li class="uncheck">☐ Plan Week 2 marketing</li>
+</ul>
+
+<h3>Week 5-8: Scale & Optimize (April 22 - May 19, 2026)</h3>
+
+<p><strong>Goals:</strong></p>
+<ul>
+    <li>50+ signups</li>
+    <li>10+ paying customers</li>
+    <li>5+ testimonials</li>
+    <li>1,000+ Twitter impressions/week</li>
+    <li>Positive Reddit karma (no bans)</li>
+</ul>
+
+<p><strong>Activities:</strong></p>
+<ul>
+    <li>Daily Twitter posting</li>
+    <li>Weekly Reddit comments</li>
+    <li>Bi-weekly feature updates</li>
+    <li>Monthly product blog post</li>
+    <li>Email marketing (if we capture emails)</li>
+</ul>
+
+<p><strong>Metrics to Track:</strong></p>
+<ul>
+    <li>Signups (free trials)</li>
+    <li>Trial-to-paid conversion rate</li>
+    <li>Churn rate</li>
+    <li>MRR (Monthly Recurring Revenue)</li>
+    <li>Twitter followers</li>
+    <li>Reddit karma</li>
+    <li>Customer feedback scores</li>
+</ul>
+
+<hr>
+
+<h2>Success Metrics</h2>
+
+<h3>Phase 1: Validation (Week 1-4)</h3>
+<ul>
+    <li class="check">✅ Product built and deployed</li>
+    <li class="check">✅ 10+ beta testers using the app</li>
+    <li class="check">✅ 3
