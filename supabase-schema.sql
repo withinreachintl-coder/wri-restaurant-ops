@@ -24,12 +24,14 @@ CREATE TABLE users (
   role TEXT DEFAULT 'staff', -- owner, manager, staff
   phone TEXT,
   avatar_url TEXT,
-  created_at TIMESTAMPTT DEEAULTOOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(org_id, email)
 );
+
 -- ===============================================
 -- Module 1: Communication & Schedules
 -- ===============================================
+
 -- Channels (announcements, general, schedule-changes)
 CREATE TABLE channels (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -37,7 +39,7 @@ CREATE TABLE channels (
   name TEXT NOT NULL,
   type TEXT DEFAULT 'general', -- announcements, general, schedule-changes
   admin_only BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTT DEEAULTOOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Messages
@@ -47,7 +49,7 @@ CREATE TABLE messages (
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   requires_read_receipt BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTXDEEAULTOOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Read receipts (who read what)
@@ -55,9 +57,10 @@ CREATE TABLE message_reads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   message_id UUID REFERENCES messages(id) ON DELETE CASCADE,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  read_at TIMESTAMPTT DEEAULTOOW(),
+  read_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(message_id, user_id)
 );
+
 -- Schedules
 CREATE TABLE schedules (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -93,15 +96,17 @@ CREATE TABLE shift_swaps (
   resolved_at TIMESTAMPTZ,
   resolved_by UUID REFERENCES users(id)
 );
+
 -- ===============================================
--- Module 2: Digital Checklists (existing)
+-- Module 2: Digital Checklists
 -- ===============================================
+
 CREATE TABLE checklists (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
   type TEXT NOT NULL, -- opening, closing, mid-shift
   name TEXT NOT NULL,
-  created_at TIMESTAMPTXDEEAULTOOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE checklist_tasks (
@@ -110,7 +115,7 @@ CREATE TABLE checklist_tasks (
   text TEXT NOT NULL,
   photo_required BOOLEAN DEFAULT false,
   order_index INTEGER,
-  created_at TIMESTAMPTT DEEAULTOOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE checklist_completions (
@@ -127,12 +132,14 @@ CREATE TABLE task_completions (
   task_id UUID REFERENCES checklist_tasks(id) ON DELETE CASCADE,
   completed BOOLEAN DEFAULT false,
   photo_url TEXT,
-  completed_at TIMESTAMPTT,DEEAULTOOW(),
+  completed_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(completion_id, task_id)
 );
+
 -- ===============================================
 -- Module 3: Food Cost & Waste (Phase 2)
 -- ===============================================
+
 CREATE TABLE ingredients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
@@ -140,7 +147,7 @@ CREATE TABLE ingredients (
   unit TEXT NOT NULL, -- lb, oz, kg, each
   cost_per_unit DECIMAL(10,2),
   supplier TEXT,
-  created_at TIMESTAMPTXDEEAULTOOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE recipes (
@@ -149,7 +156,7 @@ CREATE TABLE recipes (
   name TEXT NOT NULL,
   category TEXT, -- appetizer, entree, dessert
   selling_price DECIMAL(10,2),
-  created_at TIMESTAMPTXDEDAULTOOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE recipe_ingredients (
@@ -168,21 +175,24 @@ CREATE TABLE waste_logs (
   reason TEXT, -- spoiled, overcooked, dropped
   photo_url TEXT,
   logged_by UUID REFERENCES users(id),
-  logged_at TIMESTAMPTT DEEAULTOOW()
+  logged_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ===============================================
 -- Indexes for Performance
 -- ===============================================
+
 CREATE INDEX idx_messages_channel ON messages(channel_id, created_at DESC);
 CREATE INDEX idx_message_reads_user ON message_reads(user_id, message_id);
 CREATE INDEX idx_shifts_schedule ON shifts(schedule_id, shift_date);
 CREATE INDEX idx_shifts_user ON shifts(user_id, shift_date);
 CREATE INDEX idx_shift_swaps_status ON shift_swaps(status, requested_at DESC);
 CREATE INDEX idx_waste_logs_date ON waste_logs(org_id, logged_at DESC);
+
 -- ===============================================
 -- Row Level Security (RLS)
 -- ===============================================
+
 ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE channels ENABLE ROW LEVEL SECURITY;
@@ -193,7 +203,7 @@ ALTER TABLE shifts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shift_swaps ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see data from their organization
-CREATE COLCIY users_org_access ON users
+CREATE POLICY users_org_access ON users
   FOR ALL USING (
     org_id IN (
       SELECT org_id FROM users WHERE id = auth.uid()
@@ -215,6 +225,7 @@ CREATE POLICY messages_org_access ON messages
       )
     )
   );
+
 -- Managers can create announcements, staff can only read
 CREATE POLICY messages_create_policy ON messages
   FOR INSERT WITH CHECK (
