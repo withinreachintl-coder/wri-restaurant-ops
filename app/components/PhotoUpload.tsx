@@ -12,7 +12,8 @@ type PhotoUploadProps = {
 export default function PhotoUpload({ onPhotoUploaded, taskId, existingPhotoUrl }: PhotoUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClientComponentClient()
 
   const uploadPhoto = async (file: File) => {
@@ -35,6 +36,8 @@ export default function PhotoUpload({ onPhotoUploaded, taskId, existingPhotoUrl 
       const fileName = `${Date.now()}-${taskId}.${fileExt}`
       const filePath = `${fileName}`
 
+      console.log('Uploading to Supabase:', filePath)
+
       // Upload to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from('photos')
@@ -43,12 +46,19 @@ export default function PhotoUpload({ onPhotoUploaded, taskId, existingPhotoUrl 
           upsert: false
         })
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error('Upload error:', uploadError)
+        throw uploadError
+      }
+
+      console.log('Upload successful:', data)
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('photos')
         .getPublicUrl(data.path)
+
+      console.log('Public URL:', publicUrl)
 
       onPhotoUploaded(publicUrl)
     } catch (err) {
@@ -61,23 +71,29 @@ export default function PhotoUpload({ onPhotoUploaded, taskId, existingPhotoUrl 
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+    console.log('File selected:', file)
     if (file) {
       uploadPhoto(file)
     }
+    // Reset input so same file can be selected again
+    e.target.value = ''
   }
 
-  const handleCameraCapture = () => {
-    // Trigger file input with camera preference
-    if (fileInputRef.current) {
-      fileInputRef.current.click()
+  const handleCameraCapture = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    console.log('Camera button clicked, triggering input')
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click()
     }
   }
 
-  const handleGallerySelect = () => {
-    // Trigger file input without camera preference
-    if (fileInputRef.current) {
-      fileInputRef.current.removeAttribute('capture')
-      fileInputRef.current.click()
+  const handleGallerySelect = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    console.log('Gallery button clicked, triggering input')
+    if (galleryInputRef.current) {
+      galleryInputRef.current.click()
     }
   }
 
@@ -102,11 +118,19 @@ export default function PhotoUpload({ onPhotoUploaded, taskId, existingPhotoUrl 
 
   return (
     <div className="mt-2">
+      {/* Hidden file inputs */}
       <input
-        ref={fileInputRef}
+        ref={cameraInputRef}
         type="file"
         accept="image/*"
         capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
         onChange={handleFileSelect}
         className="hidden"
       />
@@ -125,6 +149,7 @@ export default function PhotoUpload({ onPhotoUploaded, taskId, existingPhotoUrl 
       ) : (
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={handleCameraCapture}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
           >
@@ -136,6 +161,7 @@ export default function PhotoUpload({ onPhotoUploaded, taskId, existingPhotoUrl 
           </button>
 
           <button
+            type="button"
             onClick={handleGallerySelect}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
           >
