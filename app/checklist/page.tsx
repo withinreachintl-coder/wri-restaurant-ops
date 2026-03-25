@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import PhotoUpload from '@/app/components/PhotoUpload'
 
 type Task = {
   id: string
@@ -45,7 +46,7 @@ export default function ChecklistPage() {
 
   const handleTypeChange = (type: 'opening' | 'closing') => {
     setChecklistType(type)
-    setTasks(type === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+    setTasks(type === 'opening' ? [...OPENING_TASKS] : [...CLOSING_TASKS])
   }
 
   const handleToggleTask = (taskId: string) => {
@@ -68,18 +69,20 @@ export default function ChecklistPage() {
     )
   }
 
-  const handlePhotoUpload = (taskId: string) => {
-    // TODO: Implement actual photo upload
-    const fakeUrl = `https://placeholder.com/photo-${taskId}`
+  const handlePhotoUploaded = (taskId: string, photoUrl: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task =>
-        task.id === taskId ? { ...task, photoUrl: fakeUrl } : task
+        task.id === taskId ? { ...task, photoUrl } : task
       )
     )
   }
 
   const completedCount = tasks.filter(t => t.completed).length
   const progressPercent = Math.round((completedCount / tasks.length) * 100)
+
+  // Check if all photo-required tasks have photos
+  const missingPhotos = tasks.filter(t => t.photoRequired && t.completed && !t.photoUrl)
+  const canComplete = completedCount === tasks.length && missingPhotos.length === 0
 
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
@@ -133,6 +136,21 @@ export default function ChecklistPage() {
               />
             </div>
           </div>
+
+          {/* Missing Photos Warning */}
+          {missingPhotos.length > 0 && (
+            <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <span className="text-yellow-600 text-lg">⚠️</span>
+                <div className="text-sm text-yellow-800">
+                  <strong>{missingPhotos.length} photo{missingPhotos.length > 1 ? 's' : ''} required</strong>
+                  <div className="text-yellow-700 mt-1">
+                    Please add photos for all completed tasks that require them
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -192,8 +210,15 @@ export default function ChecklistPage() {
                 </button>
 
                 <div className="flex-1">
-                  <div className={`font-medium ${task.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
-                    {task.text}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className={`font-medium ${task.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                      {task.text}
+                    </div>
+                    {task.photoRequired && (
+                      <span className="flex-shrink-0 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                        Photo Required
+                      </span>
+                    )}
                   </div>
 
                   {task.completed && task.completedBy && (
@@ -203,22 +228,11 @@ export default function ChecklistPage() {
                   )}
 
                   {task.photoRequired && (
-                    <div className="mt-2">
-                      {task.photoUrl ? (
-                        <div className="text-sm text-green-600 flex items-center gap-1">
-                          <span>📸</span>
-                          <span>Photo attached</span>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handlePhotoUpload(task.id)}
-                          className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-                        >
-                          <span>📷</span>
-                          <span>Add photo {task.completed ? '(optional)' : '(required)'}</span>
-                        </button>
-                      )}
-                    </div>
+                    <PhotoUpload
+                      taskId={task.id}
+                      existingPhotoUrl={task.photoUrl}
+                      onPhotoUploaded={(url) => handlePhotoUploaded(task.id, url)}
+                    />
                   )}
                 </div>
               </div>
@@ -231,12 +245,21 @@ export default function ChecklistPage() {
       {completedCount === tasks.length && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
           <div className="max-w-4xl mx-auto">
-            <Link
-              href="/dashboard"
-              className="block w-full py-3 bg-green-600 text-white text-center rounded-lg font-semibold hover:bg-green-700 transition-colors"
-            >
-              ✓ All Done! Go to Dashboard
-            </Link>
+            {canComplete ? (
+              <Link
+                href="/dashboard"
+                className="block w-full py-3 bg-green-600 text-white text-center rounded-lg font-semibold hover:bg-green-700 transition-colors"
+              >
+                ✓ All Done! Go to Dashboard
+              </Link>
+            ) : (
+              <div className="w-full py-3 bg-gray-300 text-gray-600 text-center rounded-lg font-semibold cursor-not-allowed">
+                {missingPhotos.length > 0 
+                  ? `Add ${missingPhotos.length} required photo${missingPhotos.length > 1 ? 's' : ''} to complete`
+                  : 'Complete all tasks to finish'
+                }
+              </div>
+            )}
           </div>
         </div>
       )}
