@@ -1,1 +1,473 @@
-J3VzZSBjbGllbnQnCgppbXBvcnQgeyB1c2VTdGF0ZSwgdXNlRWZmZWN0IH0gZnJvbSAncmVhY3QnCmltcG9ydCBMaW5rIGZyb20gJ25leHQvbGluaycKaW1wb3J0IFBob3RvVXBsb2FkIGZyb20gJ0AvYXBwL2NvbXBvbmVudHMvUGhvdG9VcGxvYWQnCmltcG9ydCB7CiAgZ2V0Q2hlY2tsaXN0LAogIGFkZENoZWNrbGlzdEl0ZW0sCiAgdXBkYXRlQ2hlY2tsaXN0SXRlbSwKICBkZWxldGVDaGVja2xpc3RJdGVtLAogIG1vdmVJdGVtVXAsCiAgbW92ZUl0ZW1Eb3duLAogIGNhbkFkZE1vcmVJdGVtcywKICB0eXBlIENoZWNrbGlzdCwKICB0eXBlIENoZWNrbGlzdEl0ZW0sCiAgdHlwZSBDaGVja2xpc3RUeXBlCn0gZnJvbSAnQC9saWIvY2hlY2tsaXN0cycKCmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIENoZWNrbGlzdFBhZ2UoKSB7CiAgY29uc3QgW2NoZWNrbGlzdFR5cGUsIHNldENoZWNrbGlzdFR5cGVdID0gdXNlU3RhdGU8Q2hlY2tsaXN0VHlwZT4oJ29wZW5pbmcnKQogIGNvbnN0IFtjaGVja2xpc3QsIHNldENoZWNrbGlzdF0gPSB1c2VTdGF0ZTxDaGVja2xpc3QgfCBudWxsPihudWxsKQogIGNvbnN0IFt0YXNrcywgc2V0VGFza3NdID0gdXNlU3RhdGU8Q2hlY2tsaXN0SXRlbVtdPihbXSkKICBjb25zdCBbc3RhZmZOYW1lLCBzZXRTdGFmZk5hbWVdID0gdXNlU3RhdGUoJycpCiAgY29uc3QgW3Nob3dOYW1lUHJvbXB0LCBzZXRTaG93TmFtZVByb21wdF0gPSB1c2VTdGF0ZSh0cnVlKQogIGNvbnN0IFtsb2FkaW5nLCBzZXRMb2FkaW5nXSA9IHVzZVN0YXRlKHRydWUpCiAgCiAgLy8gRWRpdCBtb2RlIHN0YXRlCiAgY29uc3QgW2VkaXRNb2RlLCBzZXRFZGl0TW9kZV0gPSB1c2VTdGF0ZShmYWxzZSkKICBjb25zdCBbZWRpdGluZ0l0ZW1JZCwgc2V0RWRpdGluZ0l0ZW1JZF0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKQogIGNvbnN0IFtlZGl0VGV4dCwgc2V0RWRpdFRleHRdID0gdXNlU3RhdGUoJycpCiAgY29uc3QgW25ld0l0ZW1UZXh0LCBzZXROZXdJdGVtVGV4dF0gPSB1c2VTdGF0ZSgnJykKICBjb25zdCBbc2hvd0FkZEZvcm0sIHNldFNob3dBZGRGb3JtXSA9IHVzZVN0YXRlKGZhbHNlKQogIGNvbnN0IFthZGRJdGVtRXJyb3IsIHNldEFkZEl0ZW1FcnJvcl0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKQogIGNvbnN0IFtpdGVtTGltaXQsIHNldEl0ZW1MaW1pdF0gPSB1c2VTdGF0ZTx7IGNhbkFkZDogYm9vbGVhbjsgbWVzc2FnZT86IHN0cmluZyB9IHwgbnVsbD4obnVsbCkKCiAgLy8gQ29tcGxldGlvbiB0cmFja2luZyAoZm9yIGRpc3BsYXkgb25seSwgbm90IHNhdmVkIHlldCkKICBjb25zdCBbY29tcGxldGVkSXRlbXMsIHNldENvbXBsZXRlZEl0ZW1zXSA9IHVzZVN0YXRlPFNldDxzdHJpbmc+PihuZXcgU2V0KCkpCiAgY29uc3QgW3Bob3RvVXJscywgc2V0UGhvdG9VcmxzXSA9IHVzZVN0YXRlPFJlY29yZDxzdHJpbmcsIHN0cmluZz4+KHt9KQoKICAvLyBMb2FkIGNoZWNrbGlzdCBmcm9tIFN1cGFiYXNlCiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIGxvYWRDaGVja2xpc3QoKQogIH0sIFtjaGVja2xpc3RUeXBlXSkKCiAgYXN5bmMgZnVuY3Rpb24gbG9hZENoZWNrbGlzdCgpIHsKICAgIHNldExvYWRpbmcodHJ1ZSkKICAgIGNvbnN0IGRhdGEgPSBhd2FpdCBnZXRDaGVja2xpc3QoY2hlY2tsaXN0VHlwZSkKICAgIGlmIChkYXRhKSB7CiAgICAgIHNldENoZWNrbGlzdChkYXRhKQogICAgICBzZXRUYXNrcyhkYXRhLml0ZW1zIHx8IFtdKQogICAgICAKICAgICAgLy8gQ2hlY2sgaXRlbSBsaW1pdAogICAgICBjb25zdCBsaW1pdEluZm8gPSBhd2FpdCBjYW5BZGRNb3JlSXRlbXMoZGF0YS5pZCkKICAgICAgc2V0SXRlbUxpbWl0KGxpbWl0SW5mbykKICAgIH0KICAgIHNldExvYWRpbmcoZmFsc2UpCiAgfQoKICBjb25zdCBoYW5kbGVUeXBlQ2hhbmdlID0gKHR5cGU6IENoZWNrbGlzdFR5cGUpID0+IHsKICAgIHNldENoZWNrbGlzdFR5cGUodHlwZSkKICAgIHNldENvbXBsZXRlZEl0ZW1zKG5ldyBTZXQoKSkKICAgIHNldFBob3RvVXJscyh7fSkKICB9CgogIGNvbnN0IGhhbmRsZVRvZ2dsZVRhc2sgPSAoaXRlbUlkOiBzdHJpbmcpID0+IHsKICAgIGlmICghc3RhZmZOYW1lKSB7CiAgICAgIGFsZXJ0KCdQbGVhc2UgZW50ZXIgeW91ciBuYW1lIGZpcnN0JykKICAgICAgcmV0dXJuCiAgICB9CgogICAgY29uc3QgbmV3Q29tcGxldGVkID0gbmV3IFNldChjb21wbGV0ZWRJdGVtcykKICAgIGlmIChuZXdDb21wbGV0ZWQuaGFzKGl0ZW1JZCkpIHsKICAgICAgbmV3Q29tcGxldGVkLmRlbGV0ZShpdGVtSWQpCiAgICB9IGVsc2UgewogICAgICBuZXdDb21wbGV0ZWQuYWRkKGl0ZW1JZCkKICAgIH0KICAgIHNldENvbXBsZXRlZEl0ZW1zKG5ld0NvbXBsZXRlZCkKICB9CgogIGNvbnN0IGhhbmRsZVBob3RvVXBsb2FkZWQgPSAoaXRlbUlkOiBzdHJpbmcsIHBob3RvVXJsOiBzdHJpbmcpID0+IHsKICAgIHNldFBob3RvVXJscyhwcmV2ID0+ICh7IC4uLnByZXYsIFtpdGVtSWRdOiBwaG90b1VybCB9KSkKICB9CgogIC8vIEVkaXQgbW9kZSBmdW5jdGlvbnMKICBjb25zdCBoYW5kbGVBZGRJdGVtID0gYXN5bmMgKCkgPT4gewogICAgaWYgKCFuZXdJdGVtVGV4dC50cmltKCkgfHwgIWNoZWNrbGlzdCkgcmV0dXJuCgogICAgc2V0QWRkSXRlbUVycm9yKG51bGwpCiAgICBjb25zdCByZXN1bHQgPSBhd2FpdCBhZGRDaGVja2xpc3RJdGVtKGNoZWNrbGlzdC5pZCwgbmV3SXRlbVRleHQudHJpbSgpLCBmYWxzZSkKICAgIAogICAgaWYgKHJlc3VsdC5zdWNjZXNzICYmIHJlc3VsdC5pdGVtKSB7CiAgICAgIHNldFRhc2tzKFsuLi50YXNrcywgcmVzdWx0Lml0ZW1dKQogICAgICBzZXROZXdJdGVtVGV4dCgnJykKICAgICAgc2V0U2hvd0FkZEZvcm0oZmFsc2UpCiAgICAgIAogICAgICAvLyBSZWZyZXNoIGxpbWl0IGluZm8KICAgICAgY29uc3QgbGltaXRJbmZvID0gYXdhaXQgY2FuQWRkTW9yZUl0ZW1zKGNoZWNrbGlzdC5pZCkKICAgICAgc2V0SXRlbUxpbWl0KGxpbWl0SW5mbykKICAgIH0gZWxzZSBpZiAocmVzdWx0LmVycm9yKSB7CiAgICAgIHNldEFkZEl0ZW1FcnJvcihyZXN1bHQuZXJyb3IpCiAgICB9CiAgfQoKICBjb25zdCBoYW5kbGVTdGFydEVkaXQgPSAoaXRlbTogQ2hlY2tsaXN0SXRlbSkgPT4gewogICAgc2V0RWRpdGluZ0l0ZW1JZChpdGVtLmlkKQogICAgc2V0RWRpdFRleHQoaXRlbS50ZXh0KQogIH0KCiAgY29uc3QgaGFuZGxlU2F2ZUVkaXQgPSBhc3luYyAoKSA9PiB7CiAgICBpZiAoIWVkaXRpbmdJdGVtSWQgfHwgIWVkaXRUZXh0LnRyaW0oKSkgcmV0dXJuCgogICAgY29uc3Qgc3VjY2VzcyA9IGF3YWl0IHVwZGF0ZUNoZWNrbGlzdEl0ZW0oZWRpdGluZ0l0ZW1JZCwgZWRpdFRleHQudHJpbSgpKQogICAgaWYgKHN1Y2Nlc3MpIHsKICAgICAgc2V0VGFza3ModGFza3MubWFwKHQgPT4gCiAgICAgICAgdC5pZCA9PT0gZWRpdGluZ0l0ZW1JZCA/IHsgLi4udCwgdGV4dDogZWRpdFRleHQudHJpbSgpIH0gOiB0CiAgICAgICkpCiAgICAgIHNldEVkaXRpbmdJdGVtSWQobnVsbCkKICAgICAgc2V0RWRpdFRleHQoJycpCiAgICB9CiAgfQoKICBjb25zdCBoYW5kbGVEZWxldGVJdGVtID0gYXN5bmMgKGl0ZW1JZDogc3RyaW5nKSA9PiB7CiAgICBpZiAoIWNvbmZpcm0oJ0RlbGV0ZSB0aGlzIGNoZWNrbGlzdCBpdGVtPycpKSByZXR1cm4KCiAgICBjb25zdCBzdWNjZXNzID0gYXdhaXQgZGVsZXRlQ2hlY2tsaXN0SXRlbShpdGVtSWQpCiAgICBpZiAoc3VjY2VzcykgewogICAgICBzZXRUYXNrcyh0YXNrcy5maWx0ZXIodCA9PiB0LmlkICE9PSBpdGVtSWQpKQogICAgICAKICAgICAgLy8gUmVmcmVzaCBsaW1pdCBpbmZvCiAgICAgIGlmIChjaGVja2xpc3QpIHsKICAgICAgICBjb25zdCBsaW1pdEluZm8gPSBhd2FpdCBjYW5BZGRNb3JlSXRlbXMoY2hlY2tsaXN0LmlkKQogICAgICAgIHNldEl0ZW1MaW1pdChsaW1pdEluZm8pCiAgICAgIH0KICAgIH0KICB9CgogIGNvbnN0IGhhbmRsZU1vdmVVcCA9IGFzeW5jIChpdGVtSWQ6IHN0cmluZykgPT4gewogICAgaWYgKCFjaGVja2xpc3QpIHJldHVybgogICAgY29uc3Qgc3VjY2VzcyA9IGF3YWl0IG1vdmVJdGVtVXAoY2hlY2tsaXN0LmlkLCBpdGVtSWQpCiAgICBpZiAoc3VjY2VzcykgYXdhaXQgbG9hZENoZWNrbGlzdCgpCiAgfQoKICBjb25zdCBoYW5kbGVNb3ZlRG93biA9IGFzeW5jIChpdGVtSWQ6IHN0cmluZykgPT4gewogICAgaWYgKCFjaGVja2xpc3QpIHJldHVybgogICAgY29uc3Qgc3VjY2VzcyA9IGF3YWl0IG1vdmVJdGVtRG93bihjaGVja2xpc3QuaWQsIGl0ZW1JZCkKICAgIGlmIChzdWNjZXNzKSBhd2FpdCBsb2FkQ2hlY2tsaXN0KCkKICB9CgogIGNvbnN0IGNvbXBsZXRlZENvdW50ID0gY29tcGxldGVkSXRlbXMuc2l6ZQogIGNvbnN0IHByb2dyZXNzUGVyY2VudCA9IHRhc2tzLmxlbmd0aCA+IDAgPyBNYXRoLnJvdW5kKChjb21wbGV0ZWRDb3VudCAvIHRhc2tzLmxlbmd0aCkgKiAxMDApIDogMAoKICBjb25zdCBtaXNzaW5nUGhvdG9zID0gdGFza3MuZmlsdGVyKHQgPT4gCiAgICB0LnBob3RvX3JlcXVpcmVkICYmIGNvbXBsZXRlZEl0ZW1zLmhhcyh0LmlkKSAmJiAhcGhvdG9VcmxzW3QuaWRdCiAgKQogIGNvbnN0IGNhbkNvbXBsZXRlID0gY29tcGxldGVkQ291bnQgPT09IHRhc2tzLmxlbmd0aCAmJiBtaXNzaW5nUGhvdG9zLmxlbmd0aCA9PT0gMAoKICBpZiAobG9hZGluZykgewogICAgcmV0dXJuICgKICAgICAgPGRpdiBjbGFzc05hbWU9Im1pbi1oLXNjcmVlbiBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciI+CiAgICAgICAgPGRpdiBjbGFzc05hbWU9InRleHQtY2VudGVyIj4KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJhbmltYXRlLXNwaW4gcm91bmRlZC1mdWxsIGgtMTIgdy0xMiBib3JkZXItYi0yIGJvcmRlci1ibHVlLTYwMCBteC1hdXRvIG1iLTQiPjwvZGl2PgogICAgICAgICAgPHA+TG9hZGluZyBjaGVja2xpc3QuLi48L3A+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgogICAgKQogIH0KCiAgcmV0dXJuICgKICAgIDxtYWluIGNsYXNzTmFtZT0ibWluLWgtc2NyZWVuIGJnLWdyYXktNTAgcGItMjAiPgogICAgICB7LyogSGVhZGVyICovfQogICAgICA8ZGl2IGNsYXNzTmFtZT0iYmctd2hpdGUgYm9yZGVyLWIgYm9yZGVyLWdyYXktMjAwIHN0aWNreSB0b3AtMCB6LTEwIj4KICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibWF4LXctNHhsIG14LWF1dG8gcHgtNCBweS00Ij4KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gbWItNCI+CiAgICAgICAgICAgIDxoMSBjbGFzc05hbWU9InRleHQtMnhsIGZvbnQtYm9sZCB0ZXh0LWdyYXktOTAwIj5EYWlseSBPcHMgQ2hlY2tsaXN0PC9oMT4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGdhcC0yIj4KICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXRFZGl0TW9kZSghZWRpdE1vZGUpfQogICAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgcHgtMyBweS0xLjUgdGV4dC1zbSBmb250LW1lZGl1bSByb3VuZGVkLW1kIHRyYW5zaXRpb24tY29sb3JzICR7CiAgICAgICAgICAgICAgICAgIGVkaXRNb2RlCiAgICAgICAgICAgICAgICAgICAgPyAnYmctZ3JlZW4tMTAwIHRleHQtZ3JlZW4tNzAwIGhvdmVyOmJnLWdyZWVuLTIwMCcKICAgICAgICAgICAgICAgICAgICA6ICdiZy1ncmF5LTEwMCB0ZXh0LWdyYXktNzAwIGhvdmVyOmJnLWdyYXktMjAwJwogICAgICAgICAgICAgICAgfWB9CiAgICAgICAgICAgICAgPgogICAgICAgICAgICAgICAge2VkaXRNb2RlID8gJ+KckyBEb25lIEVkaXRpbmcnIDogJ+Kcj++4jyBFZGl0IENoZWNrbGlzdCd9CiAgICAgICAgICAgICAgPC9idXR0b24+CiAgICAgICAgICAgICAgPExpbmsgCiAgICAgICAgICAgICAgICBocmVmPSIvZGFzaGJvYXJkIgogICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJ0ZXh0LXNtIHRleHQtYmx1ZS02MDAgaG92ZXI6dGV4dC1ibHVlLTcwMCBmb250LW1lZGl1bSIKICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICBEYXNoYm9hcmQg4oaSCiAgICAgICAgICAgICAgPC9MaW5rPgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgIHsvKiBUeXBlIFRvZ2dsZSAqL30KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGdhcC0yIj4KICAgICAgICAgICAgPGJ1dHRvbgogICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZVR5cGVDaGFuZ2UoJ29wZW5pbmcnKX0KICAgICAgICAgICAgICBjbGFzc05hbWU9e2BmbGV4LTEgcHktMiBweC00IHJvdW5kZWQtbGcgZm9udC1zZW1pYm9sZCB0cmFuc2l0aW9uLWNvbG9ycyAkewogICAgICAgICAgICAgICAgY2hlY2tsaXN0VHlwZSA9PT0gJ29wZW5pbmcnCiAgICAgICAgICAgICAgICAgID8gJ2JnLWJsdWUtNjAwIHRleHQtd2hpdGUnCiAgICAgICAgICAgICAgICAgIDogJ2JnLWdyYXktMTAwIHRleHQtZ3JheS03MDAgaG92ZXI6YmctZ3JheS0yMDAnCiAgICAgICAgICAgICAgfWB9CiAgICAgICAgICAgID4KICAgICAgICAgICAgICBPcGVuaW5nCiAgICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gaGFuZGxlVHlwZUNoYW5nZSgnY2xvc2luZycpfQogICAgICAgICAgICAgIGNsYXNzTmFtZT17YGZsZXgtMSBweS0yIHB4LTQgcm91bmRlZC1sZyBmb250LXNlbWlib2xkIHRyYW5zaXRpb24tY29sb3JzICR7CiAgICAgICAgICAgICAgICBjaGVja2xpc3RUeXBlID09PSAnY2xvc2luZycKICAgICAgICAgICAgICAgICAgPyAnYmctYmx1ZS02MDAgdGV4dC13aGl0ZScKICAgICAgICAgICAgICAgICAgOiAnYmctZ3JheS0xMDAgdGV4dC1ncmF5LTcwMCBob3ZlcjpiZy1ncmF5LTIwMCcKICAgICAgICAgICAgICB9YH0KICAgICAgICAgICAgPgogICAgICAgICAgICAgIENsb3NpbmcKICAgICAgICAgICAgPC9idXR0b24+CiAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICB7LyogUHJvZ3Jlc3MgQmFyIChvbmx5IGluIG5vbi1lZGl0IG1vZGUpICovfQogICAgICAgICAgeyFlZGl0TW9kZSAmJiAoCiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC00Ij4KICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBqdXN0aWZ5LWJldHdlZW4gdGV4dC1zbSB0ZXh0LWdyYXktNjAwIG1iLTEiPgogICAgICAgICAgICAgICAgPHNwYW4+e2NvbXBsZXRlZENvdW50fSBvZiB7dGFza3MubGVuZ3RofSBjb21wbGV0ZTwvc3Bhbj4KICAgICAgICAgICAgICAgIDxzcGFuPntwcm9ncmVzc1BlcmNlbnR9JTwvc3Bhbj4KICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iaC0yIGJnLWdyYXktMjAwIHJvdW5kZWQtZnVsbCBvdmVyZmxvdy1oaWRkZW4iPgogICAgICAgICAgICAgICAgPGRpdgogICAgICAgICAgICAgICAgICBjbGFzc05hbWU9ImgtZnVsbCBiZy1ncmVlbi01MDAgdHJhbnNpdGlvbi1hbGwgZHVyYXRpb24tMzAwIgogICAgICAgICAgICAgICAgICBzdHlsZT17eyB3aWR0aDogYCR7cHJvZ3Jlc3NQZXJjZW50fSVgIH19CiAgICAgICAgICAgICAgICAvPgogICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICl9CgogICAgICAgICAgey8qIE1pc3NpbmcgUGhvdG9zIFdhcm5pbmcgKi99CiAgICAgICAgICB7IWVkaXRNb2RlICYmIG1pc3NpbmdQaG90b3MubGVuZ3RoID4gMCAmJiAoCiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJtdC0zIGJnLXllbGxvdy01MCBib3JkZXIgYm9yZGVyLXllbGxvdy0yMDAgcm91bmRlZC1sZyBwLTMiPgogICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGl0ZW1zLXN0YXJ0IGdhcC0yIj4KICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idGV4dC15ZWxsb3ctNjAwIHRleHQtbGciPuKaoO+4jzwvc3Bhbj4KICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJ0ZXh0LXNtIHRleHQteWVsbG93LTgwMCI+CiAgICAgICAgICAgICAgICAgIDxzdHJvbmc+e21pc3NpbmdQaG90b3MubGVuZ3RofSBwaG90b3ttaXNzaW5nUGhvdG9zLmxlbmd0aCA+IDEgPyAncycgOiAnJ30gcmVxdWlyZWQ8L3N0cm9uZz4KICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9InRleHQteWVsbG93LTcwMCBtdC0xIj4KICAgICAgICAgICAgICAgICAgICBQbGVhc2UgYWRkIHBob3RvcyBmb3IgYWxsIGNvbXBsZXRlZCB0YXNrcyB0aGF0IHJlcXVpcmUgdGhlbQogICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICl9CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgoKICAgICAgey8qIE5hbWUgUHJvbXB0IChvbmx5IGluIG5vbi1lZGl0IG1vZGUpICovfQogICAgICB7IWVkaXRNb2RlICYmIHNob3dOYW1lUHJvbXB0ICYmICgKICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibWF4LXctNHhsIG14LWF1dG8gcHgtNCBweS02Ij4KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJiZy1ibHVlLTUwIGJvcmRlciBib3JkZXItYmx1ZS0yMDAgcm91bmRlZC1sZyBwLTQiPgogICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPSJibG9jayB0ZXh0LXNtIGZvbnQtbWVkaXVtIHRleHQtZ3JheS03MDAgbWItMiI+CiAgICAgICAgICAgICAgV2hvJ3MgY29tcGxldGluZyB0aGlzIGNoZWNrbGlzdD8KICAgICAgICAgICAgPC9sYWJlbD4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggZ2FwLTIiPgogICAgICAgICAgICAgIDxpbnB1dAogICAgICAgICAgICAgICAgdHlwZT0idGV4dCIKICAgICAgICAgICAgICAgIHZhbHVlPXtzdGFmZk5hbWV9CiAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IHNldFN0YWZmTmFtZShlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj0iRW50ZXIgeW91ciBuYW1lIgogICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJmbGV4LTEgcHgtNCBweS0yIGJvcmRlciBib3JkZXItZ3JheS0zMDAgcm91bmRlZC1sZyBmb2N1czpyaW5nLTIgZm9jdXM6cmluZy1ibHVlLTUwMCBmb2N1czpib3JkZXItdHJhbnNwYXJlbnQiCiAgICAgICAgICAgICAgLz4KICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzdGFmZk5hbWUgJiYgc2V0U2hvd05hbWVQcm9tcHQoZmFsc2UpfQogICAgICAgICAgICAgICAgZGlzYWJsZWQ9eyFzdGFmZk5hbWV9CiAgICAgICAgICAgICAgICBjbGFzc05hbWU9InB4LTYgcHktMiBiZy1ibHVlLTYwMCB0ZXh0LXdoaXRlIHJvdW5kZWQtbGcgZm9udC1zZW1pYm9sZCBob3ZlcjpiZy1ibHVlLTcwMCBkaXNhYmxlZDpiZy1ncmF5LTMwMCBkaXNhYmxlZDpjdXJzb3Itbm90LWFsbG93ZWQiCiAgICAgICAgICAgICAgPgogICAgICAgICAgICAgICAgU3RhcnQKICAgICAgICAgICAgICA8L2J1dHRvbj4KICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICA8L2Rpdj4KICAgICAgKX0KCiAgICAgIHsvKiBUYXNrIExpc3QgKi99CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJtYXgtdy00eGwgbXgtYXV0byBweC00IHB5LTYgc3BhY2UteS0zIj4KICAgICAgICB7dGFza3MubWFwKCh0YXNrLCBpbmRleCkgPT4gKAogICAgICAgICAgPGRpdgogICAgICAgICAgICBrZXk9e3Rhc2suaWR9CiAgICAgICAgICAgIGNsYXNzTmFtZT17YGJnLXdoaXRlIHJvdW5kZWQtbGcgYm9yZGVyLTIgdHJhbnNpdGlvbi1hbGwgJHsKICAgICAgICAgICAgICAhZWRpdE1vZGUgJiYgY29tcGxldGVkSXRlbXMuaGFzKHRhc2suaWQpCiAgICAgICAgICAgICAgICA/ICdib3JkZXItZ3JlZW4tNTAwIGJnLWdyZWVuLTUwJwogICAgICAgICAgICAgICAgOiAnYm9yZGVyLWdyYXktMjAwIGhvdmVyOmJvcmRlci1ibHVlLTMwMCcKICAgICAgICAgICAgfWB9CiAgICAgICAgICA+CiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJwLTQiPgogICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGl0ZW1zLXN0YXJ0IGdhcC0zIj4KICAgICAgICAgICAgICAgIHshZWRpdE1vZGUgJiYgKAogICAgICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gaGFuZGxlVG9nZ2xlVGFzayh0YXNrLmlkKX0KICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2BmbGV4LXNocmluay0wIHctNiBoLTYgcm91bmRlZCBib3JkZXItMiBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciB0cmFuc2l0aW9uLWNvbG9ycyAkewogICAgICAgICAgICAgICAgICAgICAgY29tcGxldGVkSXRlbXMuaGFzKHRhc2suaWQpCiAgICAgICAgICAgICAgICAgICAgICAgID8gJ2JnLWdyZWVuLTUwMCBib3JkZXItZ3JlZW4tNTAwJwogICAgICAgICAgICAgICAgICAgICAgICA6ICdib3JkZXItZ3JheS0zMDAgaG92ZXI6Ym9yZGVyLWJsdWUtNTAwJwogICAgICAgICAgICAgICAgICAgIH1gfQogICAgICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICAgICAge2NvbXBsZXRlZEl0ZW1zLmhhcyh0YXNrLmlkKSAmJiAoCiAgICAgICAgICAgICAgICAgICAgICA8c3ZnIGNsYXNzTmFtZT0idy00IGgtNCB0ZXh0LXdoaXRlIiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgdmlld0JveD0iMCAwIDI0IDI0Ij4KICAgICAgICAgICAgICAgICAgICAgICAgPHBhdGggc3Ryb2tlTGluZWNhcD0icm91bmQiIHN0cm9rZUxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlV2lkdGg9ezN9IGQ9Ik01IDEzbDQgNEwxOSA3IiAvPgogICAgICAgICAgICAgICAgICAgICAgPC9zdmc+CiAgICAgICAgICAgICAgICAgICAgKX0KICAgICAgICAgICAgICAgICAgPC9idXR0b24+CiAgICAgICAgICAgICAgICApfQoKICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4LTEiPgogICAgICAgICAgICAgICAgICB7ZWRpdGluZ0l0ZW1JZCA9PT0gdGFzay5pZCA/ICgKICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZmxleCBnYXAtMiI+CiAgICAgICAgICAgICAgICAgICAgICA8aW5wdXQKICAgICAgICAgICAgICAgICAgICAgICAgdHlwZT0idGV4dCIKICAgICAgICAgICAgICAgICAgICAgICAgdmFsdWU9e2VkaXRUZXh0fQogICAgICAgICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IHNldEVkaXRUZXh0KGUudGFyZ2V0LnZhbHVlKX0KICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJmbGV4LTEgcHgtMyBweS0xLjUgYm9yZGVyIGJvcmRlci1ncmF5LTMwMCByb3VuZGVkLW1kIgogICAgICAgICAgICAgICAgICAgICAgICBhdXRvRm9jdXMKICAgICAgICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgICAgICAgICA8YnV0dG9uCiAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZVNhdmVFZGl0fQogICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9InB4LTMgcHktMS41IGJnLWdyZWVuLTYwMCB0ZXh0LXdoaXRlIHRleHQtc20gcm91bmRlZC1tZCBob3ZlcjpiZy1ncmVlbi03MDAiCiAgICAgICAgICAgICAgICAgICAgICA+CiAgICAgICAgICAgICAgICAgICAgICAgIFNhdmUKICAgICAgICAgICAgICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICAgICAgICAgICAgICAgPGJ1dHRvbgogICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXRFZGl0aW5nSXRlbUlkKG51bGwpfQogICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9InB4LTMgcHktMS41IGJnLWdyYXktMzAwIHRleHQtZ3JheS03MDAgdGV4dC1zbSByb3VuZGVkLW1kIGhvdmVyOmJnLWdyYXktNDAwIgogICAgICAgICAgICAgICAgICAgICAgPgogICAgICAgICAgICAgICAgICAgICAgICBDYW5jZWwKICAgICAgICAgICAgICAgICAgICAgIDwvYnV0dG9uPgogICAgICAgICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICAgICAgICApIDogKAogICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGl0ZW1zLXN0YXJ0IGp1c3RpZnktYmV0d2VlbiBnYXAtMiI+CiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17YGZvbnQtbWVkaXVtICR7IWVkaXRNb2RlICYmIGNvbXBsZXRlZEl0ZW1zLmhhcyh0YXNrLmlkKSA/ICd0ZXh0LWdyYXktNTAwIGxpbmUtdGhyb3VnaCcgOiAndGV4dC1ncmF5LTkwMCd9YH0+CiAgICAgICAgICAgICAgICAgICAgICAgIHt0YXNrLnRleHR9CiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgICAgICAgICAgIHt0YXNrLnBob3RvX3JlcXVpcmVkICYmICgKICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPSJmbGV4LXNocmluay0wIHRleHQteHMgYmctYmx1ZS0xMDAgdGV4dC1ibHVlLTcwMCBweC0yIHB5LTAuNSByb3VuZGVkLWZ1bGwgZm9udC1tZWRpdW0iPgogICAgICAgICAgICAgICAgICAgICAgICAgIFBob3RvIFJlcXVpcmVkCiAgICAgICAgICAgICAgICAgICAgICAgIDwvc3Bhbj4KICAgICAgICAgICAgICAgICAgICAgICl9CiAgICAgICAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgICAgICAgICl9CgogICAgICAgICAgICAgICAgICB7LyogRWRpdCBtb2RlIGNvbn
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import PhotoUpload from '@/app/components/PhotoUpload'
+import {
+  getChecklist,
+  addChecklistItem,
+  updateChecklistItem,
+  deleteChecklistItem,
+  moveItemUp,
+  moveItemDown,
+  canAddMoreItems,
+  type Checklist,
+  type ChecklistItem,
+  type ChecklistType
+} from '@/lib/checklists'
+
+export default function ChecklistPage() {
+  const [checklistType, setChecklistType] = useState<ChecklistType>('opening')
+  const [checklist, setChecklist] = useState<Checklist | null>(null)
+  const [tasks, setTasks] = useState<ChecklistItem[]>([])
+  const [staffName, setStaffName] = useState('')
+  const [showNamePrompt, setShowNamePrompt] = useState(true)
+  const [loading, setLoading] = useState(true)
+  
+  // Edit mode state
+  const [editMode, setEditMode] = useState(false)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [editText, setEditText] = useState('')
+  const [newItemText, setNewItemText] = useState('')
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [addItemError, setAddItemError] = useState<string | null>(null)
+  const [itemLimit, setItemLimit] = useState<{ canAdd: boolean; message?: string } | null>(null)
+
+  // Completion tracking (for display only, not saved yet)
+  const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
+  const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({})
+
+  // Load checklist from Supabase
+  useEffect(() => {
+    loadChecklist()
+  }, [checklistType])
+
+  async function loadChecklist() {
+    setLoading(true)
+    const data = await getChecklist(checklistType)
+    if (data) {
+      setChecklist(data)
+      setTasks(data.items || [])
+      
+      // Check item limit
+      const limitInfo = await canAddMoreItems(data.id)
+      setItemLimit(limitInfo)
+    }
+    setLoading(false)
+  }
+
+  const handleTypeChange = (type: ChecklistType) => {
+    setChecklistType(type)
+    setCompletedItems(new Set())
+    setPhotoUrls({})
+  }
+
+  const handleToggleTask = (itemId: string) => {
+    if (!staffName) {
+      alert('Please enter your name first')
+      return
+    }
+
+    const newCompleted = new Set(completedItems)
+    if (newCompleted.has(itemId)) {
+      newCompleted.delete(itemId)
+    } else {
+      newCompleted.add(itemId)
+    }
+    setCompletedItems(newCompleted)
+  }
+
+  const handlePhotoUploaded = (itemId: string, photoUrl: string) => {
+    setPhotoUrls(prev => ({ ...prev, [itemId]: photoUrl }))
+  }
+
+  // Edit mode functions
+  const handleAddItem = async () => {
+    if (!newItemText.trim() || !checklist) return
+
+    setAddItemError(null)
+    const result = await addChecklistItem(checklist.id, newItemText.trim(), false)
+    
+    if (result.success && result.item) {
+      setTasks([...tasks, result.item])
+      setNewItemText('')
+      setShowAddForm(false)
+      
+      // Refresh limit info
+      const limitInfo = await canAddMoreItems(checklist.id)
+      setItemLimit(limitInfo)
+    } else if (result.error) {
+      setAddItemError(result.error)
+    }
+  }
+
+  const handleStartEdit = (item: ChecklistItem) => {
+    setEditingItemId(item.id)
+    setEditText(item.text)
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingItemId || !editText.trim()) return
+
+    const success = await updateChecklistItem(editingItemId, editText.trim())
+    if (success) {
+      setTasks(tasks.map(t => 
+        t.id === editingItemId ? { ...t, text: editText.trim() } : t
+      ))
+      setEditingItemId(null)
+      setEditText('')
+    }
+  }
+
+  const handleDeleteItem = async (itemId: string) => {
+    if (!confirm('Delete this checklist item?')) return
+
+    const success = await deleteChecklistItem(itemId)
+    if (success) {
+      setTasks(tasks.filter(t => t.id !== itemId))
+      
+      // Refresh limit info
+      if (checklist) {
+        const limitInfo = await canAddMoreItems(checklist.id)
+        setItemLimit(limitInfo)
+      }
+    }
+  }
+
+  const handleMoveUp = async (itemId: string) => {
+    if (!checklist) return
+    const success = await moveItemUp(checklist.id, itemId)
+    if (success) await loadChecklist()
+  }
+
+  const handleMoveDown = async (itemId: string) => {
+    if (!checklist) return
+    const success = await moveItemDown(checklist.id, itemId)
+    if (success) await loadChecklist()
+  }
+
+  const completedCount = completedItems.size
+  const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
+
+  const missingPhotos = tasks.filter(t => 
+    t.photo_required && completedItems.has(t.id) && !photoUrls[t.id]
+  )
+  const canComplete = completedCount === tasks.length && missingPhotos.length === 0
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Loading checklist...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50 pb-20">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-gray-900">Daily Ops Checklist</h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEditMode(!editMode)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  editMode
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {editMode ? '✓ Done Editing' : '✏️ Edit Checklist'}
+              </button>
+              <Link 
+                href="/dashboard"
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Dashboard →
+              </Link>
+            </div>
+          </div>
+
+          {/* Type Toggle */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleTypeChange('opening')}
+              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-colors ${
+                checklistType === 'opening'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Opening
+            </button>
+            <button
+              onClick={() => handleTypeChange('closing')}
+              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-colors ${
+                checklistType === 'closing'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Closing
+            </button>
+          </div>
+
+          {/* Progress Bar (only in non-edit mode) */}
+          {!editMode && (
+            <div className="mt-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>{completedCount} of {tasks.length} complete</span>
+                <span>{progressPercent}%</span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-500 transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Missing Photos Warning */}
+          {!editMode && missingPhotos.length > 0 && (
+            <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <span className="text-yellow-600 text-lg">⚠️</span>
+                <div className="text-sm text-yellow-800">
+                  <strong>{missingPhotos.length} photo{missingPhotos.length > 1 ? 's' : ''} required</strong>
+                  <div className="text-yellow-700 mt-1">
+                    Please add photos for all completed tasks that require them
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Name Prompt (only in non-edit mode) */}
+      {!editMode && showNamePrompt && (
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Who's completing this checklist?
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={staffName}
+                onChange={(e) => setStaffName(e.target.value)}
+                placeholder="Enter your name"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                onClick={() => staffName && setShowNamePrompt(false)}
+                disabled={!staffName}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Start
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Task List */}
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-3">
+        {tasks.map((task, index) => (
+          <div
+            key={task.id}
+            className={`bg-white rounded-lg border-2 transition-all ${
+              !editMode && completedItems.has(task.id)
+                ? 'border-green-500 bg-green-50'
+                : 'border-gray-200 hover:border-blue-300'
+            }`}
+          >
+            <div className="p-4">
+              <div className="flex items-start gap-3">
+                {!editMode && (
+                  <button
+                    onClick={() => handleToggleTask(task.id)}
+                    className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+                      completedItems.has(task.id)
+                        ? 'bg-green-500 border-green-500'
+                        : 'border-gray-300 hover:border-blue-500'
+                    }`}
+                  >
+                    {completedItems.has(task.id) && (
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </button>
+                )}
+
+                <div className="flex-1">
+                  {editingItemId === task.id ? (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleSaveEdit}
+                        className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingItemId(null)}
+                        className="px-3 py-1.5 bg-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-400"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between gap-2">
+                      <div className={`font-medium ${!editMode && completedItems.has(task.id) ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                        {task.text}
+                      </div>
+                      {task.photo_required && (
+                        <span className="flex-shrink-0 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                          Photo Required
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Edit mode controls */}
+                  {editMode && editingItemId !== task.id && (
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => handleStartEdit(task)}
+                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        ✏️ Edit
+                      </button>
+                      {index > 0 && (
+                        <button
+                          onClick={() => handleMoveUp(task.id)}
+                          className="text-xs text-gray-600 hover:text-gray-800"
+                        >
+                          ↑ Move Up
+                        </button>
+                      )}
+                      {index < tasks.length - 1 && (
+                        <button
+                          onClick={() => handleMoveDown(task.id)}
+                          className="text-xs text-gray-600 hover:text-gray-800"
+                        >
+                          ↓ Move Down
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteItem(task.id)}
+                        className="text-xs text-red-600 hover:text-red-700 font-medium"
+                      >
+                        🗑 Delete
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Photo upload (only when task completed and photo required) */}
+                  {!editMode && task.photo_required && completedItems.has(task.id) && (
+                    <div className="mt-3">
+                      <PhotoUpload
+                        onUploadComplete={(url) => handlePhotoUploaded(task.id, url)}
+                        existingUrl={photoUrls[task.id]}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Add Item Form (Edit Mode) */}
+        {editMode && (
+          <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-4">
+            {!showAddForm ? (
+              <div>
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  disabled={itemLimit && !itemLimit.canAdd}
+                  className="w-full py-2 text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  + Add New Item
+                </button>
+                {itemLimit && !itemLimit.canAdd && (
+                  <div className="mt-2 text-xs text-center">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                      <p className="text-yellow-800 font-medium">🔒 {itemLimit.message}</p>
+                      <Link href="/billing" className="text-blue-600 hover:text-blue-700 underline">
+                        Upgrade to Pro
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  value={newItemText}
+                  onChange={(e) => setNewItemText(e.target.value)}
+                  placeholder="Enter task description"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md mb-2"
+                  autoFocus
+                />
+                {addItemError && (
+                  <p className="text-sm text-red-600 mb-2">{addItemError}</p>
+                )}
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleAddItem}
+                    className="flex-1 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+                  >
+                    Add Item
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddForm(false)
+                      setNewItemText('')
+                      setAddItemError(null)
+                    }}
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Complete Button (fixed at bottom, only in non-edit mode) */}
+      {!editMode && !showNamePrompt && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+          <div className="max-w-4xl mx-auto">
+            <button
+              disabled={!canComplete}
+              className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+                canComplete
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              {canComplete ? '✓ Complete Checklist' : 'Complete all tasks to finish'}
+            </button>
+          </div>
+        </div>
+      )}
+    </main>
+  )
+}
