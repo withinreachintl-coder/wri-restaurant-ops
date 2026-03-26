@@ -380,8 +380,9 @@ export default function ChecklistPage() {
                   {!editMode && task.photo_required && completedItems.has(task.id) && (
                     <div className="mt-3">
                       <PhotoUpload
-                        onUploadComplete={(url) => handlePhotoUploaded(task.id, url)}
-                        existingUrl={photoUrls[task.id]}
+                        taskId={task.id}
+                        onPhotoUploaded={(url) => handlePhotoUploaded(task.id, url)}
+                        existingPhotoUrl={photoUrls[task.id]}
                       />
                     </div>
                   )}
