@@ -399,7 +399,7 @@ export default function ChecklistPage() {
               <div>
                 <button
                   onClick={() => setShowAddForm(true)}
-                  disabled={itemLimit && !itemLimit.canAdd}
+                  disabled={itemLimit ? !itemLimit.canAdd : false}
                   className="w-full py-2 text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   + Add New Item
