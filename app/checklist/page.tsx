@@ -2,168 +2,184 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import PhotoUpload from '@/app/components/PhotoUpload'
-import {
-  getChecklist,
-  addChecklistItem,
-  updateChecklistItem,
-  deleteChecklistItem,
-  moveItemUp,
-  moveItemDown,
-  canAddMoreItems,
-  type Checklist,
-  type ChecklistItem,
-  type ChecklistType
-} from '@/lib/checklists'
+import { supabase, ChecklistTask } from '@/lib/supabase'
+
+const OPENING_TASKS: ChecklistTask[] = [
+  { id: '1', text: 'Check walk-in cooler temperature (38°F or below)', completed: false, photoRequired: true, checklistType: 'opening', order: 1 },
+  { id: '2', text: 'Check freezer temperature (0°F or below)', completed: false, photoRequired: true, checklistType: 'opening', order: 2 },
+  { id: '3', text: 'Verify prep station setup and cleanliness', completed: false, photoRequired: false, checklistType: 'opening', order: 3 },
+  { id: '4', text: 'Test all cooking equipment (ovens, fryers, grills)', completed: false, photoRequired: false, checklistType: 'opening', order: 4 },
+  { id: '5', text: 'Check hand wash stations (soap, towels, hot water)', completed: false, photoRequired: false, checklistType: 'opening', order: 5 },
+  { id: '6', text: 'Verify first aid kit is stocked', completed: false, photoRequired: false, checklistType: 'opening', order: 6 },
+  { id: '7', text: 'Count and verify register cash (starting balance)', completed: false, photoRequired: true, checklistType: 'opening', order: 7 },
+  { id: '8', text: 'Turn on all lights and music', completed: false, photoRequired: false, checklistType: 'opening', order: 8 },
+  { id: '9', text: 'Unlock entrance doors', completed: false, photoRequired: false, checklistType: 'opening', order: 9 },
+]
+
+const CLOSING_TASKS: ChecklistTask[] = [
+  { id: 'c1', text: 'Lock entrance doors', completed: false, photoRequired: false, checklistType: 'closing', order: 1 },
+  { id: 'c2', text: 'Turn off all cooking equipment', completed: false, photoRequired: true, checklistType: 'closing', order: 2 },
+  { id: 'c3', text: 'Clean and sanitize all food prep surfaces', completed: false, photoRequired: true, checklistType: 'closing', order: 3 },
+  { id: 'c4', text: 'Sweep and mop all kitchen floors', completed: false, photoRequired: true, checklistType: 'closing', order: 4 },
+  { id: 'c5', text: 'Empty all trash and replace liners', completed: false, photoRequired: false, checklistType: 'closing', order: 5 },
+  { id: 'c6', text: 'Restock prep station for tomorrow', completed: false, photoRequired: false, checklistType: 'closing', order: 6 },
+  { id: 'c7', text: 'Count register cash and complete cash drop', completed: false, photoRequired: true, checklistType: 'closing', order: 7 },
+  { id: 'c8', text: 'Turn off lights and music', completed: false, photoRequired: false, checklistType: 'closing', order: 8 },
+  { id: 'c9', text: 'Set alarm and lock all doors', completed: false, photoRequired: false, checklistType: 'closing', order: 9 },
+]
 
 export default function ChecklistPage() {
-  const [checklistType, setChecklistType] = useState<ChecklistType>('opening')
-  const [checklist, setChecklist] = useState<Checklist | null>(null)
-  const [tasks, setTasks] = useState<ChecklistItem[]>([])
+  const [checklistType, setChecklistType] = useState<'opening' | 'closing'>('opening')
+  const [tasks, setTasks] = useState<ChecklistTask[]>([])
   const [staffName, setStaffName] = useState('')
   const [showNamePrompt, setShowNamePrompt] = useState(true)
-  const [loading, setLoading] = useState(true)
-  
-  // Edit mode state
   const [editMode, setEditMode] = useState(false)
-  const [editingItemId, setEditingItemId] = useState<string | null>(null)
-  const [editText, setEditText] = useState('')
   const [newItemText, setNewItemText] = useState('')
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [addItemError, setAddItemError] = useState<string | null>(null)
-  const [itemLimit, setItemLimit] = useState<{ canAdd: boolean; message?: string } | null>(null)
+  const [newItemPhotoRequired, setNewItemPhotoRequired] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  // Completion tracking (for display only, not saved yet)
-  const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
-  const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({})
-
-  // Load checklist from Supabase
+  // Load tasks from Supabase or use defaults
   useEffect(() => {
-    loadChecklist()
+    loadTasks()
   }, [checklistType])
 
-  async function loadChecklist() {
+  const loadTasks = async () => {
     setLoading(true)
-    const data = await getChecklist(checklistType)
-    if (data) {
-      setChecklist(data)
-      setTasks(data.items || [])
-      
-      // Check item limit
-      const limitInfo = await canAddMoreItems(data.id)
-      setItemLimit(limitInfo)
+    try {
+      const { data, error } = await supabase
+        .from('checklist_tasks')
+        .select('*')
+        .eq('checklistType', checklistType)
+        .order('order', { ascending: true })
+
+      if (error) {
+        console.error('Error loading tasks:', error)
+        // Fallback to default tasks if DB fails
+        setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+      } else if (data && data.length > 0) {
+        setTasks(data)
+      } else {
+        // No tasks in DB, use defaults
+        setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+      }
+    } catch (err) {
+      console.error('Failed to fetch tasks:', err)
+      setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
-  const handleTypeChange = (type: ChecklistType) => {
+  const handleTypeChange = (type: 'opening' | 'closing') => {
     setChecklistType(type)
-    setCompletedItems(new Set())
-    setPhotoUrls({})
   }
 
-  const handleToggleTask = (itemId: string) => {
+  const handleToggleTask = (taskId: string) => {
+    if (editMode) return // Don't toggle in edit mode
+
     if (!staffName) {
       alert('Please enter your name first')
       return
     }
 
-    const newCompleted = new Set(completedItems)
-    if (newCompleted.has(itemId)) {
-      newCompleted.delete(itemId)
-    } else {
-      newCompleted.add(itemId)
-    }
-    setCompletedItems(newCompleted)
-  }
-
-  const handlePhotoUploaded = (itemId: string, photoUrl: string) => {
-    setPhotoUrls(prev => ({ ...prev, [itemId]: photoUrl }))
-  }
-
-  // Edit mode functions
-  const handleAddItem = async () => {
-    if (!newItemText.trim() || !checklist) return
-
-    setAddItemError(null)
-    const result = await addChecklistItem(checklist.id, newItemText.trim(), false)
-    
-    if (result.success && result.item) {
-      setTasks([...tasks, result.item])
-      setNewItemText('')
-      setShowAddForm(false)
-      
-      // Refresh limit info
-      const limitInfo = await canAddMoreItems(checklist.id)
-      setItemLimit(limitInfo)
-    } else if (result.error) {
-      setAddItemError(result.error)
-    }
-  }
-
-  const handleStartEdit = (item: ChecklistItem) => {
-    setEditingItemId(item.id)
-    setEditText(item.text)
-  }
-
-  const handleSaveEdit = async () => {
-    if (!editingItemId || !editText.trim()) return
-
-    const success = await updateChecklistItem(editingItemId, editText.trim())
-    if (success) {
-      setTasks(tasks.map(t => 
-        t.id === editingItemId ? { ...t, text: editText.trim() } : t
-      ))
-      setEditingItemId(null)
-      setEditText('')
-    }
-  }
-
-  const handleDeleteItem = async (itemId: string) => {
-    if (!confirm('Delete this checklist item?')) return
-
-    const success = await deleteChecklistItem(itemId)
-    if (success) {
-      setTasks(tasks.filter(t => t.id !== itemId))
-      
-      // Refresh limit info
-      if (checklist) {
-        const limitInfo = await canAddMoreItems(checklist.id)
-        setItemLimit(limitInfo)
-      }
-    }
-  }
-
-  const handleMoveUp = async (itemId: string) => {
-    if (!checklist) return
-    const success = await moveItemUp(checklist.id, itemId)
-    if (success) await loadChecklist()
-  }
-
-  const handleMoveDown = async (itemId: string) => {
-    if (!checklist) return
-    const success = await moveItemDown(checklist.id, itemId)
-    if (success) await loadChecklist()
-  }
-
-  const completedCount = completedItems.size
-  const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
-
-  const missingPhotos = tasks.filter(t => 
-    t.photo_required && completedItems.has(t.id) && !photoUrls[t.id]
-  )
-  const canComplete = completedCount === tasks.length && missingPhotos.length === 0
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p>Loading checklist...</p>
-        </div>
-      </div>
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId
+          ? {
+              ...task,
+              completed: !task.completed,
+              completedBy: !task.completed ? staffName : undefined,
+              completedAt: !task.completed ? new Date().toLocaleTimeString() : undefined,
+            }
+          : task
+      )
     )
   }
+
+  const handlePhotoUpload = (taskId: string) => {
+    // TODO: Implement actual photo upload
+    const fakeUrl = `https://placeholder.com/photo-${taskId}`
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, photoUrl: fakeUrl } : task
+      )
+    )
+  }
+
+  const handleAddItem = async () => {
+    if (!newItemText.trim()) {
+      alert('Please enter task text')
+      return
+    }
+
+    const newTask: ChecklistTask = {
+      id: `temp-${Date.now()}`, // Temporary ID
+      text: newItemText.trim(),
+      completed: false,
+      photoRequired: newItemPhotoRequired,
+      checklistType,
+      order: tasks.length + 1,
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('checklist_tasks')
+        .insert([{
+          text: newTask.text,
+          completed: newTask.completed,
+          photoRequired: newTask.photoRequired,
+          checklistType: newTask.checklistType,
+          order: newTask.order,
+        }])
+        .select()
+
+      if (error) {
+        console.error('Error adding task:', error)
+        alert('Failed to add task. Check console for details.')
+        return
+      }
+
+      if (data && data.length > 0) {
+        // Use the returned task with real ID
+        setTasks(prev => [...prev, data[0]])
+      } else {
+        // Fallback to local state if no data returned
+        setTasks(prev => [...prev, newTask])
+      }
+
+      // Reset form
+      setNewItemText('')
+      setNewItemPhotoRequired(false)
+    } catch (err) {
+      console.error('Failed to add task:', err)
+      alert('Failed to add task. Check console for details.')
+    }
+  }
+
+  const handleDeleteItem = async (taskId: string) => {
+    if (!confirm('Are you sure you want to delete this task?')) return
+
+    try {
+      const { error } = await supabase
+        .from('checklist_tasks')
+        .delete()
+        .eq('id', taskId)
+
+      if (error) {
+        console.error('Error deleting task:', error)
+        alert('Failed to delete task. Check console for details.')
+        return
+      }
+
+      setTasks(prev => prev.filter(t => t.id !== taskId))
+    } catch (err) {
+      console.error('Failed to delete task:', err)
+      alert('Failed to delete task. Check console for details.')
+    }
+  }
+
+  const completedCount = tasks.filter(t => t.completed).length
+  const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
 
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
@@ -172,20 +188,20 @@ export default function ChecklistPage() {
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-gray-900">Daily Ops Checklist</h1>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2">
               <button
                 onClick={() => setEditMode(!editMode)}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${
                   editMode
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    ? 'bg-orange-600 text-white hover:bg-orange-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {editMode ? '✓ Done Editing' : '✏️ Edit Checklist'}
+                {editMode ? '✓ Done Editing' : '✏️ Edit'}
               </button>
               <Link 
                 href="/dashboard"
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium px-4 py-2"
               >
                 Dashboard →
               </Link>
@@ -216,7 +232,7 @@ export default function ChecklistPage() {
             </button>
           </div>
 
-          {/* Progress Bar (only in non-edit mode) */}
+          {/* Progress Bar (hide in edit mode) */}
           {!editMode && (
             <div className="mt-4">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
@@ -231,25 +247,10 @@ export default function ChecklistPage() {
               </div>
             </div>
           )}
-
-          {/* Missing Photos Warning */}
-          {!editMode && missingPhotos.length > 0 && (
-            <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <div className="flex items-start gap-2">
-                <span className="text-yellow-600 text-lg">⚠️</span>
-                <div className="text-sm text-yellow-800">
-                  <strong>{missingPhotos.length} photo{missingPhotos.length > 1 ? 's' : ''} required</strong>
-                  <div className="text-yellow-700 mt-1">
-                    Please add photos for all completed tasks that require them
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Name Prompt (only in non-edit mode) */}
+      {/* Name Prompt (hide in edit mode) */}
       {!editMode && showNamePrompt && (
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -276,196 +277,154 @@ export default function ChecklistPage() {
         </div>
       )}
 
+      {/* Add Item Form (edit mode only) */}
+      {editMode && (
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 mb-3">Add New Task</h3>
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={newItemText}
+                onChange={(e) => setNewItemText(e.target.value)}
+                placeholder="Task description..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newItemText.trim()) {
+                    handleAddItem()
+                  }
+                }}
+              />
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={newItemPhotoRequired}
+                  onChange={(e) => setNewItemPhotoRequired(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded"
+                />
+                <span className="text-sm text-gray-700">Photo required</span>
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAddItem}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
+                  Add Item
+                </button>
+                <button
+                  onClick={() => {
+                    setNewItemText('')
+                    setNewItemPhotoRequired(false)
+                  }}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Task List */}
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-3">
-        {tasks.map((task, index) => (
-          <div
-            key={task.id}
-            className={`bg-white rounded-lg border-2 transition-all ${
-              !editMode && completedItems.has(task.id)
-                ? 'border-green-500 bg-green-50'
-                : 'border-gray-200 hover:border-blue-300'
-            }`}
-          >
-            <div className="p-4">
-              <div className="flex items-start gap-3">
-                {!editMode && (
-                  <button
-                    onClick={() => handleToggleTask(task.id)}
-                    className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
-                      completedItems.has(task.id)
-                        ? 'bg-green-500 border-green-500'
-                        : 'border-gray-300 hover:border-blue-500'
-                    }`}
-                  >
-                    {completedItems.has(task.id) && (
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </button>
-                )}
+        {loading ? (
+          <div className="text-center py-12 text-gray-500">Loading tasks...</div>
+        ) : tasks.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            No tasks yet. {editMode && 'Add some above!'}
+          </div>
+        ) : (
+          tasks.map((task) => (
+            <div
+              key={task.id}
+              className={`bg-white rounded-lg border-2 transition-all ${
+                task.completed
+                  ? 'border-green-500 bg-green-50'
+                  : 'border-gray-200 hover:border-blue-300'
+              }`}
+            >
+              <div className="p-4">
+                <div className="flex items-start gap-3">
+                  {!editMode && (
+                    <button
+                      onClick={() => handleToggleTask(task.id)}
+                      className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+                        task.completed
+                          ? 'bg-green-500 border-green-500'
+                          : 'border-gray-300 hover:border-blue-500'
+                      }`}
+                    >
+                      {task.completed && (
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
 
-                <div className="flex-1">
-                  {editingItemId === task.id ? (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md"
-                        autoFocus
-                      />
-                      <button
-                        onClick={handleSaveEdit}
-                        className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingItemId(null)}
-                        className="px-3 py-1.5 bg-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-400"
-                      >
-                        Cancel
-                      </button>
+                  <div className="flex-1">
+                    <div className={`font-medium ${task.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                      {task.text}
                     </div>
-                  ) : (
-                    <div className="flex items-start justify-between gap-2">
-                      <div className={`font-medium ${!editMode && completedItems.has(task.id) ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
-                        {task.text}
+
+                    {task.completed && task.completedBy && (
+                      <div className="text-sm text-gray-500 mt-1">
+                        ✓ Completed by {task.completedBy} at {task.completedAt}
                       </div>
-                      {task.photo_required && (
-                        <span className="flex-shrink-0 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                          Photo Required
-                        </span>
-                      )}
-                    </div>
-                  )}
+                    )}
 
-                  {/* Edit mode controls */}
-                  {editMode && editingItemId !== task.id && (
-                    <div className="flex gap-2 mt-2">
-                      <button
-                        onClick={() => handleStartEdit(task)}
-                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        ✏️ Edit
-                      </button>
-                      {index > 0 && (
-                        <button
-                          onClick={() => handleMoveUp(task.id)}
-                          className="text-xs text-gray-600 hover:text-gray-800"
-                        >
-                          ↑ Move Up
-                        </button>
-                      )}
-                      {index < tasks.length - 1 && (
-                        <button
-                          onClick={() => handleMoveDown(task.id)}
-                          className="text-xs text-gray-600 hover:text-gray-800"
-                        >
-                          ↓ Move Down
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDeleteItem(task.id)}
-                        className="text-xs text-red-600 hover:text-red-700 font-medium"
-                      >
-                        🗑 Delete
-                      </button>
-                    </div>
-                  )}
+                    {!editMode && task.photoRequired && (
+                      <div className="mt-2">
+                        {task.photoUrl ? (
+                          <div className="text-sm text-green-600 flex items-center gap-1">
+                            <span>📸</span>
+                            <span>Photo attached</span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handlePhotoUpload(task.id)}
+                            className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                          >
+                            <span>📷</span>
+                            <span>Add photo {task.completed ? '(optional)' : '(required)'}</span>
+                          </button>
+                        )}
+                      </div>
+                    )}
 
-                  {/* Photo upload (only when task completed and photo required) */}
-                  {!editMode && task.photo_required && completedItems.has(task.id) && (
-                    <div className="mt-3">
-                      <PhotoUpload
-                        taskId={task.id}
-                        onPhotoUploaded={(url) => handlePhotoUploaded(task.id, url)}
-                        existingPhotoUrl={photoUrls[task.id]}
-                      />
-                    </div>
+                    {editMode && (
+                      <div className="text-sm text-gray-500 mt-1">
+                        {task.photoRequired ? '📷 Photo required' : '📷 No photo'}
+                      </div>
+                    )}
+                  </div>
+
+                  {editMode && (
+                    <button
+                      onClick={() => handleDeleteItem(task.id)}
+                      className="flex-shrink-0 px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 text-sm font-medium transition-colors"
+                    >
+                      Delete
+                    </button>
                   )}
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-
-        {/* Add Item Form (Edit Mode) */}
-        {editMode && (
-          <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-4">
-            {!showAddForm ? (
-              <div>
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  disabled={itemLimit ? !itemLimit.canAdd : false}
-                  className="w-full py-2 text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
-                >
-                  + Add New Item
-                </button>
-                {itemLimit && !itemLimit.canAdd && (
-                  <div className="mt-2 text-xs text-center">
-                    <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                      <p className="text-yellow-800 font-medium">🔒 {itemLimit.message}</p>
-                      <Link href="/billing" className="text-blue-600 hover:text-blue-700 underline">
-                        Upgrade to Pro
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div>
-                <input
-                  type="text"
-                  value={newItemText}
-                  onChange={(e) => setNewItemText(e.target.value)}
-                  placeholder="Enter task description"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md mb-2"
-                  autoFocus
-                />
-                {addItemError && (
-                  <p className="text-sm text-red-600 mb-2">{addItemError}</p>
-                )}
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleAddItem}
-                    className="flex-1 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-                  >
-                    Add Item
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowAddForm(false)
-                      setNewItemText('')
-                      setAddItemError(null)
-                    }}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          ))
         )}
       </div>
 
-      {/* Complete Button (fixed at bottom, only in non-edit mode) */}
-      {!editMode && !showNamePrompt && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+      {/* Complete Button (hide in edit mode) */}
+      {!editMode && completedCount === tasks.length && tasks.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
           <div className="max-w-4xl mx-auto">
-            <button
-              disabled={!canComplete}
-              className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-                canComplete
-                  ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+            <Link
+              href="/dashboard"
+              className="block w-full py-3 bg-green-600 text-white text-center rounded-lg font-semibold hover:bg-green-700 transition-colors"
             >
-              {canComplete ? '✓ Complete Checklist' : 'Complete all tasks to finish'}
-            </button>
+              ✓ All Done! Go to Dashboard
+            </Link>
           </div>
         </div>
       )}
