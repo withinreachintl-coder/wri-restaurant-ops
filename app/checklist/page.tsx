@@ -79,9 +79,12 @@ export default function ChecklistPage() {
         .eq('id', user.id)
         .single()
 
-      if (userError && userError.code === 'PGRST116') {
-        // User doesn't exist in users table, create them with a new org
-        console.log('User not found, creating new user and org...')
+      // Check if user exists and has org_id
+      const needsUserCreation = userError?.code === 'PGRST116' || !userData?.org_id
+      
+      if (needsUserCreation) {
+        // User doesn't exist OR exists but has no org_id - create both
+        console.log('Creating user and org records...')
         
         // Create organization first
         const { data: newOrg, error: orgCreateError } = await supabase
@@ -103,28 +106,32 @@ export default function ChecklistPage() {
 
         orgId = newOrg.id
 
-        // Create user record
-        const { error: userCreateError } = await supabase
+        // Create or update user record with org_id
+        const { error: userUpsertError } = await supabase
           .from('users')
-          .insert([{
+          .upsert([{
             id: user.id,
             email: user.email,
             org_id: orgId,
             role: 'admin'
-          }])
+          }], {
+            onConflict: 'id'
+          })
 
-        if (userCreateError) {
-          console.error('Error creating user:', userCreateError)
+        if (userUpsertError) {
+          console.error('Error upserting user:', userUpsertError)
           setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
           setLoading(false)
           return
         }
-      } else if (userError || !userData?.org_id) {
-        console.error('Error fetching user org_id:', userError)
+      } else if (userError) {
+        // Real error (not just missing record)
+        console.error('Error fetching user:', userError)
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
         setLoading(false)
         return
       } else {
+        // User exists with org_id
         orgId = userData.org_id
       }
 
