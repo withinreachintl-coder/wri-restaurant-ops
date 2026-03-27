@@ -221,10 +221,23 @@ export default function ChecklistPage() {
       return
     }
 
+    // Check free tier limit (10 items)
+    if (tasks.length >= 10) {
+      const shouldUpgrade = confirm(
+        `You've reached the free plan limit of 10 checklist items.\n\n` +
+        `Upgrade to Pro ($19/month) for unlimited items?\n\n` +
+        `Click OK to upgrade, or Cancel to stay on the free plan.`
+      )
+      if (shouldUpgrade) {
+        window.location.href = '/billing'
+      }
+      return
+    }
+
     const nextOrderIndex = tasks.length + 1
 
     try {
-      const { data, error } = await supabase
+      const { data, error} = await supabase
         .from('checklist_items')
         .insert([{
           checklist_id: checklistId, // Now using the real UUID!
@@ -236,6 +249,20 @@ export default function ChecklistPage() {
 
       if (error) {
         console.error('Error adding task:', error)
+        
+        // Check if it's a free tier limit error
+        if (error.message && error.message.includes('Free accounts are limited to')) {
+          const shouldUpgrade = confirm(
+            `You've reached the free plan limit of 10 checklist items.\n\n` +
+            `Upgrade to Pro ($19/month) for unlimited items?\n\n` +
+            `Click OK to upgrade, or Cancel to stay on the free plan.`
+          )
+          if (shouldUpgrade) {
+            window.location.href = '/billing'
+          }
+          return
+        }
+        
         alert(`Failed to add task: ${error.message}`)
         return
       }

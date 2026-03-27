@@ -16,12 +16,21 @@ https://hrenwlintzheyrylntjc.supabase.co
 sb_publishable_cylgtsKx89xJo52ONQhmgg_HAip7DxU
 ```
 
-### Email Configuration (Optional)
+### Email Configuration
 
 **RESEND_API_KEY**
 ```
 your_resend_api_key_here
 ```
+
+### Stripe Configuration (Required for billing)
+
+**STRIPE_SECRET_KEY**
+```
+sk_live_... (get from Stripe Dashboard → Developers → API keys)
+```
+
+**Note:** The `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is optional and only needed if you plan to use Stripe.js on the client side
 
 ## How to Add in Vercel
 
