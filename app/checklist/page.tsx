@@ -69,22 +69,63 @@ export default function ChecklistPage() {
         return
       }
 
-      // Get user's org_id
+      // Get or create user record with org_id
+      let orgId: string
+      
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('org_id')
         .eq('id', user.id)
         .single()
 
-      if (userError || !userData?.org_id) {
+      if (userError && userError.code === 'PGRST116') {
+        // User doesn't exist in users table, create them with a new org
+        console.log('User not found, creating new user and org...')
+        
+        // Create organization first
+        const { data: newOrg, error: orgCreateError } = await supabase
+          .from('organizations')
+          .insert([{
+            name: user.email?.split('@')[0] || 'My Restaurant',
+            subscription_status: 'trial',
+            subscription_tier: 'free'
+          }])
+          .select('id')
+          .single()
+
+        if (orgCreateError || !newOrg) {
+          console.error('Error creating org:', orgCreateError)
+          setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+          setLoading(false)
+          return
+        }
+
+        orgId = newOrg.id
+
+        // Create user record
+        const { error: userCreateError } = await supabase
+          .from('users')
+          .insert([{
+            id: user.id,
+            email: user.email,
+            org_id: orgId,
+            role: 'admin'
+          }])
+
+        if (userCreateError) {
+          console.error('Error creating user:', userCreateError)
+          setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+          setLoading(false)
+          return
+        }
+      } else if (userError || !userData?.org_id) {
         console.error('Error fetching user org_id:', userError)
-        // Fallback to default tasks if can't get org
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
         setLoading(false)
         return
+      } else {
+        orgId = userData.org_id
       }
-
-      const orgId = userData.org_id
 
       // Try to find existing checklist by type and org
       const { data: existingChecklists, error: fetchError } = await supabase
