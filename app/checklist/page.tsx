@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase, ChecklistItem } from '@/lib/supabase'
+import PhotoUpload from '../components/PhotoUpload'
 
 // Simple type for display (maps from DB schema)
 type DisplayTask = {
@@ -241,12 +242,10 @@ export default function ChecklistPage() {
     )
   }
 
-  const handlePhotoUpload = (taskId: string) => {
-    // TODO: Implement actual photo upload
-    const fakeUrl = `https://placeholder.com/photo-${taskId}`
+  const handlePhotoUploaded = (taskId: string, photoUrl: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task =>
-        task.id === taskId ? { ...task, photoUrl: fakeUrl } : task
+        task.id === taskId ? { ...task, photoUrl } : task
       )
     )
   }
@@ -548,22 +547,11 @@ export default function ChecklistPage() {
                     )}
 
                     {!editMode && task.photoRequired && (
-                      <div className="mt-2">
-                        {task.photoUrl ? (
-                          <div className="text-sm text-green-600 flex items-center gap-1">
-                            <span>📸</span>
-                            <span>Photo attached</span>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handlePhotoUpload(task.id)}
-                            className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-                          >
-                            <span>📷</span>
-                            <span>Add photo {task.completed ? '(optional)' : '(required)'}</span>
-                          </button>
-                        )}
-                      </div>
+                      <PhotoUpload
+                        taskId={task.id}
+                        onPhotoUploaded={handlePhotoUploaded}
+                        currentPhotoUrl={task.photoUrl}
+                      />
                     )}
 
                     {editMode && (
