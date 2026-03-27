@@ -1,6 +1,6 @@
 // lib/checklists.ts - Checklist management functions with tier limits
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 
 export type ChecklistType = 'opening' | 'closing'
 
@@ -31,7 +31,7 @@ const FREE_TIER_ITEM_LIMIT = 10
  * Check if org is on paid plan
  */
 async function isOrgPaid(orgId: string): Promise<boolean> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
   
   const { data: org } = await supabase
     .from('organizations')
@@ -47,7 +47,7 @@ async function isOrgPaid(orgId: string): Promise<boolean> {
  * Fetch checklist with items for an org
  */
 export async function getChecklist(type: ChecklistType): Promise<Checklist | null> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
   
   // Get current user's org
   const { data: userData } = await supabase.auth.getUser()
@@ -94,7 +94,7 @@ export async function addChecklistItem(
   text: string,
   photoRequired: boolean = false
 ): Promise<{ success: boolean; item?: ChecklistItem; error?: string }> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   // Get checklist to find org_id
   const { data: checklist } = await supabase
@@ -156,7 +156,7 @@ export async function updateChecklistItem(
   text: string,
   photoRequired?: boolean
 ): Promise<boolean> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   const updates: any = { text, updated_at: new Date().toISOString() }
   if (photoRequired !== undefined) {
@@ -180,7 +180,7 @@ export async function updateChecklistItem(
  * Delete checklist item
  */
 export async function deleteChecklistItem(itemId: string): Promise<boolean> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   const { error } = await supabase
     .from('checklist_items')
@@ -202,7 +202,7 @@ export async function reorderChecklistItems(
   checklistId: string,
   itemIds: string[]
 ): Promise<boolean> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   // Update order_index for each item
   const updates = itemIds.map((id, index) => ({
@@ -227,7 +227,7 @@ export async function reorderChecklistItems(
  * Move item up in order
  */
 export async function moveItemUp(checklistId: string, itemId: string): Promise<boolean> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   // Get all items sorted by order
   const { data: items } = await supabase
@@ -253,7 +253,7 @@ export async function moveItemUp(checklistId: string, itemId: string): Promise<b
  * Move item down in order
  */
 export async function moveItemDown(checklistId: string, itemId: string): Promise<boolean> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   // Get all items sorted by order
   const { data: items } = await supabase
@@ -279,7 +279,7 @@ export async function moveItemDown(checklistId: string, itemId: string): Promise
  * Check if user can add more items (for UI feedback)
  */
 export async function canAddMoreItems(checklistId: string): Promise<{ canAdd: boolean; currentCount: number; limit: number | null; message?: string }> {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   // Get checklist to find org_id
   const { data: checklist } = await supabase
