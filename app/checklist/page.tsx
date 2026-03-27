@@ -39,9 +39,8 @@ const CLOSING_TASKS: DisplayTask[] = [
   { id: 'c9', text: 'Set alarm and lock all doors', photoRequired: false, completed: false },
 ]
 
-// We'll use a fixed checklist_id for simplicity (can be made dynamic later)
-const OPENING_CHECKLIST_ID = 'opening-checklist'
-const CLOSING_CHECKLIST_ID = 'closing-checklist'
+// Default org ID - should be replaced with actual user's org from auth
+const DEFAULT_ORG_ID = '00000000-0000-0000-0000-000000000000'
 
 export default function ChecklistPage() {
   const [checklistType, setChecklistType] = useState<'opening' | 'closing'>('opening')
@@ -52,16 +51,71 @@ export default function ChecklistPage() {
   const [newItemText, setNewItemText] = useState('')
   const [newItemPhotoRequired, setNewItemPhotoRequired] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [checklistId, setChecklistId] = useState<string | null>(null)
 
-  const currentChecklistId = checklistType === 'opening' ? OPENING_CHECKLIST_ID : CLOSING_CHECKLIST_ID
-
-  // Load tasks from Supabase or use defaults
+  // Load or create checklist, then load tasks
   useEffect(() => {
-    loadTasks()
+    loadOrCreateChecklist()
   }, [checklistType])
 
-  const loadTasks = async () => {
+  const loadOrCreateChecklist = async () => {
     setLoading(true)
+    try {
+      // Try to find existing checklist by type
+      const { data: existingChecklists, error: fetchError } = await supabase
+        .from('checklists')
+        .select('id, org_id, type')
+        .eq('type', checklistType)
+        .limit(1)
+
+      if (fetchError) {
+        console.error('Error fetching checklist:', fetchError)
+        // Fallback to default tasks
+        setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+        setLoading(false)
+        return
+      }
+
+      let currentChecklistId: string
+
+      if (existingChecklists && existingChecklists.length > 0) {
+        // Use existing checklist
+        currentChecklistId = existingChecklists[0].id
+        setChecklistId(currentChecklistId)
+      } else {
+        // Create new checklist
+        const { data: newChecklist, error: createError } = await supabase
+          .from('checklists')
+          .insert([{
+            org_id: DEFAULT_ORG_ID,
+            name: `${checklistType.charAt(0).toUpperCase() + checklistType.slice(1)} Checklist`,
+            type: checklistType
+          }])
+          .select('id')
+          .single()
+
+        if (createError || !newChecklist) {
+          console.error('Error creating checklist:', createError)
+          // Fallback to default tasks
+          setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+          setLoading(false)
+          return
+        }
+
+        currentChecklistId = newChecklist.id
+        setChecklistId(currentChecklistId)
+      }
+
+      // Now load tasks for this checklist
+      await loadTasks(currentChecklistId)
+    } catch (err) {
+      console.error('Failed to load checklist:', err)
+      setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+      setLoading(false)
+    }
+  }
+
+  const loadTasks = async (currentChecklistId: string) => {
     try {
       const { data, error } = await supabase
         .from('checklist_items')
@@ -136,13 +190,18 @@ export default function ChecklistPage() {
       return
     }
 
+    if (!checklistId) {
+      alert('Checklist not loaded. Please refresh the page.')
+      return
+    }
+
     const nextOrderIndex = tasks.length + 1
 
     try {
       const { data, error } = await supabase
         .from('checklist_items')
         .insert([{
-          checklist_id: currentChecklistId,
+          checklist_id: checklistId, // Now using the real UUID!
           text: newItemText.trim(),
           photo_required: newItemPhotoRequired,
           order_index: nextOrderIndex,
@@ -151,7 +210,7 @@ export default function ChecklistPage() {
 
       if (error) {
         console.error('Error adding task:', error)
-        alert('Failed to add task. Check console for details.')
+        alert(`Failed to add task: ${error.message}`)
         return
       }
 
@@ -326,7 +385,8 @@ export default function ChecklistPage() {
               <div className="flex gap-2">
                 <button
                   onClick={handleAddItem}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                  disabled={!checklistId}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Add Item
                 </button>
