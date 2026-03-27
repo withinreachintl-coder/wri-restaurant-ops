@@ -5,18 +5,15 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-export type ChecklistTask = {
+// Match the actual database schema (snake_case columns)
+export type ChecklistItem = {
   id: string
+  checklist_id: string
   text: string
-  completed: boolean
-  photoRequired: boolean
-  photoUrl?: string
-  completedBy?: string
-  completedAt?: string
-  checklistType: 'opening' | 'closing'
-  order: number
-  createdAt?: string
-  updatedAt?: string
+  photo_required: boolean
+  order_index: number
+  created_at: string
+  updated_at: string
 }
 
 // Auth helpers

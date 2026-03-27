@@ -2,41 +2,58 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { supabase, ChecklistTask } from '@/lib/supabase'
+import { supabase, ChecklistItem } from '@/lib/supabase'
 
-const OPENING_TASKS: ChecklistTask[] = [
-  { id: '1', text: 'Check walk-in cooler temperature (38°F or below)', completed: false, photoRequired: true, checklistType: 'opening', order: 1 },
-  { id: '2', text: 'Check freezer temperature (0°F or below)', completed: false, photoRequired: true, checklistType: 'opening', order: 2 },
-  { id: '3', text: 'Verify prep station setup and cleanliness', completed: false, photoRequired: false, checklistType: 'opening', order: 3 },
-  { id: '4', text: 'Test all cooking equipment (ovens, fryers, grills)', completed: false, photoRequired: false, checklistType: 'opening', order: 4 },
-  { id: '5', text: 'Check hand wash stations (soap, towels, hot water)', completed: false, photoRequired: false, checklistType: 'opening', order: 5 },
-  { id: '6', text: 'Verify first aid kit is stocked', completed: false, photoRequired: false, checklistType: 'opening', order: 6 },
-  { id: '7', text: 'Count and verify register cash (starting balance)', completed: false, photoRequired: true, checklistType: 'opening', order: 7 },
-  { id: '8', text: 'Turn on all lights and music', completed: false, photoRequired: false, checklistType: 'opening', order: 8 },
-  { id: '9', text: 'Unlock entrance doors', completed: false, photoRequired: false, checklistType: 'opening', order: 9 },
+// Simple type for display (maps from DB schema)
+type DisplayTask = {
+  id: string
+  text: string
+  photoRequired: boolean
+  completed: boolean
+  completedBy?: string
+  completedAt?: string
+  photoUrl?: string
+}
+
+const OPENING_TASKS: DisplayTask[] = [
+  { id: '1', text: 'Check walk-in cooler temperature (38°F or below)', photoRequired: true, completed: false },
+  { id: '2', text: 'Check freezer temperature (0°F or below)', photoRequired: true, completed: false },
+  { id: '3', text: 'Verify prep station setup and cleanliness', photoRequired: false, completed: false },
+  { id: '4', text: 'Test all cooking equipment (ovens, fryers, grills)', photoRequired: false, completed: false },
+  { id: '5', text: 'Check hand wash stations (soap, towels, hot water)', photoRequired: false, completed: false },
+  { id: '6', text: 'Verify first aid kit is stocked', photoRequired: false, completed: false },
+  { id: '7', text: 'Count and verify register cash (starting balance)', photoRequired: true, completed: false },
+  { id: '8', text: 'Turn on all lights and music', photoRequired: false, completed: false },
+  { id: '9', text: 'Unlock entrance doors', photoRequired: false, completed: false },
 ]
 
-const CLOSING_TASKS: ChecklistTask[] = [
-  { id: 'c1', text: 'Lock entrance doors', completed: false, photoRequired: false, checklistType: 'closing', order: 1 },
-  { id: 'c2', text: 'Turn off all cooking equipment', completed: false, photoRequired: true, checklistType: 'closing', order: 2 },
-  { id: 'c3', text: 'Clean and sanitize all food prep surfaces', completed: false, photoRequired: true, checklistType: 'closing', order: 3 },
-  { id: 'c4', text: 'Sweep and mop all kitchen floors', completed: false, photoRequired: true, checklistType: 'closing', order: 4 },
-  { id: 'c5', text: 'Empty all trash and replace liners', completed: false, photoRequired: false, checklistType: 'closing', order: 5 },
-  { id: 'c6', text: 'Restock prep station for tomorrow', completed: false, photoRequired: false, checklistType: 'closing', order: 6 },
-  { id: 'c7', text: 'Count register cash and complete cash drop', completed: false, photoRequired: true, checklistType: 'closing', order: 7 },
-  { id: 'c8', text: 'Turn off lights and music', completed: false, photoRequired: false, checklistType: 'closing', order: 8 },
-  { id: 'c9', text: 'Set alarm and lock all doors', completed: false, photoRequired: false, checklistType: 'closing', order: 9 },
+const CLOSING_TASKS: DisplayTask[] = [
+  { id: 'c1', text: 'Lock entrance doors', photoRequired: false, completed: false },
+  { id: 'c2', text: 'Turn off all cooking equipment', photoRequired: true, completed: false },
+  { id: 'c3', text: 'Clean and sanitize all food prep surfaces', photoRequired: true, completed: false },
+  { id: 'c4', text: 'Sweep and mop all kitchen floors', photoRequired: true, completed: false },
+  { id: 'c5', text: 'Empty all trash and replace liners', photoRequired: false, completed: false },
+  { id: 'c6', text: 'Restock prep station for tomorrow', photoRequired: false, completed: false },
+  { id: 'c7', text: 'Count register cash and complete cash drop', photoRequired: true, completed: false },
+  { id: 'c8', text: 'Turn off lights and music', photoRequired: false, completed: false },
+  { id: 'c9', text: 'Set alarm and lock all doors', photoRequired: false, completed: false },
 ]
+
+// We'll use a fixed checklist_id for simplicity (can be made dynamic later)
+const OPENING_CHECKLIST_ID = 'opening-checklist'
+const CLOSING_CHECKLIST_ID = 'closing-checklist'
 
 export default function ChecklistPage() {
   const [checklistType, setChecklistType] = useState<'opening' | 'closing'>('opening')
-  const [tasks, setTasks] = useState<ChecklistTask[]>([])
+  const [tasks, setTasks] = useState<DisplayTask[]>([])
   const [staffName, setStaffName] = useState('')
   const [showNamePrompt, setShowNamePrompt] = useState(true)
   const [editMode, setEditMode] = useState(false)
   const [newItemText, setNewItemText] = useState('')
   const [newItemPhotoRequired, setNewItemPhotoRequired] = useState(false)
   const [loading, setLoading] = useState(true)
+
+  const currentChecklistId = checklistType === 'opening' ? OPENING_CHECKLIST_ID : CLOSING_CHECKLIST_ID
 
   // Load tasks from Supabase or use defaults
   useEffect(() => {
@@ -47,17 +64,24 @@ export default function ChecklistPage() {
     setLoading(true)
     try {
       const { data, error } = await supabase
-        .from('checklist_tasks')
+        .from('checklist_items')
         .select('*')
-        .eq('checklistType', checklistType)
-        .order('order', { ascending: true })
+        .eq('checklist_id', currentChecklistId)
+        .order('order_index', { ascending: true })
 
       if (error) {
         console.error('Error loading tasks:', error)
         // Fallback to default tasks if DB fails
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
       } else if (data && data.length > 0) {
-        setTasks(data)
+        // Map DB schema to display format
+        const displayTasks: DisplayTask[] = data.map((item: ChecklistItem) => ({
+          id: item.id,
+          text: item.text,
+          photoRequired: item.photo_required,
+          completed: false, // Reset on page load
+        }))
+        setTasks(displayTasks)
       } else {
         // No tasks in DB, use defaults
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
@@ -112,24 +136,16 @@ export default function ChecklistPage() {
       return
     }
 
-    const newTask: ChecklistTask = {
-      id: `temp-${Date.now()}`, // Temporary ID
-      text: newItemText.trim(),
-      completed: false,
-      photoRequired: newItemPhotoRequired,
-      checklistType,
-      order: tasks.length + 1,
-    }
+    const nextOrderIndex = tasks.length + 1
 
     try {
       const { data, error } = await supabase
-        .from('checklist_tasks')
+        .from('checklist_items')
         .insert([{
-          text: newTask.text,
-          completed: newTask.completed,
-          photoRequired: newTask.photoRequired,
-          checklistType: newTask.checklistType,
-          order: newTask.order,
+          checklist_id: currentChecklistId,
+          text: newItemText.trim(),
+          photo_required: newItemPhotoRequired,
+          order_index: nextOrderIndex,
         }])
         .select()
 
@@ -140,10 +156,13 @@ export default function ChecklistPage() {
       }
 
       if (data && data.length > 0) {
-        // Use the returned task with real ID
-        setTasks(prev => [...prev, data[0]])
-      } else {
-        // Fallback to local state if no data returned
+        // Map the returned item to display format
+        const newTask: DisplayTask = {
+          id: data[0].id,
+          text: data[0].text,
+          photoRequired: data[0].photo_required,
+          completed: false,
+        }
         setTasks(prev => [...prev, newTask])
       }
 
@@ -161,7 +180,7 @@ export default function ChecklistPage() {
 
     try {
       const { error } = await supabase
-        .from('checklist_tasks')
+        .from('checklist_items')
         .delete()
         .eq('id', taskId)
 
