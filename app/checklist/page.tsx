@@ -39,9 +39,6 @@ const CLOSING_TASKS: DisplayTask[] = [
   { id: 'c9', text: 'Set alarm and lock all doors', photoRequired: false, completed: false },
 ]
 
-// Default org ID - should be replaced with actual user's org from auth
-const DEFAULT_ORG_ID = '00000000-0000-0000-0000-000000000000'
-
 export default function ChecklistPage() {
   const [checklistType, setChecklistType] = useState<'opening' | 'closing'>('opening')
   const [tasks, setTasks] = useState<DisplayTask[]>([])
@@ -61,11 +58,40 @@ export default function ChecklistPage() {
   const loadOrCreateChecklist = async () => {
     setLoading(true)
     try {
-      // Try to find existing checklist by type
+      // Get authenticated user
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError || !user) {
+        console.error('No authenticated user:', authError)
+        // Fallback to default tasks if not authenticated
+        setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+        setLoading(false)
+        return
+      }
+
+      // Get user's org_id
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('org_id')
+        .eq('id', user.id)
+        .single()
+
+      if (userError || !userData?.org_id) {
+        console.error('Error fetching user org_id:', userError)
+        // Fallback to default tasks if can't get org
+        setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+        setLoading(false)
+        return
+      }
+
+      const orgId = userData.org_id
+
+      // Try to find existing checklist by type and org
       const { data: existingChecklists, error: fetchError } = await supabase
         .from('checklists')
         .select('id, org_id, type')
         .eq('type', checklistType)
+        .eq('org_id', orgId)
         .limit(1)
 
       if (fetchError) {
@@ -83,11 +109,11 @@ export default function ChecklistPage() {
         currentChecklistId = existingChecklists[0].id
         setChecklistId(currentChecklistId)
       } else {
-        // Create new checklist
+        // Create new checklist for this org
         const { data: newChecklist, error: createError } = await supabase
           .from('checklists')
           .insert([{
-            org_id: DEFAULT_ORG_ID,
+            org_id: orgId,
             name: `${checklistType.charAt(0).toUpperCase() + checklistType.slice(1)} Checklist`,
             type: checklistType
           }])
