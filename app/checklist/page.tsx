@@ -91,8 +91,8 @@ export default function ChecklistPage() {
           .from('organizations')
           .insert([{
             name: user.email?.split('@')[0] || 'My Restaurant',
-            subscription_status: 'trial',
-            subscription_tier: 'free'
+            owner_email: user.email || '',
+            plan: 'basic'
           }])
           .select('id')
           .single()
