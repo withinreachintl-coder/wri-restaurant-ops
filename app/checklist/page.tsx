@@ -124,6 +124,7 @@ export default function ChecklistPage() {
           .upsert([{
             id: user.id,
             email: user.email,
+            name: user.email?.split('@')[0] || 'User',
             org_id: orgId,
             role: 'admin'
           }], {
