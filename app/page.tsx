@@ -33,7 +33,7 @@ export default function LandingPage() {
 
           {/* CTA Button */}
           <a
-            href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
+            href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
             className="inline-block bg-blue-600 text-white text-lg font-semibold px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
           >
             Start Free Trial
@@ -157,7 +157,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <a
-                href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
+                href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
                 className="block w-full py-3 px-6 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-center"
               >
                 Start 14-Day Trial
@@ -175,7 +175,7 @@ export default function LandingPage() {
             Start your free trial. No credit card required.
           </p>
           <a
-            href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
+            href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
             className="inline-block bg-blue-600 text-white text-lg font-semibold px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
           >
             Start Free Trial
