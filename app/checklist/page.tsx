@@ -85,6 +85,8 @@ export default function ChecklistPage() {
       if (needsUserCreation) {
         // User doesn't exist OR exists but has no org_id - create both
         console.log('Creating user and org records...')
+        console.log('User email:', user.email)
+        console.log('User ID:', user.id)
         
         // Create organization first
         const { data: newOrg, error: orgCreateError } = await supabase
@@ -99,10 +101,14 @@ export default function ChecklistPage() {
 
         if (orgCreateError || !newOrg) {
           console.error('Error creating org:', orgCreateError)
+          console.error('Org create error details:', JSON.stringify(orgCreateError, null, 2))
+          alert(`Failed to create org: ${orgCreateError?.message || 'Unknown error'}`)
           setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
           setLoading(false)
           return
         }
+        
+        console.log('Org created successfully:', newOrg.id)
 
         orgId = newOrg.id
 
