@@ -392,10 +392,9 @@ export default function ChecklistPage() {
               </button>
               <Link 
                 href="/help"
-                className="text-sm text-gray-600 hover:text-gray-800 font-medium px-4 py-2"
-                title="How to use this app"
+                className="text-sm px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
               >
-                ?
+                How to Use
               </Link>
               <Link 
                 href="/dashboard"
