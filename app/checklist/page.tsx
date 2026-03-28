@@ -391,6 +391,13 @@ export default function ChecklistPage() {
                 {editMode ? '✓ Done Editing' : '✏️ Edit'}
               </button>
               <Link 
+                href="/help"
+                className="text-sm text-gray-600 hover:text-gray-800 font-medium px-4 py-2"
+                title="How to use this app"
+              >
+                ?
+              </Link>
+              <Link 
                 href="/dashboard"
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium px-4 py-2"
               >
