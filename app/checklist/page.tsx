@@ -50,6 +50,12 @@ export default function ChecklistPage() {
   const [newItemPhotoRequired, setNewItemPhotoRequired] = useState(false)
   const [loading, setLoading] = useState(true)
   const [checklistId, setChecklistId] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  // Mark component as mounted to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Load or create checklist, then load tasks
   useEffect(() => {
@@ -491,7 +497,7 @@ export default function ChecklistPage() {
               <div className="flex gap-2">
                 <button
                   onClick={handleAddItem}
-                  disabled={!checklistId}
+                  disabled={!mounted || !checklistId}
                   className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Add Item
