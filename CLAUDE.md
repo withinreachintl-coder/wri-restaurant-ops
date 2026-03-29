@@ -78,6 +78,91 @@ background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #F5F0E8
 
 ---
 
+## App Interior Pages (Post-Login)
+
+All pages accessed after login (dashboard, checklist, billing, help, settings) use a **light cream aesthetic** to contrast with the dark landing/auth pages.
+
+### Background & Layout
+
+```css
+/* Page wrapper */
+background: #FAFAF9;  /* Light cream — NOT dark #1C1917 */
+max-width: 768px;
+margin: 0 auto;
+padding: 0 24px;
+```
+
+### Cards & Containers
+
+```css
+/* All cards, sections, content boxes */
+background: #FFFFFF;
+border: 1px solid #E8E3DC;
+border-radius: 8px;
+padding: 20px;
+```
+
+**Never use:**
+- Dark transparent backgrounds (`rgba(255,255,255,0.03)`)
+- Dark card colors (`#141210` or `#1C1917`)
+- Heavy shadows (use subtle borders instead)
+
+### Text Colors (Light Background)
+
+```css
+--text-primary: #1C1917;      /* Headings, labels */
+--text-secondary: #78716C;    /* Body text, descriptions */
+--text-muted: #6B5B4E;        /* Hints, captions */
+```
+
+**Never use light text colors** (#F5F0E8, #A89880) on interior pages — these are for dark backgrounds only.
+
+### Buttons (Interior Pages)
+
+```css
+/* Primary action buttons */
+background: #D97706;
+color: #1C1917;
+border-radius: 4px;
+font-weight: 500;
+
+/* Destructive/delete buttons */
+background: #EF4444;  /* Red — keep as-is */
+color: #FFFFFF;
+```
+
+**Never use:**
+- Tan/beige buttons
+- Blue buttons
+- Light gray buttons as primary CTAs
+
+### Page Structure
+
+```tsx
+<main className="min-h-screen" style={{ background: '#FAFAF9' }}>
+  <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px' }}>
+    {/* Page content with white cards */}
+  </div>
+</main>
+```
+
+### Examples of Interior Pages
+
+- `/dashboard` — main app hub
+- `/checklist` — opening/closing checklists
+- `/billing` — subscription management
+- `/help` — documentation
+- `/settings` — account settings (when built)
+
+### Auth & Marketing Pages (Dark Background)
+
+These pages **keep the dark aesthetic**:
+- `/` — landing page
+- `/auth/login` — login/magic link
+- `/welcome` — onboarding flow
+
+---
+
 ## Code Rules
 
 ### TypeScript
