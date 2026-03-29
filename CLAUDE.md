@@ -167,4 +167,25 @@ background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #F5F0E8
 Every screen should make a restaurant owner think:
 *"This was built by someone who understands my operation."*
 
-Not: *"This looks like another generic SaaS tool."*
+Not: *"This looks like another generic SaaS tool."*  
+---
+
+## Feature Backlog (approved, not yet built)
+
+### Brand Color Customization
+Paying customers ($19/mo) should be able to customize the checklist and 
+dashboard background and accent colors to match their restaurant's brand.
+
+Scope:
+- Checklist page background and card colors
+- Dashboard page background and card colors
+- NOT the landing page or auth pages
+
+Implementation notes:
+- Store brand_color_primary and brand_color_secondary on the organizations table
+- Apply colors via CSS variables scoped to the app interior only
+- Add a simple color picker in account/settings page
+- Free tier users see default WRI cream/amber theme only
+- Paid tier unlocks color customization
+```
+
