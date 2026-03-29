@@ -3,25 +3,98 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --color-bg-primary: #1C1917;
+  --color-bg-deep: #141210;
+  --color-bg-card-dark: rgba(255,255,255,0.04);
+  --color-accent: #D97706;
+  --color-accent-hover: #B45309;
+  --color-text-primary-dark: #F5F0E8;
+  --color-text-secondary-dark: #A89880;
+  --color-text-muted-dark: #6B5B4E;
+  --color-border-dark: rgba(255,255,255,0.08);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
+html,
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary-dark);
+  font-family: var(--font-dmsans), 'DM Sans', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+.h-hero,
+.hero-title,
+.hero-subtitle {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Subtle grain overlay on body for texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Focus rings — accessible amber glow */
+input:focus-visible,
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(217, 119, 6, 0.5);
+  outline-offset: 2px;
+}
+
+/* Input placeholder color */
+input::placeholder,
+textarea::placeholder {
+  color: #6B5B4E;
+  opacity: 1;
+}
+
+/* Selection highlight */
+::selection {
+  background: rgba(217, 119, 6, 0.3);
+  color: #F5F0E8;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Link underline animation utility */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-accent);
+  transition: width 0.25s ease;
+}
+.link-underline:hover::after {
+  width: 100%;
 }

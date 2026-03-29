@@ -12,7 +12,6 @@ export default function BillingPage() {
   const [showCanceled, setShowCanceled] = useState(false)
 
   useEffect(() => {
-    // Check for success/canceled query params
     const params = new URLSearchParams(window.location.search)
     if (params.get('success') === 'true') {
       setShowSuccess(true)
@@ -27,16 +26,14 @@ export default function BillingPage() {
   const loadSubscriptionStatus = async () => {
     setLoading(true)
     try {
-      // Get authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser()
-      
+
       if (authError || !user) {
         console.error('No authenticated user:', authError)
         setLoading(false)
         return
       }
 
-      // Get user's org_id
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('org_id')
@@ -49,7 +46,6 @@ export default function BillingPage() {
         return
       }
 
-      // Get organization subscription status
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
         .select('subscription_status, subscription_tier, subscription_end_date')
@@ -62,7 +58,6 @@ export default function BillingPage() {
         return
       }
 
-      // Determine if user is on Pro plan
       const isPro = orgData?.subscription_status === 'active' || orgData?.subscription_tier === 'paid'
       setSubscriptionStatus(isPro ? 'pro' : 'free')
 
@@ -78,12 +73,9 @@ export default function BillingPage() {
 
   const handleUpgrade = async () => {
     try {
-      // Create Stripe Checkout Session
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
 
       const { url, error } = await response.json()
@@ -112,95 +104,229 @@ export default function BillingPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading billing information...</div>
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#1C1917' }}>
+        <div
+          style={{
+            fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+            fontSize: '14px',
+            fontWeight: 300,
+            color: '#6B5B4E',
+          }}
+        >
+          Loading billing information...
+        </div>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
+      <div className="max-w-4xl mx-auto" style={{ padding: '48px 24px' }}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Billing & Subscription</h1>
-          <Link 
-            href="/dashboard"
-            className="text-blue-600 hover:text-blue-700 font-medium"
+        <div className="flex items-center justify-between" style={{ marginBottom: '32px' }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+              fontSize: '28px',
+              fontWeight: 700,
+            }}
           >
-            ← Back to Dashboard
+            Billing &amp; Subscription
+          </h1>
+          <Link
+            href="/dashboard"
+            className="hover:opacity-80 transition-opacity"
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#D97706',
+              textDecoration: 'none',
+            }}
+          >
+            &larr; Dashboard
           </Link>
         </div>
 
-        {/* Success Message */}
+        {/* Success */}
         {showSuccess && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-green-800">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-              </svg>
-              <span className="font-semibold">Success! Your subscription is now active.</span>
-            </div>
+          <div
+            style={{
+              background: 'rgba(217,119,6,0.08)',
+              border: '1px solid rgba(217,119,6,0.2)',
+              borderRadius: '8px',
+              padding: '16px 20px',
+              marginBottom: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <span style={{ color: '#D97706' }}>&#10003;</span>
+            <span
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#D97706',
+              }}
+            >
+              Success! Your subscription is now active.
+            </span>
           </div>
         )}
 
-        {/* Canceled Message */}
+        {/* Canceled */}
         {showCanceled && (
-          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-yellow-800">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
-              </svg>
-              <span className="font-semibold">Checkout was canceled. No charges were made.</span>
-            </div>
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '8px',
+              padding: '16px 20px',
+              marginBottom: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <span style={{ color: '#A89880' }}>&#9888;</span>
+            <span
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#A89880',
+              }}
+            >
+              Checkout was canceled. No charges were made.
+            </span>
           </div>
         )}
 
-        {/* Current Plan Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Current Plan</h2>
-          
-          <div className="flex items-center justify-between mb-6">
+        {/* Current Plan */}
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: '8px',
+            padding: '28px',
+            marginBottom: '24px',
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#6B5B4E',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '20px',
+            }}
+          >
+            Current Plan
+          </h2>
+
+          <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
             <div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div
+                style={{
+                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  marginBottom: '4px',
+                }}
+              >
                 {subscriptionStatus === 'pro' ? 'Pro Plan' : 'Free Plan'}
               </div>
-              <div className="text-gray-600 mt-1">
-                {subscriptionStatus === 'pro' 
-                  ? '$19/month - Unlimited checklist items'
+              <div
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 300,
+                  color: '#A89880',
+                }}
+              >
+                {subscriptionStatus === 'pro'
+                  ? '$19/month — Unlimited checklist items'
                   : 'Up to 10 checklist items'
                 }
               </div>
             </div>
-            <div className={`px-4 py-2 rounded-full font-semibold ${
-              subscriptionStatus === 'pro'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-700'
-            }`}>
+            <span
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: subscriptionStatus === 'pro' ? '#D97706' : '#6B5B4E',
+                background: subscriptionStatus === 'pro' ? 'rgba(217,119,6,0.12)' : 'rgba(255,255,255,0.04)',
+                padding: '6px 14px',
+                borderRadius: '4px',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase' as const,
+              }}
+            >
               {subscriptionStatus === 'pro' ? 'Active' : 'Free'}
-            </div>
+            </span>
           </div>
 
           {subscriptionStatus === 'pro' && nextBillingDate && (
-            <div className="bg-gray-50 rounded-lg p-4 mb-4">
-              <div className="text-sm text-gray-600">Next billing date</div>
-              <div className="text-lg font-semibold text-gray-900">{nextBillingDate}</div>
+            <div
+              style={{
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.04)',
+                borderRadius: '4px',
+                padding: '16px',
+                marginBottom: '20px',
+              }}
+            >
+              <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '12px', fontWeight: 400, color: '#6B5B4E', marginBottom: '4px' }}>
+                Next billing date
+              </div>
+              <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '16px', fontWeight: 500, color: '#F5F0E8' }}>
+                {nextBillingDate}
+              </div>
             </div>
           )}
 
           {subscriptionStatus === 'free' && (
             <button
               onClick={handleUpgrade}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="hover:opacity-90 transition-opacity"
+              style={{
+                width: '100%',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#1C1917',
+                background: '#D97706',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '14px 24px',
+                cursor: 'pointer',
+              }}
             >
-              Upgrade to Pro - $19/month
+              Upgrade to Pro — $19/month
             </button>
           )}
 
           {subscriptionStatus === 'pro' && (
             <button
               onClick={handleCancelSubscription}
-              className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+              className="hover:opacity-80 transition-opacity"
+              style={{
+                width: '100%',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#A89880',
+                background: 'transparent',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '4px',
+                padding: '12px 24px',
+                cursor: 'pointer',
+              }}
             >
               Cancel Subscription
             </button>
@@ -208,83 +334,155 @@ export default function BillingPage() {
         </div>
 
         {/* Feature Comparison */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Plan Features</h2>
-          
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: '8px',
+            padding: '28px',
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#6B5B4E',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '24px',
+            }}
+          >
+            Plan Features
+          </h2>
+
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Free Plan */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-lg text-gray-900 mb-4">Free Plan</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-700">Up to 10 checklist items</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-700">Opening & closing checklists</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-700">Staff completion tracking</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-700">Manager dashboard</span>
-                </li>
+            {/* Free */}
+            <div
+              style={{
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: '8px',
+                padding: '24px',
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                  fontSize: '18px',
+                  fontWeight: 500,
+                  marginBottom: '20px',
+                }}
+              >
+                Free Plan
+              </h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {['Up to 10 checklist items', 'Opening & closing checklists', 'Staff completion tracking', 'Manager dashboard'].map((f, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '10px',
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 300,
+                      color: '#A89880',
+                      marginBottom: '12px',
+                    }}
+                  >
+                    <span style={{ color: '#6B5B4E', marginTop: '2px', flexShrink: 0 }}>&#10003;</span>
+                    {f}
+                  </li>
+                ))}
               </ul>
             </div>
 
-            {/* Pro Plan */}
-            <div className="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg text-gray-900">Pro Plan</h3>
-                <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-semibold">BEST VALUE</span>
+            {/* Pro */}
+            <div
+              style={{
+                background: 'rgba(217,119,6,0.06)',
+                border: '1px solid rgba(217,119,6,0.2)',
+                borderRadius: '8px',
+                padding: '24px',
+                position: 'relative' as const,
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute' as const,
+                  top: '-10px',
+                  right: '24px',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '10px',
+                  fontWeight: 500,
+                  color: '#1C1917',
+                  background: '#D97706',
+                  padding: '3px 10px',
+                  borderRadius: '4px',
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase' as const,
+                }}
+              >
+                Best Value
               </div>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-900 font-medium">Unlimited checklist items</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-700">All Free features</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-700">Priority email support</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  <span className="text-gray-700">14-day free trial</span>
-                </li>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                  fontSize: '18px',
+                  fontWeight: 500,
+                  marginBottom: '20px',
+                }}
+              >
+                Pro Plan
+              </h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[
+                  { text: 'Unlimited checklist items', bold: true },
+                  { text: 'All Free features', bold: false },
+                  { text: 'Priority email support', bold: false },
+                  { text: '14-day free trial', bold: false },
+                ].map((f, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '10px',
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '14px',
+                      fontWeight: f.bold ? 500 : 300,
+                      color: f.bold ? '#F5F0E8' : '#A89880',
+                      marginBottom: '12px',
+                    }}
+                  >
+                    <span style={{ color: '#D97706', marginTop: '2px', flexShrink: 0 }}>&#10003;</span>
+                    {f.text}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Help Section */}
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Questions about billing? Contact us at{' '}
-          <a href="mailto:support@wireach.tools" className="text-blue-600 hover:text-blue-700 font-medium">
-            support@wireach.tools
-          </a>
+        {/* Support */}
+        <div style={{ marginTop: '32px', textAlign: 'center' }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 300,
+              color: '#6B5B4E',
+            }}
+          >
+            Questions about billing? Contact{' '}
+            <a
+              href="mailto:support@wireach.tools"
+              style={{ color: '#D97706', textDecoration: 'none' }}
+              className="hover:opacity-80 transition-opacity"
+            >
+              support@wireach.tools
+            </a>
+          </p>
         </div>
       </div>
     </main>

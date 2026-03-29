@@ -76,6 +76,34 @@ background: #D97706; color: #1C1917; border-radius: 4px; font-weight: 500;
 background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #F5F0E8;
 ```
 
+### Texture & Atmosphere
+
+- Body has a subtle SVG noise grain overlay (`opacity: 0.025`) for depth — never remove it
+- All interactive elements have amber focus rings (`outline: 2px solid rgba(217,119,6,0.5)`)
+- Text rendering uses `-webkit-font-smoothing: antialiased`
+- Text selection highlight is amber (`rgba(217,119,6,0.3)`)
+- Input placeholders use `#6B5B4E`
+
+### Visual State Patterns
+
+- **Completed tasks:** amber left-border accent (3px solid #D97706) + amber-tinted background
+- **Live status cards:** 3px amber left-border to draw attention
+- **Feature cards on hover:** border warms to `rgba(217,119,6,0.15)`
+- **Testimonial blocks:** large decorative `"` watermark in faded amber behind text
+- **Quote attributions:** small amber line accent + text (not em-dash)
+- **Tables on mobile:** horizontal scroll with `-webkit-overflow-scrolling: touch`
+
+### Icons
+
+- Use inline SVGs with `stroke="#D97706"` and `strokeWidth="1.5"` — not emoji or HTML entities
+- Each feature should have a distinct icon, not the same checkmark repeated
+- Icons sit inside 40x40 amber-tinted boxes (`rgba(217,119,6,0.1)` background)
+
+### CSS Utilities (defined in globals.css)
+
+- `.link-underline` — animated amber underline that grows on hover
+- Focus-visible styles are global — never add `outline: none` without a replacement
+
 ---
 
 ## Code Rules

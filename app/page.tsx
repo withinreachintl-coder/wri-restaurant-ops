@@ -2,198 +2,641 @@ import Link from 'next/link'
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
-        {/* Header with Login */}
-        <div className="flex justify-between items-center mb-16">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-xl font-bold">✓</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900">Daily Ops</span>
+    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
+      {/* Nav */}
+      <nav className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              background: 'rgba(217,119,6,0.15)',
+              border: '1px solid rgba(217,119,6,0.3)',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#D97706',
+              fontSize: '16px',
+              fontWeight: 700,
+            }}
+          >
+            &#10003;
           </div>
-          <Link 
+          <span
+            style={{
+              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+              fontSize: '18px',
+              fontWeight: 600,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Daily Ops
+          </span>
+        </div>
+        <div className="flex items-center gap-6">
+          <Link
+            href="/help"
+            className="hidden sm:inline hover:opacity-80 transition-opacity"
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '14px',
+              fontWeight: 400,
+              color: '#A89880',
+              textDecoration: 'none',
+            }}
+          >
+            How It Works
+          </Link>
+          <Link
             href="/auth/login"
-            className="text-blue-600 hover:text-blue-700 font-medium px-4 py-2"
+            className="hover:opacity-80 transition-opacity"
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#F5F0E8',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '4px',
+              padding: '8px 20px',
+              textDecoration: 'none',
+            }}
           >
             Log In
           </Link>
         </div>
+      </nav>
 
-        {/* Hero Content */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Run your restaurant shift<br />
-            <span className="text-blue-600">without the chaos</span>
+      {/* Hero */}
+      <section className="max-w-5xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28">
+        <div className="max-w-3xl">
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#D97706',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '20px',
+            }}
+          >
+            For independent restaurants
+          </p>
+          <h1
+            style={{
+              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+              fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+              fontWeight: 700,
+              lineHeight: 1.1,
+              marginBottom: '24px',
+            }}
+          >
+            Your opening shift<br />
+            shouldn&apos;t start with<br />
+            <span style={{ color: '#D97706' }}>a missing checklist.</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            Digital opening and closing checklists built for independent restaurant owners who are tired of paper logs and lost records
-          </p>
-
-          {/* CTA Button */}
-          <a
-            href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
-            className="inline-block bg-blue-600 text-white text-lg font-semibold px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '18px',
+              fontWeight: 300,
+              lineHeight: 1.7,
+              color: '#A89880',
+              maxWidth: '520px',
+              marginBottom: '40px',
+            }}
           >
-            Start Free Trial
-          </a>
-          <p className="text-sm text-gray-500 mt-4">
-            Start free — no credit card needed for 14 days
+            Digital opening and closing checklists with timestamps, photo proof,
+            and staff sign-off. Built for restaurant operators who are done with
+            paper logs and guesswork.
           </p>
-        </div>
-
-        {/* Feature Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <span className="text-2xl">✓</span>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Opening & Closing Checklists
-            </h3>
-            <p className="text-gray-600">
-              Digital checklists with timestamps and staff sign-off. No more lost paper logs or forgotten tasks.
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <span className="text-2xl">📸</span>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Photo Capture Built-In
-            </h3>
-            <p className="text-gray-600">
-              Capture fridge temps, equipment checks, and cleanliness proof. Health inspectors love it.
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <span className="text-2xl">👥</span>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Team Accountability
-            </h3>
-            <p className="text-gray-600">
-              See who completed what and when. Auto-timestamped records you can trust.
-            </p>
+          <div className="flex flex-wrap items-center gap-4">
+            <a
+              href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+              className="hover:opacity-90 transition-opacity"
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                background: '#D97706',
+                color: '#1C1917',
+                fontSize: '15px',
+                fontWeight: 500,
+                padding: '14px 32px',
+                borderRadius: '4px',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >
+              Start 14-Day Free Trial
+            </a>
+            <span
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '13px',
+                fontWeight: 400,
+                color: '#6B5B4E',
+              }}
+            >
+              No credit card required &middot; $19/mo after trial
+            </span>
           </div>
         </div>
+      </section>
 
-        {/* Social Proof / Trust Section */}
-        <div className="bg-blue-50 rounded-2xl p-8 md:p-12 text-center">
-          <p className="text-lg text-gray-700 mb-2">
-            "I built this for my own restaurant because paper checklists were killing us."
-          </p>
-          <p className="text-sm text-gray-600">
-            — Independent restaurant owner who got tired of health inspector stress
-          </p>
-        </div>
+      {/* Divider */}
+      <div className="max-w-5xl mx-auto px-6">
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+      </div>
 
-        {/* Pricing Preview */}
-        <div className="mt-16 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Simple, honest pricing
-          </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Start free. Upgrade when you're ready.
-          </p>
+      {/* Features */}
+      <section className="max-w-5xl mx-auto px-6 py-20 md:py-24">
+        <p
+          style={{
+            fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+            fontSize: '13px',
+            fontWeight: 500,
+            color: '#6B5B4E',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase' as const,
+            marginBottom: '12px',
+          }}
+        >
+          What you get
+        </p>
+        <h2
+          style={{
+            fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+            fontSize: 'clamp(1.75rem, 3.5vw, 2.25rem)',
+            fontWeight: 500,
+            marginBottom: '48px',
+          }}
+        >
+          Everything a shift needs. Nothing it doesn&apos;t.
+        </h2>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Tier */}
-            <div className="bg-white p-8 rounded-xl shadow-sm border-2 border-gray-200">
-              <div className="text-sm font-semibold text-gray-500 uppercase mb-2">
-                Free
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-4">
-                $0
-                <span className="text-lg text-gray-500 font-normal">/month</span>
-              </div>
-              <ul className="text-left space-y-3 mb-6">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600 mt-1">✓</span>
-                  <span className="text-gray-600">Up to 10 checklist items</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600 mt-1">✓</span>
-                  <span className="text-gray-600">Photo capture</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600 mt-1">✓</span>
-                  <span className="text-gray-600">Team accountability</span>
-                </li>
-              </ul>
-              <button className="w-full py-3 px-6 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
-                Start Free
-              </button>
-            </div>
-
-            {/* Pro Tier */}
-            <div className="bg-blue-600 p-8 rounded-xl shadow-lg text-white relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">
-                MOST POPULAR
-              </div>
-              <div className="text-sm font-semibold uppercase mb-2 opacity-90">
-                Pro
-              </div>
-              <div className="text-4xl font-bold mb-4">
-                $19
-                <span className="text-lg font-normal opacity-90">/month</span>
-              </div>
-              <ul className="text-left space-y-3 mb-6">
-                <li className="flex items-start gap-2">
-                  <span className="mt-1">✓</span>
-                  <span>Unlimited checklist items</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1">✓</span>
-                  <span>Everything in Free</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1">✓</span>
-                  <span>Priority support</span>
-                </li>
-              </ul>
-              <a
-                href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
-                className="block w-full py-3 px-6 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-center"
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                </svg>
+              ),
+              label: 'Opening & Closing Checklists',
+              body: 'Digital checklists with timestamps and staff sign-off. Every task tracked, every shift accounted for.',
+            },
+            {
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
+                </svg>
+              ),
+              label: 'Photo Proof Built In',
+              body: 'Snap fridge temps, line checks, cleanliness. When the health inspector walks in, you\'re ready.',
+            },
+            {
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+              ),
+              label: 'Staff Accountability',
+              body: 'See who completed what and when. Auto-timestamped records that hold your team to the standard.',
+            },
+          ].map((feature, i) => (
+            <div
+              key={i}
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: '8px',
+                padding: '32px 28px',
+                transition: 'border-color 0.25s ease',
+              }}
+              className="hover:!border-[rgba(217,119,6,0.15)]"
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  background: 'rgba(217,119,6,0.1)',
+                  border: '1px solid rgba(217,119,6,0.2)',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '20px',
+                }}
               >
-                Start 14-Day Trial
-              </a>
+                {feature.icon}
+              </div>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                  fontSize: '18px',
+                  fontWeight: 500,
+                  marginBottom: '12px',
+                }}
+              >
+                {feature.label}
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 300,
+                  lineHeight: 1.7,
+                  color: '#A89880',
+                }}
+              >
+                {feature.body}
+              </p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="max-w-5xl mx-auto px-6">
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+      </div>
+
+      {/* Quote */}
+      <section className="max-w-5xl mx-auto px-6 py-20 md:py-24">
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: '8px',
+            padding: '40px 36px',
+            position: 'relative' as const,
+            overflow: 'hidden',
+          }}
+        >
+          {/* Decorative quotation mark */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              top: '-8px',
+              left: '24px',
+              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+              fontSize: '120px',
+              fontWeight: 700,
+              lineHeight: 1,
+              color: 'rgba(217,119,6,0.08)',
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          >
+            &ldquo;
+          </div>
+          <p
+            style={{
+              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+              fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)',
+              fontWeight: 400,
+              fontStyle: 'italic',
+              lineHeight: 1.6,
+              marginBottom: '16px',
+              position: 'relative',
+            }}
+          >
+            &ldquo;I built this for my own restaurant because paper checklists
+            were killing us. Missed tasks, no proof, no accountability.
+            Now every shift runs the same way.&rdquo;
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+            <div
+              style={{
+                width: '24px',
+                height: '1px',
+                background: 'rgba(217,119,6,0.3)',
+              }}
+            />
+            <p
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '13px',
+                fontWeight: 400,
+                color: '#6B5B4E',
+              }}
+            >
+              Independent restaurant owner, tired of health inspector stress
+            </p>
           </div>
         </div>
+      </section>
 
-        {/* Footer CTA */}
-        <div className="mt-24 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to ditch the paper?
-          </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Start your free trial. No credit card required.
-          </p>
-          <a
-            href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
-            className="inline-block bg-blue-600 text-white text-lg font-semibold px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+      {/* Divider */}
+      <div className="max-w-5xl mx-auto px-6">
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+      </div>
+
+      {/* Pricing */}
+      <section className="max-w-5xl mx-auto px-6 py-20 md:py-24">
+        <p
+          style={{
+            fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+            fontSize: '13px',
+            fontWeight: 500,
+            color: '#6B5B4E',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase' as const,
+            marginBottom: '12px',
+          }}
+        >
+          Pricing
+        </p>
+        <h2
+          style={{
+            fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+            fontSize: 'clamp(1.75rem, 3.5vw, 2.25rem)',
+            fontWeight: 500,
+            marginBottom: '48px',
+          }}
+        >
+          Simple. Honest. No surprises.
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-6 max-w-3xl">
+          {/* Free Tier */}
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '8px',
+              padding: '36px 32px',
+            }}
           >
-            Start Free Trial
-          </a>
-        </div>
+            <p
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: '#6B5B4E',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase' as const,
+                marginBottom: '8px',
+              }}
+            >
+              Free
+            </p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '24px' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                  fontSize: '40px',
+                  fontWeight: 700,
+                }}
+              >
+                $0
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 300,
+                  color: '#6B5B4E',
+                }}
+              >
+                /month
+              </span>
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0' }}>
+              {['Up to 10 checklist items', 'Photo capture', 'Team sign-off'].map((item, i) => (
+                <li
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 300,
+                    color: '#A89880',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <span style={{ color: '#6B5B4E', marginTop: '2px', flexShrink: 0 }}>&#10003;</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/auth/login"
+              className="hover:opacity-80 transition-opacity"
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#F5F0E8',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: '4px',
+                padding: '12px 24px',
+                textDecoration: 'none',
+              }}
+            >
+              Get Started
+            </Link>
+          </div>
 
-        {/* Footer */}
-        <div className="mt-24 pt-12 border-t border-gray-200 text-center text-gray-500 text-sm">
-          <p>
+          {/* Pro Tier */}
+          <div
+            style={{
+              background: 'rgba(217,119,6,0.06)',
+              border: '1px solid rgba(217,119,6,0.2)',
+              borderRadius: '8px',
+              padding: '36px 32px',
+              position: 'relative' as const,
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute' as const,
+                top: '-12px',
+                left: '32px',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: '#1C1917',
+                background: '#D97706',
+                padding: '4px 12px',
+                borderRadius: '4px',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase' as const,
+              }}
+            >
+              Recommended
+            </div>
+            <p
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: '#D97706',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase' as const,
+                marginBottom: '8px',
+              }}
+            >
+              Pro
+            </p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '24px' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                  fontSize: '40px',
+                  fontWeight: 700,
+                }}
+              >
+                $19
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 300,
+                  color: '#6B5B4E',
+                }}
+              >
+                /month
+              </span>
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0' }}>
+              {['Unlimited checklist items', 'Everything in Free', 'Priority support'].map((item, i) => (
+                <li
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 300,
+                    color: '#A89880',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <span style={{ color: '#D97706', marginTop: '2px', flexShrink: 0 }}>&#10003;</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <a
+              href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+              className="hover:opacity-90 transition-opacity"
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#1C1917',
+                background: '#D97706',
+                borderRadius: '4px',
+                padding: '12px 24px',
+                textDecoration: 'none',
+              }}
+            >
+              Start 14-Day Free Trial
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="max-w-5xl mx-auto px-6">
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+      </div>
+
+      {/* Final CTA */}
+      <section className="max-w-5xl mx-auto px-6 py-20 md:py-24 text-center">
+        <h2
+          style={{
+            fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+            fontSize: 'clamp(1.75rem, 3.5vw, 2.25rem)',
+            fontWeight: 500,
+            marginBottom: '16px',
+          }}
+        >
+          Ready to run a tighter shift?
+        </h2>
+        <p
+          style={{
+            fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+            fontSize: '16px',
+            fontWeight: 300,
+            color: '#A89880',
+            marginBottom: '32px',
+          }}
+        >
+          Start your free trial. No credit card. Cancel anytime.
+        </p>
+        <a
+          href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+          className="hover:opacity-90 transition-opacity"
+          style={{
+            fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+            background: '#D97706',
+            color: '#1C1917',
+            fontSize: '15px',
+            fontWeight: 500,
+            padding: '14px 32px',
+            borderRadius: '4px',
+            textDecoration: 'none',
+            display: 'inline-block',
+          }}
+        >
+          Start 14-Day Free Trial
+        </a>
+      </section>
+
+      {/* Footer */}
+      <footer className="max-w-5xl mx-auto px-6 py-10" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 300,
+              color: '#6B5B4E',
+            }}
+          >
             Built for independent restaurants, by an independent restaurant owner.
           </p>
-          <div className="mt-4 flex justify-center gap-6">
-            <a href="mailto:support@wireach.tools" className="hover:text-blue-600">
+          <div className="flex items-center gap-6">
+            <Link
+              href="/help"
+              className="hover:opacity-80 transition-opacity"
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '13px',
+                fontWeight: 400,
+                color: '#6B5B4E',
+                textDecoration: 'none',
+              }}
+            >
+              How to Use
+            </Link>
+            <a
+              href="mailto:support@wireach.tools"
+              className="hover:opacity-80 transition-opacity"
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '13px',
+                fontWeight: 400,
+                color: '#6B5B4E',
+                textDecoration: 'none',
+              }}
+            >
               support@wireach.tools
             </a>
           </div>
         </div>
-      </div>
+      </footer>
     </main>
   )
 }

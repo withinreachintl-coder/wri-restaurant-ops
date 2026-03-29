@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { supabase, ChecklistItem } from '@/lib/supabase'
 import PhotoUpload from '../components/PhotoUpload'
 
-// Simple type for display (maps from DB schema)
 type DisplayTask = {
   id: string
   text: string
@@ -52,12 +51,10 @@ export default function ChecklistPage() {
   const [checklistId, setChecklistId] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
 
-  // Mark component as mounted to prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Load or create checklist, then load tasks
   useEffect(() => {
     loadOrCreateChecklist()
   }, [checklistType])
@@ -65,36 +62,30 @@ export default function ChecklistPage() {
   const loadOrCreateChecklist = async () => {
     setLoading(true)
     try {
-      // Get authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser()
-      
+
       if (authError || !user) {
         console.error('No authenticated user:', authError)
-        // Fallback to default tasks if not authenticated
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
         setLoading(false)
         return
       }
 
-      // Get or create user record with org_id
       let orgId: string
-      
+
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('org_id')
         .eq('id', user.id)
         .single()
 
-      // Check if user exists and has org_id
       const needsUserCreation = userError?.code === 'PGRST116' || !userData?.org_id
-      
+
       if (needsUserCreation) {
-        // User doesn't exist OR exists but has no org_id - create both
         console.log('Creating user and org records...')
         console.log('User email:', user.email)
         console.log('User ID:', user.id)
-        
-        // Create organization first
+
         const { data: newOrg, error: orgCreateError } = await supabase
           .from('organizations')
           .insert([{
@@ -113,12 +104,11 @@ export default function ChecklistPage() {
           setLoading(false)
           return
         }
-        
+
         console.log('Org created successfully:', newOrg.id)
 
         orgId = newOrg.id
 
-        // Create or update user record with org_id
         const { error: userUpsertError } = await supabase
           .from('users')
           .upsert([{
@@ -138,17 +128,14 @@ export default function ChecklistPage() {
           return
         }
       } else if (userError) {
-        // Real error (not just missing record)
         console.error('Error fetching user:', userError)
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
         setLoading(false)
         return
       } else {
-        // User exists with org_id
         orgId = userData.org_id
       }
 
-      // Try to find existing checklist by type and org
       const { data: existingChecklists, error: fetchError } = await supabase
         .from('checklists')
         .select('id, org_id, type')
@@ -158,7 +145,6 @@ export default function ChecklistPage() {
 
       if (fetchError) {
         console.error('Error fetching checklist:', fetchError)
-        // Fallback to default tasks
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
         setLoading(false)
         return
@@ -167,11 +153,9 @@ export default function ChecklistPage() {
       let currentChecklistId: string
 
       if (existingChecklists && existingChecklists.length > 0) {
-        // Use existing checklist
         currentChecklistId = existingChecklists[0].id
         setChecklistId(currentChecklistId)
       } else {
-        // Create new checklist for this org
         const { data: newChecklist, error: createError } = await supabase
           .from('checklists')
           .insert([{
@@ -184,7 +168,6 @@ export default function ChecklistPage() {
 
         if (createError || !newChecklist) {
           console.error('Error creating checklist:', createError)
-          // Fallback to default tasks
           setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
           setLoading(false)
           return
@@ -194,7 +177,6 @@ export default function ChecklistPage() {
         setChecklistId(currentChecklistId)
       }
 
-      // Now load tasks for this checklist
       await loadTasks(currentChecklistId)
     } catch (err) {
       console.error('Failed to load checklist:', err)
@@ -213,19 +195,16 @@ export default function ChecklistPage() {
 
       if (error) {
         console.error('Error loading tasks:', error)
-        // Fallback to default tasks if DB fails
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
       } else if (data && data.length > 0) {
-        // Map DB schema to display format
         const displayTasks: DisplayTask[] = data.map((item: ChecklistItem) => ({
           id: item.id,
           text: item.text,
           photoRequired: item.photo_required,
-          completed: false, // Reset on page load
+          completed: false,
         }))
         setTasks(displayTasks)
       } else {
-        // No tasks in DB, use defaults
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
       }
     } catch (err) {
@@ -241,7 +220,7 @@ export default function ChecklistPage() {
   }
 
   const handleToggleTask = (taskId: string) => {
-    if (editMode) return // Don't toggle in edit mode
+    if (editMode) return
 
     if (!staffName) {
       alert('Please enter your name first')
@@ -281,7 +260,6 @@ export default function ChecklistPage() {
       return
     }
 
-    // Check free tier limit (10 items)
     if (tasks.length >= 10) {
       const shouldUpgrade = confirm(
         `You've reached the free plan limit of 10 checklist items.\n\n` +
@@ -300,7 +278,7 @@ export default function ChecklistPage() {
       const { data, error} = await supabase
         .from('checklist_items')
         .insert([{
-          checklist_id: checklistId, // Now using the real UUID!
+          checklist_id: checklistId,
           text: newItemText.trim(),
           photo_required: newItemPhotoRequired,
           order_index: nextOrderIndex,
@@ -309,8 +287,7 @@ export default function ChecklistPage() {
 
       if (error) {
         console.error('Error adding task:', error)
-        
-        // Check if it's a free tier limit error
+
         if (error.message && error.message.includes('Free accounts are limited to')) {
           const shouldUpgrade = confirm(
             `You've reached the free plan limit of 10 checklist items.\n\n` +
@@ -322,13 +299,12 @@ export default function ChecklistPage() {
           }
           return
         }
-        
+
         alert(`Failed to add task: ${error.message}`)
         return
       }
 
       if (data && data.length > 0) {
-        // Map the returned item to display format
         const newTask: DisplayTask = {
           id: data[0].id,
           text: data[0].text,
@@ -338,7 +314,6 @@ export default function ChecklistPage() {
         setTasks(prev => [...prev, newTask])
       }
 
-      // Reset form
       setNewItemText('')
       setNewItemPhotoRequired(false)
     } catch (err) {
@@ -373,73 +348,126 @@ export default function ChecklistPage() {
   const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8', paddingBottom: '100px' }}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Daily Ops Checklist</h1>
-            <div className="flex gap-2">
+      <div
+        className="sticky top-0 z-10"
+        style={{ background: '#1C1917', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between" style={{ marginBottom: '16px' }}>
+            <h1
+              style={{
+                fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                fontSize: '22px',
+                fontWeight: 700,
+              }}
+            >
+              Daily Ops Checklist
+            </h1>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <button
                 onClick={() => setEditMode(!editMode)}
-                className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${
-                  editMode
-                    ? 'bg-orange-600 text-white hover:bg-orange-700'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className="hover:opacity-80 transition-opacity"
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: editMode ? '#1C1917' : '#F5F0E8',
+                  background: editMode ? '#D97706' : 'transparent',
+                  border: editMode ? 'none' : '1px solid rgba(255,255,255,0.15)',
+                  borderRadius: '4px',
+                  padding: '8px 16px',
+                  cursor: 'pointer',
+                }}
               >
-                {editMode ? '✓ Done Editing' : '✏️ Edit'}
+                {editMode ? '✓ Done' : 'Edit'}
               </button>
-              <Link 
+              <Link
                 href="/help"
-                className="text-sm px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                className="hover:opacity-80 transition-opacity"
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: '#1C1917',
+                  background: '#D97706',
+                  borderRadius: '4px',
+                  padding: '8px 16px',
+                  textDecoration: 'none',
+                }}
               >
                 How to Use
               </Link>
-              <Link 
+              <Link
                 href="/dashboard"
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium px-4 py-2"
+                className="hover:opacity-80 transition-opacity"
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: '#D97706',
+                  textDecoration: 'none',
+                  padding: '8px 12px',
+                }}
               >
-                Dashboard →
+                Dashboard &rarr;
               </Link>
             </div>
           </div>
 
           {/* Type Toggle */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleTypeChange('opening')}
-              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-colors ${
-                checklistType === 'opening'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Opening
-            </button>
-            <button
-              onClick={() => handleTypeChange('closing')}
-              className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-colors ${
-                checklistType === 'closing'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Closing
-            </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {(['opening', 'closing'] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => handleTypeChange(type)}
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  flex: 1,
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: checklistType === type ? '#1C1917' : '#A89880',
+                  background: checklistType === type ? '#D97706' : 'rgba(255,255,255,0.04)',
+                  border: checklistType === type ? 'none' : '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '4px',
+                  padding: '10px 16px',
+                  cursor: 'pointer',
+                  textTransform: 'capitalize' as const,
+                }}
+              >
+                {type}
+              </button>
+            ))}
           </div>
 
-          {/* Progress Bar (hide in edit mode) */}
+          {/* Progress Bar */}
           {!editMode && (
-            <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
+            <div style={{ marginTop: '16px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '12px',
+                  fontWeight: 400,
+                  color: '#6B5B4E',
+                  marginBottom: '6px',
+                }}
+              >
                 <span>{completedCount} of {tasks.length} complete</span>
                 <span>{progressPercent}%</span>
               </div>
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div style={{ height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', overflow: 'hidden' }}>
                 <div
-                  className="h-full bg-green-500 transition-all duration-300"
-                  style={{ width: `${progressPercent}%` }}
+                  style={{
+                    height: '100%',
+                    width: `${progressPercent}%`,
+                    background: progressPercent === 100 ? '#D97706' : '#B45309',
+                    borderRadius: '2px',
+                    transition: 'width 0.3s',
+                  }}
                 />
               </div>
             </div>
@@ -447,25 +475,63 @@ export default function ChecklistPage() {
         </div>
       </div>
 
-      {/* Name Prompt (hide in edit mode) */}
+      {/* Name Prompt */}
       {!editMode && showNamePrompt && (
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Who's completing this checklist?
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          <div
+            style={{
+              background: 'rgba(217,119,6,0.06)',
+              border: '1px solid rgba(217,119,6,0.15)',
+              borderRadius: '8px',
+              padding: '20px',
+            }}
+          >
+            <label
+              style={{
+                display: 'block',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#A89880',
+                marginBottom: '10px',
+              }}
+            >
+              Who&apos;s completing this checklist?
             </label>
-            <div className="flex gap-2">
+            <div style={{ display: 'flex', gap: '8px' }}>
               <input
                 type="text"
                 value={staffName}
                 onChange={(e) => setStaffName(e.target.value)}
                 placeholder="Enter your name"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                style={{
+                  flex: 1,
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  color: '#F5F0E8',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: '4px',
+                  padding: '10px 14px',
+                  outline: 'none',
+                }}
               />
               <button
                 onClick={() => staffName && setShowNamePrompt(false)}
                 disabled={!staffName}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#1C1917',
+                  background: !staffName ? '#6B5B4E' : '#D97706',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '10px 24px',
+                  cursor: !staffName ? 'not-allowed' : 'pointer',
+                }}
               >
                 Start
               </button>
@@ -474,38 +540,92 @@ export default function ChecklistPage() {
         </div>
       )}
 
-      {/* Add Item Form (edit mode only) */}
+      {/* Add Item (edit mode) */}
       {editMode && (
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 mb-3">Add New Task</h3>
-            <div className="space-y-3">
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '8px',
+              padding: '20px',
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#F5F0E8',
+                marginBottom: '14px',
+              }}
+            >
+              Add New Task
+            </h3>
+            <div>
               <input
                 type="text"
                 value={newItemText}
                 onChange={(e) => setNewItemText(e.target.value)}
                 placeholder="Task description..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && newItemText.trim()) {
                     handleAddItem()
                   }
                 }}
+                style={{
+                  width: '100%',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  color: '#F5F0E8',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: '4px',
+                  padding: '10px 14px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  marginBottom: '12px',
+                }}
               />
-              <label className="flex items-center gap-2">
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 400,
+                  color: '#A89880',
+                  marginBottom: '14px',
+                  cursor: 'pointer',
+                }}
+              >
                 <input
                   type="checkbox"
                   checked={newItemPhotoRequired}
                   onChange={(e) => setNewItemPhotoRequired(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded"
+                  style={{ accentColor: '#D97706' }}
                 />
-                <span className="text-sm text-gray-700">Photo required</span>
+                Photo required
               </label>
-              <div className="flex gap-2">
+              <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={handleAddItem}
                   disabled={!mounted || !checklistId}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="hover:opacity-90 transition-opacity"
+                  style={{
+                    flex: 1,
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: '#1C1917',
+                    background: (!mounted || !checklistId) ? '#6B5B4E' : '#D97706',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '10px 20px',
+                    cursor: (!mounted || !checklistId) ? 'not-allowed' : 'pointer',
+                  }}
                 >
                   Add Item
                 </button>
@@ -514,7 +634,18 @@ export default function ChecklistPage() {
                     setNewItemText('')
                     setNewItemPhotoRequired(false)
                   }}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                  className="hover:opacity-80 transition-opacity"
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: '#A89880',
+                    background: 'transparent',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '4px',
+                    padding: '10px 20px',
+                    cursor: 'pointer',
+                  }}
                 >
                   Cancel
                 </button>
@@ -525,92 +656,183 @@ export default function ChecklistPage() {
       )}
 
       {/* Task List */}
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-3">
+      <div className="max-w-3xl mx-auto px-4 py-6" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading tasks...</div>
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '48px 0',
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '14px',
+              fontWeight: 300,
+              color: '#6B5B4E',
+            }}
+          >
+            Loading tasks...
+          </div>
         ) : tasks.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '48px 0',
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '14px',
+              fontWeight: 300,
+              color: '#6B5B4E',
+            }}
+          >
             No tasks yet. {editMode && 'Add some above!'}
           </div>
         ) : (
           tasks.map((task) => (
             <div
               key={task.id}
-              className={`bg-white rounded-lg border-2 transition-all ${
-                task.completed
-                  ? 'border-green-500 bg-green-50'
-                  : 'border-gray-200 hover:border-blue-300'
-              }`}
+              style={{
+                background: task.completed ? 'rgba(217,119,6,0.06)' : 'rgba(255,255,255,0.03)',
+                border: task.completed
+                  ? '1px solid rgba(217,119,6,0.2)'
+                  : '1px solid rgba(255,255,255,0.06)',
+                borderLeft: task.completed ? '3px solid #D97706' : '3px solid transparent',
+                borderRadius: '8px',
+                padding: '16px',
+                transition: 'all 0.25s ease',
+              }}
             >
-              <div className="p-4">
-                <div className="flex items-start gap-3">
-                  {!editMode && (
-                    <button
-                      onClick={() => handleToggleTask(task.id)}
-                      className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
-                        task.completed
-                          ? 'bg-green-500 border-green-500'
-                          : 'border-gray-300 hover:border-blue-500'
-                      }`}
-                    >
-                      {task.completed && (
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                  )}
-
-                  <div className="flex-1">
-                    <div className={`font-medium ${task.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
-                      {task.text}
-                    </div>
-
-                    {task.completed && task.completedBy && (
-                      <div className="text-sm text-gray-500 mt-1">
-                        ✓ Completed by {task.completedBy} at {task.completedAt}
-                      </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                {!editMode && (
+                  <button
+                    onClick={() => handleToggleTask(task.id)}
+                    style={{
+                      flexShrink: 0,
+                      width: '22px',
+                      height: '22px',
+                      borderRadius: '4px',
+                      border: task.completed ? 'none' : '2px solid rgba(255,255,255,0.2)',
+                      background: task.completed ? '#D97706' : 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      marginTop: '1px',
+                    }}
+                  >
+                    {task.completed && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1917" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 13l4 4L19 7" />
+                      </svg>
                     )}
+                  </button>
+                )}
 
-                    {!editMode && task.photoRequired && (
-                      <PhotoUpload
-                        taskId={task.id}
-                        onPhotoUploaded={handlePhotoUploaded}
-                        currentPhotoUrl={task.photoUrl}
-                      />
-                    )}
-
-                    {editMode && (
-                      <div className="text-sm text-gray-500 mt-1">
-                        {task.photoRequired ? '📷 Photo required' : '📷 No photo'}
-                      </div>
-                    )}
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '14px',
+                      fontWeight: task.completed ? 300 : 400,
+                      color: task.completed ? '#6B5B4E' : '#F5F0E8',
+                      textDecoration: task.completed ? 'line-through' : 'none',
+                    }}
+                  >
+                    {task.text}
                   </div>
 
-                  {editMode && (
-                    <button
-                      onClick={() => handleDeleteItem(task.id)}
-                      className="flex-shrink-0 px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 text-sm font-medium transition-colors"
+                  {task.completed && task.completedBy && (
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                        fontSize: '12px',
+                        fontWeight: 300,
+                        color: '#6B5B4E',
+                        marginTop: '4px',
+                      }}
                     >
-                      Delete
-                    </button>
+                      &#10003; Completed by {task.completedBy} at {task.completedAt}
+                    </div>
+                  )}
+
+                  {!editMode && task.photoRequired && (
+                    <PhotoUpload
+                      taskId={task.id}
+                      onPhotoUploaded={handlePhotoUploaded}
+                      currentPhotoUrl={task.photoUrl}
+                    />
+                  )}
+
+                  {editMode && (
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                        fontSize: '12px',
+                        fontWeight: 300,
+                        color: '#6B5B4E',
+                        marginTop: '4px',
+                      }}
+                    >
+                      {task.photoRequired ? '\uD83D\uDCF7 Photo required' : '\uD83D\uDCF7 No photo'}
+                    </div>
                   )}
                 </div>
+
+                {editMode && (
+                  <button
+                    onClick={() => handleDeleteItem(task.id)}
+                    className="hover:opacity-80 transition-opacity"
+                    style={{
+                      flexShrink: 0,
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      color: '#EF4444',
+                      background: 'rgba(239,68,68,0.08)',
+                      border: '1px solid rgba(239,68,68,0.15)',
+                      borderRadius: '4px',
+                      padding: '6px 12px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
           ))
         )}
       </div>
 
-      {/* Complete Button (hide in edit mode) */}
+      {/* Complete Button */}
       {!editMode && completedCount === tasks.length && tasks.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-          <div className="max-w-4xl mx-auto">
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: '#1C1917',
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+            padding: '16px',
+          }}
+        >
+          <div className="max-w-3xl mx-auto">
             <Link
               href="/dashboard"
-              className="block w-full py-3 bg-green-600 text-white text-center rounded-lg font-semibold hover:bg-green-700 transition-colors"
+              className="hover:opacity-90 transition-opacity"
+              style={{
+                display: 'block',
+                width: '100%',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '15px',
+                fontWeight: 500,
+                color: '#1C1917',
+                background: '#D97706',
+                borderRadius: '4px',
+                padding: '14px 24px',
+                textDecoration: 'none',
+                textAlign: 'center',
+                boxSizing: 'border-box',
+              }}
             >
-              ✓ All Done! Go to Dashboard
+              &#10003; All Done — Go to Dashboard
             </Link>
           </div>
         </div>

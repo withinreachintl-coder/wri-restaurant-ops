@@ -17,7 +17,6 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Client-side preview
     const reader = new FileReader()
     reader.onloadend = () => {
       setPreview(reader.result as string)
@@ -26,8 +25,7 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
 
     // TODO: Upload to actual storage (S3, Cloudflare R2, etc.)
     setUploading(true)
-    
-    // Simulate upload delay
+
     setTimeout(() => {
       const fakeUrl = `https://storage.wireach.tools/photos/${taskId}-${Date.now()}.jpg`
       onPhotoUploaded(taskId, fakeUrl)
@@ -42,7 +40,7 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
   }
 
   return (
-    <div className="mt-2">
+    <div style={{ marginTop: '10px' }}>
       <input
         ref={fileInputRef}
         type="file"
@@ -53,24 +51,55 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
       />
 
       {preview ? (
-        <div className="space-y-2">
-          <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
+        <div>
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '180px',
+              background: 'rgba(255,255,255,0.04)',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              marginBottom: '8px',
+            }}
+          >
             <img
               src={preview}
               alt="Task photo"
-              className="w-full h-full object-cover"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            <div className="absolute top-2 right-2">
+            <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
               <button
                 onClick={handleCapture}
-                className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                className="hover:opacity-80 transition-opacity"
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: '#1C1917',
+                  background: '#D97706',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '6px 12px',
+                  cursor: 'pointer',
+                }}
               >
                 Retake
               </button>
             </div>
           </div>
-          <div className="text-sm text-green-600 flex items-center gap-1">
-            <span>✓</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '12px',
+              fontWeight: 400,
+              color: '#D97706',
+            }}
+          >
+            <span>&#10003;</span>
             <span>Photo attached</span>
           </div>
         </div>
@@ -78,14 +107,27 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
         <button
           onClick={handleCapture}
           disabled={uploading}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg hover:bg-blue-100 transition-colors w-full disabled:opacity-50"
+          className="hover:opacity-80 transition-opacity"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: '100%',
+            fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+            background: 'rgba(217,119,6,0.06)',
+            border: '1px dashed rgba(217,119,6,0.3)',
+            borderRadius: '4px',
+            padding: '12px 16px',
+            cursor: uploading ? 'not-allowed' : 'pointer',
+            opacity: uploading ? 0.5 : 1,
+          }}
         >
-          <span className="text-2xl">📷</span>
-          <div className="text-left">
-            <div className="text-sm font-medium text-blue-700">
+          <span style={{ fontSize: '20px' }}>&#128247;</span>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '13px', fontWeight: 500, color: '#D97706' }}>
               {uploading ? 'Uploading...' : 'Take Photo'}
             </div>
-            <div className="text-xs text-blue-600">
+            <div style={{ fontSize: '11px', fontWeight: 300, color: '#A89880' }}>
               Proof of completion
             </div>
           </div>

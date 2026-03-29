@@ -54,162 +54,354 @@ export default function DashboardPage() {
   })
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Manager Dashboard</h1>
-              <p className="text-gray-600 mt-1">Real-time checklist tracking</p>
-            </div>
-            <div className="flex gap-3">
-              <Link
-                href="/checklist"
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              <h1
+                style={{
+                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                  fontSize: '28px',
+                  fontWeight: 700,
+                  marginBottom: '4px',
+                }}
               >
-                + Start Checklist
-              </Link>
+                Manager Dashboard
+              </h1>
+              <p
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 300,
+                  color: '#A89880',
+                }}
+              >
+                Real-time checklist tracking
+              </p>
             </div>
+            <Link
+              href="/checklist"
+              className="hover:opacity-90 transition-opacity"
+              style={{
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#1C1917',
+                background: '#D97706',
+                borderRadius: '4px',
+                padding: '10px 20px',
+                textDecoration: 'none',
+              }}
+            >
+              + Start Checklist
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Current Shift Status */}
+      <div className="max-w-5xl mx-auto px-6 py-8" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        {/* Live Status */}
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Live Status</h2>
-          
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-start justify-between mb-4">
+          <h2
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#6B5B4E',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '16px',
+            }}
+          >
+            Live Status
+          </h2>
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderLeft: '3px solid #D97706',
+              borderRadius: '8px',
+              padding: '28px',
+            }}
+          >
+            <div className="flex items-start justify-between" style={{ marginBottom: '16px' }}>
               <div>
-                <div className="flex items-center gap-3">
-                  <h3 className="text-2xl font-bold text-gray-900 capitalize">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                  <h3
+                    style={{
+                      fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                      fontSize: '22px',
+                      fontWeight: 500,
+                      textTransform: 'capitalize' as const,
+                    }}
+                  >
                     {currentProgress.type} Checklist
                   </h3>
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-semibold rounded-full">
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      color: '#D97706',
+                      background: 'rgba(217,119,6,0.12)',
+                      padding: '4px 10px',
+                      borderRadius: '4px',
+                      letterSpacing: '0.02em',
+                    }}
+                  >
                     In Progress
                   </span>
                 </div>
-                <p className="text-gray-600 mt-1">
+                <p
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 300,
+                    color: '#A89880',
+                  }}
+                >
                   Started by {currentProgress.inProgressBy} at {currentProgress.startedAt}
                 </p>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold text-blue-600">
+              <div style={{ textAlign: 'right' }}>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                    fontSize: '32px',
+                    fontWeight: 700,
+                    color: '#D97706',
+                  }}
+                >
                   {currentProgress.progress}%
                 </div>
-                <div className="text-sm text-gray-600">
+                <div
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 300,
+                    color: '#6B5B4E',
+                  }}
+                >
                   {currentProgress.completedTasks} of {currentProgress.totalTasks}
                 </div>
               </div>
             </div>
 
-            <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              style={{
+                height: '6px',
+                background: 'rgba(255,255,255,0.06)',
+                borderRadius: '3px',
+                overflow: 'hidden',
+              }}
+            >
               <div
-                className="h-full bg-blue-600 transition-all duration-500"
-                style={{ width: `${currentProgress.progress}%` }}
+                style={{
+                  height: '100%',
+                  width: `${currentProgress.progress}%`,
+                  background: '#D97706',
+                  borderRadius: '3px',
+                  transition: 'width 0.5s',
+                }}
               />
             </div>
 
-            <div className="mt-4 flex gap-2">
+            <div style={{ marginTop: '16px' }}>
               <Link
                 href="/checklist"
-                className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                className="hover:opacity-80 transition-opacity"
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: '#D97706',
+                  textDecoration: 'none',
+                }}
               >
-                View Live Progress →
+                View Live Progress &rarr;
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Quick Stats */}
+        {/* Stats */}
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">This Week</h2>
-          
+          <h2
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#6B5B4E',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '16px',
+            }}
+          >
+            This Week
+          </h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="text-gray-600 text-sm font-medium mb-1">Completion Rate</div>
-              <div className="text-3xl font-bold text-gray-900">96%</div>
-              <div className="text-sm text-green-600 mt-1">↑ 4% from last week</div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="text-gray-600 text-sm font-medium mb-1">Avg. Completion Time</div>
-              <div className="text-3xl font-bold text-gray-900">12 min</div>
-              <div className="text-sm text-green-600 mt-1">↓ 2 min faster</div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="text-gray-600 text-sm font-medium mb-1">Photos Attached</div>
-              <div className="text-3xl font-bold text-gray-900">98%</div>
-              <div className="text-sm text-green-600 mt-1">↑ 12% from last week</div>
-            </div>
+            {[
+              { label: 'Completion Rate', value: '96%', change: '↑ 4% from last week' },
+              { label: 'Avg. Completion Time', value: '12 min', change: '↓ 2 min faster' },
+              { label: 'Photos Attached', value: '98%', change: '↑ 12% from last week' },
+            ].map((stat, i) => (
+              <div
+                key={i}
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '8px',
+                  padding: '24px',
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: '#6B5B4E',
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase' as const,
+                    marginBottom: '8px',
+                  }}
+                >
+                  {stat.label}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                    fontSize: '32px',
+                    fontWeight: 700,
+                    color: '#F5F0E8',
+                    marginBottom: '4px',
+                  }}
+                >
+                  {stat.value}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    color: '#D97706',
+                  }}
+                >
+                  {stat.change}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Checklist History */}
+        {/* History */}
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Checklists</h2>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Completed By
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Progress
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Time
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+          <h2
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#6B5B4E',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '16px',
+            }}
+          >
+            Recent Checklists
+          </h2>
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '8px',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  {['Date', 'Type', 'Completed By', 'Progress', 'Time', ''].map((h, i) => (
+                    <th
+                      key={i}
+                      style={{
+                        fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        color: '#6B5B4E',
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase' as const,
+                        textAlign: 'left',
+                        padding: '12px 20px',
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody>
                 {MOCK_HISTORY.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <tr
+                    key={idx}
+                    style={{ borderBottom: idx < MOCK_HISTORY.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
+                  >
+                    <td style={{ padding: '14px 20px', fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 400, color: '#F5F0E8' }}>
                       {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded capitalize">
+                    <td style={{ padding: '14px 20px' }}>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                          fontSize: '11px',
+                          fontWeight: 500,
+                          color: '#D97706',
+                          background: 'rgba(217,119,6,0.1)',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          textTransform: 'capitalize' as const,
+                        }}
+                      >
                         {item.type}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td style={{ padding: '14px 20px', fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 400, color: '#F5F0E8' }}>
                       {item.completedBy}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-gray-200 rounded-full w-24">
+                    <td style={{ padding: '14px 20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', width: '80px' }}>
                           <div
-                            className={`h-full rounded-full ${
-                              item.progress === 100 ? 'bg-green-500' : 'bg-yellow-500'
-                            }`}
-                            style={{ width: `${item.progress}%` }}
+                            style={{
+                              height: '100%',
+                              borderRadius: '2px',
+                              width: `${item.progress}%`,
+                              background: item.progress === 100 ? '#D97706' : '#B45309',
+                            }}
                           />
                         </div>
-                        <span className="text-sm text-gray-600">
+                        <span style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '12px', color: '#6B5B4E' }}>
                           {item.completedTasks}/{item.totalTasks}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td style={{ padding: '14px 20px', fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 300, color: '#6B5B4E' }}>
                       {item.completedAt}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <button className="text-blue-600 hover:text-blue-700 font-medium">
+                    <td style={{ padding: '14px 20px' }}>
+                      <button
+                        className="hover:opacity-80 transition-opacity"
+                        style={{
+                          fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          color: '#D97706',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                      >
                         View Report
                       </button>
                     </td>
@@ -217,21 +409,47 @@ export default function DashboardPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </section>
 
-        {/* Tips */}
+        {/* Tip */}
         <section>
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-            <div className="flex gap-4">
-              <div className="text-3xl">💡</div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Pro Tip</h3>
-                <p className="text-gray-700 text-sm">
-                  Share the checklist link with your team via text or print a QR code. 
-                  They can complete it without creating an account — just open and go.
-                </p>
-              </div>
+          <div
+            style={{
+              background: 'rgba(217,119,6,0.06)',
+              border: '1px solid rgba(217,119,6,0.15)',
+              borderRadius: '8px',
+              padding: '24px',
+              display: 'flex',
+              gap: '16px',
+            }}
+          >
+            <div style={{ fontSize: '24px', flexShrink: 0 }}>&#9889;</div>
+            <div>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#F5F0E8',
+                  marginBottom: '4px',
+                }}
+              >
+                Pro Tip
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 300,
+                  color: '#A89880',
+                  lineHeight: 1.6,
+                }}
+              >
+                Share the checklist link with your team via text or print a QR code.
+                They can complete it without creating an account — just open and go.
+              </p>
             </div>
           </div>
         </section>

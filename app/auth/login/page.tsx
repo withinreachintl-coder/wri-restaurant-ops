@@ -29,14 +29,54 @@ export default function LoginPage() {
 
   if (sent) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg border border-gray-200 p-8 text-center">
-          <div className="text-6xl mb-4">📧</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h1>
-          <p className="text-gray-600 mb-6">
-            We sent a magic link to <strong>{email}</strong>
+      <main
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: '#1C1917' }}
+      >
+        <div
+          style={{
+            maxWidth: '420px',
+            width: '100%',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '8px',
+            padding: '40px 32px',
+            textAlign: 'center',
+          }}
+        >
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>&#9993;</div>
+          <h1
+            style={{
+              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+              fontSize: '24px',
+              fontWeight: 700,
+              color: '#F5F0E8',
+              marginBottom: '8px',
+            }}
+          >
+            Check your email
+          </h1>
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '14px',
+              fontWeight: 300,
+              color: '#A89880',
+              marginBottom: '24px',
+              lineHeight: 1.6,
+            }}
+          >
+            We sent a magic link to <strong style={{ color: '#F5F0E8', fontWeight: 500 }}>{email}</strong>
           </p>
-          <p className="text-sm text-gray-500">
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 300,
+              color: '#6B5B4E',
+              marginBottom: '24px',
+            }}
+          >
             Click the link in the email to sign in. You can close this window.
           </p>
           <button
@@ -44,9 +84,18 @@ export default function LoginPage() {
               setSent(false)
               setEmail('')
             }}
-            className="mt-6 text-blue-600 hover:text-blue-700 font-medium text-sm"
+            className="hover:opacity-80 transition-opacity"
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#D97706',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
-            ← Use a different email
+            &larr; Use a different email
           </button>
         </div>
       </main>
@@ -54,17 +103,56 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Daily Ops</h1>
-          <p className="text-gray-600">Sign in to your restaurant operations hub</p>
+    <main
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: '#1C1917' }}
+    >
+      <div style={{ maxWidth: '420px', width: '100%' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+              fontSize: '32px',
+              fontWeight: 700,
+              color: '#F5F0E8',
+              marginBottom: '8px',
+            }}
+          >
+            Daily Ops
+          </h1>
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '14px',
+              fontWeight: 300,
+              color: '#A89880',
+            }}
+          >
+            Sign in to your restaurant operations hub
+          </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '8px',
+            padding: '32px',
+          }}
+        >
+          <form onSubmit={handleLogin}>
+            <div style={{ marginBottom: '20px' }}>
+              <label
+                htmlFor="email"
+                style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  color: '#A89880',
+                  marginBottom: '8px',
+                }}
+              >
                 Email address
               </label>
               <input
@@ -74,12 +162,38 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@restaurant.com"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="login-input"
+                style={{
+                  width: '100%',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  color: '#F5F0E8',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: '4px',
+                  padding: '12px 16px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.2s ease',
+                }}
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '13px',
+                  fontWeight: 400,
+                  color: '#EF4444',
+                  background: 'rgba(239,68,68,0.08)',
+                  border: '1px solid rgba(239,68,68,0.2)',
+                  borderRadius: '4px',
+                  padding: '12px 16px',
+                  marginBottom: '20px',
+                }}
+              >
                 {error}
               </div>
             )}
@@ -87,27 +201,57 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="hover:opacity-90 transition-opacity"
+              style={{
+                width: '100%',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#1C1917',
+                background: loading ? '#6B5B4E' : '#D97706',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '14px 24px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+              }}
             >
               {loading ? 'Sending...' : 'Send magic link'}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              We'll email you a magic link for a password-free sign in.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404" className="text-blue-600 hover:text-blue-700 font-medium">
-              Start free trial
-            </Link>
+          <p
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 300,
+              color: '#6B5B4E',
+              textAlign: 'center',
+              marginTop: '20px',
+            }}
+          >
+            We&apos;ll email you a magic link for a password-free sign in.
           </p>
         </div>
+
+        <p
+          style={{
+            fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+            fontSize: '13px',
+            fontWeight: 400,
+            color: '#6B5B4E',
+            textAlign: 'center',
+            marginTop: '24px',
+          }}
+        >
+          Don&apos;t have an account?{' '}
+          <Link
+            href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+            style={{ color: '#D97706', textDecoration: 'none', fontWeight: 500 }}
+            className="hover:opacity-80 transition-opacity"
+          >
+            Start free trial
+          </Link>
+        </p>
       </div>
     </main>
   )
