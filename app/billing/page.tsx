@@ -180,7 +180,7 @@ export default function BillingPage() {
         {showCanceled && (
           <div
             style={{
-              background: '#FFFFFF', border: '1px solid #E8E3DC',
+              background: '#FFFFFF',
               border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: '8px',
               padding: '16px 20px',
