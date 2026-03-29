@@ -76,34 +76,6 @@ background: #D97706; color: #1C1917; border-radius: 4px; font-weight: 500;
 background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #F5F0E8;
 ```
 
-### Texture & Atmosphere
-
-- Body has a subtle SVG noise grain overlay (`opacity: 0.025`) for depth — never remove it
-- All interactive elements have amber focus rings (`outline: 2px solid rgba(217,119,6,0.5)`)
-- Text rendering uses `-webkit-font-smoothing: antialiased`
-- Text selection highlight is amber (`rgba(217,119,6,0.3)`)
-- Input placeholders use `#6B5B4E`
-
-### Visual State Patterns
-
-- **Completed tasks:** amber left-border accent (3px solid #D97706) + amber-tinted background
-- **Live status cards:** 3px amber left-border to draw attention
-- **Feature cards on hover:** border warms to `rgba(217,119,6,0.15)`
-- **Testimonial blocks:** large decorative `"` watermark in faded amber behind text
-- **Quote attributions:** small amber line accent + text (not em-dash)
-- **Tables on mobile:** horizontal scroll with `-webkit-overflow-scrolling: touch`
-
-### Icons
-
-- Use inline SVGs with `stroke="#D97706"` and `strokeWidth="1.5"` — not emoji or HTML entities
-- Each feature should have a distinct icon, not the same checkmark repeated
-- Icons sit inside 40x40 amber-tinted boxes (`rgba(217,119,6,0.1)` background)
-
-### CSS Utilities (defined in globals.css)
-
-- `.link-underline` — animated amber underline that grows on hover
-- Focus-visible styles are global — never add `outline: none` without a replacement
-
 ---
 
 ## Code Rules
@@ -129,6 +101,27 @@ background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #F5F0E8
 2. Check `package.json` has every dependency that is imported
 3. Run `npm run build` locally and confirm it passes before pushing
 4. Never push a build you haven't verified locally
+
+---
+
+## Security Rules — Non-Negotiable
+
+### API Keys & Secrets
+- NEVER put real API keys in `.env.example` — placeholders only
+- Example: `RESEND_API_KEY=your_resend_api_key_here`
+- Real keys go in `.env.local` only — this file is in `.gitignore` and never commits
+- If you accidentally commit a real key, tell Keon immediately so it can be revoked
+- Before every push, visually confirm `.env.example` contains no real key values
+
+### node_modules
+- NEVER commit `node_modules` to git — ever
+- Before the first `git add .` on any repo, confirm `node_modules/` is in `.gitignore`
+- Run `git status` before `git add .` and check what files are staged
+- If node_modules appears in `git status`, stop and add it to `.gitignore` first
+
+### Verified incidents (March 2026)
+- Resend API key was committed to `.env.example` in wri-restaurant-ops — key revoked, new key issued
+- node_modules committed in wri-staff-comms first push — required `filter-branch` to clean history
 
 ---
 
