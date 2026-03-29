@@ -2,17 +2,18 @@ import Link from 'next/link'
 
 export default function HelpPage() {
   return (
-    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
-      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '48px 24px' }}>
+    <main className="min-h-screen" style={{ background: '#FAFAF9' }}>
+      <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px' }}>
         <div
           className="flex items-center justify-between"
-          style={{ marginBottom: '36px' }}
+          style={{ marginBottom: '36px', paddingTop: '48px' }}
         >
           <h1
             style={{
               fontFamily: 'var(--font-playfair), "Playfair Display", serif',
               fontSize: '24px',
               fontWeight: 700,
+              color: '#1C1917',
             }}
           >
             How to Use Daily Ops
@@ -43,6 +44,7 @@ export default function HelpPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
+              color: '#1C1917',
             }}
           >
             <span style={{ color: '#D97706' }}>&#10003;</span> Free Plan
@@ -50,7 +52,7 @@ export default function HelpPage() {
 
           <div
             style={{
-              background: 'rgba(255,255,255,0.03)',
+              background: '#FFFFFF', border: '1px solid #E8E3DC',
               border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: '8px',
               padding: '24px',
@@ -62,7 +64,7 @@ export default function HelpPage() {
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                 fontSize: '13px',
                 fontWeight: 500,
-                color: '#A89880',
+                color: '#78716C',
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase' as const,
                 marginBottom: '16px',
@@ -87,7 +89,7 @@ export default function HelpPage() {
                     fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                     fontSize: '14px',
                     fontWeight: 300,
-                    color: '#A89880',
+                    color: '#78716C',
                     marginBottom: '10px',
                     lineHeight: 1.5,
                   }}
@@ -101,7 +103,7 @@ export default function HelpPage() {
 
           <div
             style={{
-              background: 'rgba(255,255,255,0.02)',
+              background: '#FFFFFF', border: '1px solid #E8E3DC',
               border: '1px solid rgba(255,255,255,0.04)',
               borderRadius: '8px',
               padding: '24px',
@@ -229,7 +231,7 @@ export default function HelpPage() {
           </h2>
           <div
             style={{
-              background: 'rgba(255,255,255,0.03)',
+              background: '#FFFFFF', border: '1px solid #E8E3DC',
               border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: '8px',
               padding: '24px',
@@ -251,14 +253,14 @@ export default function HelpPage() {
                     fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                     fontSize: '14px',
                     fontWeight: 300,
-                    color: '#A89880',
+                    color: '#78716C',
                     marginBottom: '12px',
                     lineHeight: 1.5,
                   }}
                 >
                   <span style={{ color: '#D97706', marginTop: '2px', flexShrink: 0 }}>&rarr;</span>
                   <span>
-                    <strong style={{ color: '#F5F0E8', fontWeight: 500 }}>{tip.prefix}</strong>
+                    <strong style={{ color: '#1C1917', fontWeight: 500 }}>{tip.prefix}</strong>
                     {tip.suffix}
                   </span>
                 </li>

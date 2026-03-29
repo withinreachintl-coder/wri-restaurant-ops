@@ -104,7 +104,7 @@ export default function BillingPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center" style={{ background: '#1C1917' }}>
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
         <div
           style={{
             fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
@@ -120,8 +120,8 @@ export default function BillingPage() {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
-      <div className="max-w-4xl mx-auto" style={{ padding: '48px 24px' }}>
+    <main className="min-h-screen" style={{ background: '#FAFAF9', color: '#1C1917' }}>
+      <div className="max-w-3xl mx-auto" style={{ padding: '48px 24px' }}>
         {/* Header */}
         <div className="flex items-center justify-between" style={{ marginBottom: '32px' }}>
           <h1
@@ -180,7 +180,7 @@ export default function BillingPage() {
         {showCanceled && (
           <div
             style={{
-              background: 'rgba(255,255,255,0.03)',
+              background: '#FFFFFF', border: '1px solid #E8E3DC',
               border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: '8px',
               padding: '16px 20px',
@@ -190,13 +190,13 @@ export default function BillingPage() {
               gap: '10px',
             }}
           >
-            <span style={{ color: '#A89880' }}>&#9888;</span>
+            <span style={{ color: '#78716C' }}>&#9888;</span>
             <span
               style={{
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                 fontSize: '14px',
                 fontWeight: 500,
-                color: '#A89880',
+                color: '#78716C',
               }}
             >
               Checkout was canceled. No charges were made.
@@ -207,7 +207,7 @@ export default function BillingPage() {
         {/* Current Plan */}
         <div
           style={{
-            background: 'rgba(255,255,255,0.03)',
+            background: '#FFFFFF', border: '1px solid #E8E3DC',
             border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '8px',
             padding: '28px',
@@ -245,7 +245,7 @@ export default function BillingPage() {
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                   fontSize: '14px',
                   fontWeight: 300,
-                  color: '#A89880',
+                  color: '#78716C',
                 }}
               >
                 {subscriptionStatus === 'pro'
@@ -274,7 +274,7 @@ export default function BillingPage() {
           {subscriptionStatus === 'pro' && nextBillingDate && (
             <div
               style={{
-                background: 'rgba(255,255,255,0.02)',
+                background: '#FFFFFF', border: '1px solid #E8E3DC',
                 border: '1px solid rgba(255,255,255,0.04)',
                 borderRadius: '4px',
                 padding: '16px',
@@ -284,7 +284,7 @@ export default function BillingPage() {
               <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '12px', fontWeight: 400, color: '#6B5B4E', marginBottom: '4px' }}>
                 Next billing date
               </div>
-              <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '16px', fontWeight: 500, color: '#F5F0E8' }}>
+              <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '16px', fontWeight: 500, color: '#1C1917' }}>
                 {nextBillingDate}
               </div>
             </div>
@@ -320,7 +320,7 @@ export default function BillingPage() {
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                 fontSize: '13px',
                 fontWeight: 500,
-                color: '#A89880',
+                color: '#78716C',
                 background: 'transparent',
                 border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: '4px',
@@ -336,7 +336,7 @@ export default function BillingPage() {
         {/* Feature Comparison */}
         <div
           style={{
-            background: 'rgba(255,255,255,0.03)',
+            background: '#FFFFFF', border: '1px solid #E8E3DC',
             border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '8px',
             padding: '28px',
@@ -386,7 +386,7 @@ export default function BillingPage() {
                       fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                       fontSize: '14px',
                       fontWeight: 300,
-                      color: '#A89880',
+                      color: '#78716C',
                       marginBottom: '12px',
                     }}
                   >
