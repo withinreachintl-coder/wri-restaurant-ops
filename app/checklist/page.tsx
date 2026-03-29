@@ -351,13 +351,13 @@ export default function ChecklistPage() {
   const progressPercent = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
 
   return (
-    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8', paddingBottom: '100px' }}>
+    <main className="min-h-screen" style={{ background: '#FAFAF9', color: '#1C1917', paddingBottom: '100px' }}>
       {/* Header */}
       <div
         className="sticky top-0 z-10"
         style={{ background: '#1C1917', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
       >
-        <div className="max-w-3xl mx-auto px-4 py-4">
+        <div style={{ maxWidth: '768px', margin: '0 auto', padding: '16px 24px' }}>
           <div className="flex items-center justify-between" style={{ marginBottom: '16px' }}>
             <h1
               style={{
@@ -480,11 +480,11 @@ export default function ChecklistPage() {
 
       {/* Name Prompt */}
       {!editMode && showNamePrompt && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div style={{ maxWidth: '768px', margin: '0 auto', padding: '24px 24px 0' }}>
           <div
             style={{
-              background: 'rgba(217,119,6,0.06)',
-              border: '1px solid rgba(217,119,6,0.15)',
+              background: '#FFFFFF',
+              border: '1px solid #E8E3DC',
               borderRadius: '8px',
               padding: '20px',
             }}
@@ -495,7 +495,7 @@ export default function ChecklistPage() {
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                 fontSize: '13px',
                 fontWeight: 500,
-                color: '#A89880',
+                color: '#78716C',
                 marginBottom: '10px',
               }}
             >
@@ -512,9 +512,9 @@ export default function ChecklistPage() {
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                   fontSize: '14px',
                   fontWeight: 400,
-                  color: '#F5F0E8',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#1C1917',
+                  background: '#FAFAF9',
+                  border: '1px solid #E8E3DC',
                   borderRadius: '4px',
                   padding: '10px 14px',
                   outline: 'none',
@@ -529,7 +529,7 @@ export default function ChecklistPage() {
                   fontSize: '14px',
                   fontWeight: 500,
                   color: '#1C1917',
-                  background: !staffName ? '#6B5B4E' : '#D97706',
+                  background: '#D97706',
                   border: 'none',
                   borderRadius: '4px',
                   padding: '10px 24px',
@@ -545,11 +545,11 @@ export default function ChecklistPage() {
 
       {/* Add Item (edit mode) */}
       {editMode && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div style={{ maxWidth: '768px', margin: '0 auto', padding: '24px 24px 0' }}>
           <div
             style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#FFFFFF',
+              border: '1px solid #E8E3DC',
               borderRadius: '8px',
               padding: '20px',
             }}
@@ -559,7 +559,7 @@ export default function ChecklistPage() {
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                 fontSize: '14px',
                 fontWeight: 500,
-                color: '#F5F0E8',
+                color: '#1C1917',
                 marginBottom: '14px',
               }}
             >
@@ -581,9 +581,9 @@ export default function ChecklistPage() {
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                   fontSize: '14px',
                   fontWeight: 400,
-                  color: '#F5F0E8',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.12)',
+                  color: '#1C1917',
+                  background: '#FAFAF9',
+                  border: '1px solid #E8E3DC',
                   borderRadius: '4px',
                   padding: '10px 14px',
                   outline: 'none',
@@ -599,7 +599,7 @@ export default function ChecklistPage() {
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                   fontSize: '13px',
                   fontWeight: 400,
-                  color: '#A89880',
+                  color: '#78716C',
                   marginBottom: '14px',
                   cursor: 'pointer',
                 }}
@@ -623,7 +623,7 @@ export default function ChecklistPage() {
                     fontSize: '13px',
                     fontWeight: 500,
                     color: '#1C1917',
-                    background: (!mounted || !checklistId) ? '#6B5B4E' : '#D97706',
+                    background: '#D97706',
                     border: 'none',
                     borderRadius: '4px',
                     padding: '10px 20px',
@@ -642,9 +642,9 @@ export default function ChecklistPage() {
                     fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                     fontSize: '13px',
                     fontWeight: 500,
-                    color: '#A89880',
+                    color: '#78716C',
                     background: 'transparent',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    border: '1px solid #E8E3DC',
                     borderRadius: '4px',
                     padding: '10px 20px',
                     cursor: 'pointer',
@@ -659,7 +659,7 @@ export default function ChecklistPage() {
       )}
 
       {/* Task List */}
-      <div className="max-w-3xl mx-auto px-4 py-6" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ maxWidth: '768px', margin: '0 auto', padding: '24px 24px 0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {loading ? (
           <div
             style={{
@@ -691,10 +691,10 @@ export default function ChecklistPage() {
             <div
               key={task.id}
               style={{
-                background: task.completed ? 'rgba(217,119,6,0.06)' : 'rgba(255,255,255,0.03)',
+                background: task.completed ? '#FEF9F0' : '#FFFFFF',
                 border: task.completed
-                  ? '1px solid rgba(217,119,6,0.2)'
-                  : '1px solid rgba(255,255,255,0.06)',
+                  ? '1px solid rgba(217,119,6,0.25)'
+                  : '1px solid #E8E3DC',
                 borderLeft: task.completed ? '3px solid #D97706' : '3px solid transparent',
                 borderRadius: '8px',
                 padding: '16px',
@@ -710,8 +710,8 @@ export default function ChecklistPage() {
                       width: '22px',
                       height: '22px',
                       borderRadius: '4px',
-                      border: task.completed ? 'none' : '2px solid rgba(255,255,255,0.2)',
-                      background: task.completed ? '#D97706' : 'transparent',
+                      border: task.completed ? 'none' : '1.5px solid #D4C5B0',
+                      background: task.completed ? '#D97706' : '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -720,7 +720,7 @@ export default function ChecklistPage() {
                     }}
                   >
                     {task.completed && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1C1917" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 13l4 4L19 7" />
                       </svg>
                     )}
@@ -733,7 +733,7 @@ export default function ChecklistPage() {
                       fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                       fontSize: '14px',
                       fontWeight: task.completed ? 300 : 400,
-                      color: task.completed ? '#6B5B4E' : '#F5F0E8',
+                      color: task.completed ? '#78716C' : '#1C1917',
                       textDecoration: task.completed ? 'line-through' : 'none',
                     }}
                   >
@@ -816,7 +816,7 @@ export default function ChecklistPage() {
             padding: '16px',
           }}
         >
-          <div className="max-w-3xl mx-auto">
+          <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px' }}>
             <Link
               href="/dashboard"
               className="hover:opacity-90 transition-opacity"

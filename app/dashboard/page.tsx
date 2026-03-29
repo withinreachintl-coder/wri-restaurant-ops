@@ -54,10 +54,10 @@ export default function DashboardPage() {
   })
 
   return (
-    <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
+    <main className="min-h-screen" style={{ background: '#FAFAF9', color: '#1C1917' }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="max-w-5xl mx-auto px-6 py-6">
+      <div style={{ background: '#1C1917', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: '768px', margin: '0 auto', padding: '24px 24px' }}>
           <div className="flex items-center justify-between">
             <div>
               <h1
@@ -65,6 +65,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-playfair), "Playfair Display", serif',
                   fontSize: '28px',
                   fontWeight: 700,
+                  color: '#F5F0E8',
                   marginBottom: '4px',
                 }}
               >
@@ -101,7 +102,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-8" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '32px', paddingTop: '32px' }}>
         {/* Live Status */}
         <section>
           <h2
@@ -119,8 +120,8 @@ export default function DashboardPage() {
           </h2>
           <div
             style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: '#FFFFFF',
+              border: '1px solid #E8E3DC',
               borderLeft: '3px solid #D97706',
               borderRadius: '8px',
               padding: '28px',
@@ -134,6 +135,7 @@ export default function DashboardPage() {
                       fontFamily: 'var(--font-playfair), "Playfair Display", serif',
                       fontSize: '22px',
                       fontWeight: 500,
+                      color: '#1C1917',
                       textTransform: 'capitalize' as const,
                     }}
                   >
@@ -144,8 +146,8 @@ export default function DashboardPage() {
                       fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                       fontSize: '11px',
                       fontWeight: 500,
-                      color: '#D97706',
-                      background: 'rgba(217,119,6,0.12)',
+                      color: '#1C1917',
+                      background: '#D97706',
                       padding: '4px 10px',
                       borderRadius: '4px',
                       letterSpacing: '0.02em',
@@ -159,7 +161,7 @@ export default function DashboardPage() {
                     fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                     fontSize: '13px',
                     fontWeight: 300,
-                    color: '#A89880',
+                    color: '#78716C',
                   }}
                 >
                   Started by {currentProgress.inProgressBy} at {currentProgress.startedAt}
@@ -192,7 +194,7 @@ export default function DashboardPage() {
             <div
               style={{
                 height: '6px',
-                background: 'rgba(255,255,255,0.06)',
+                background: '#E8E3DC',
                 borderRadius: '3px',
                 overflow: 'hidden',
               }}
@@ -250,8 +252,8 @@ export default function DashboardPage() {
               <div
                 key={i}
                 style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: '#FFFFFF',
+                  border: '1px solid #E8E3DC',
                   borderRadius: '8px',
                   padding: '24px',
                 }}
@@ -274,7 +276,7 @@ export default function DashboardPage() {
                     fontFamily: 'var(--font-playfair), "Playfair Display", serif',
                     fontSize: '32px',
                     fontWeight: 700,
-                    color: '#F5F0E8',
+                    color: '#1C1917',
                     marginBottom: '4px',
                   }}
                 >
@@ -312,8 +314,8 @@ export default function DashboardPage() {
           </h2>
           <div
             style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: '#FFFFFF',
+              border: '1px solid #E8E3DC',
               borderRadius: '8px',
               overflow: 'hidden',
             }}
@@ -321,7 +323,7 @@ export default function DashboardPage() {
             <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <tr style={{ borderBottom: '1px solid #E8E3DC' }}>
                   {['Date', 'Type', 'Completed By', 'Progress', 'Time', ''].map((h, i) => (
                     <th
                       key={i}
@@ -345,9 +347,9 @@ export default function DashboardPage() {
                 {MOCK_HISTORY.map((item, idx) => (
                   <tr
                     key={idx}
-                    style={{ borderBottom: idx < MOCK_HISTORY.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
+                    style={{ borderBottom: idx < MOCK_HISTORY.length - 1 ? '1px solid #E8E3DC' : 'none' }}
                   >
-                    <td style={{ padding: '14px 20px', fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 400, color: '#F5F0E8' }}>
+                    <td style={{ padding: '14px 20px', fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 400, color: '#1C1917' }}>
                       {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </td>
                     <td style={{ padding: '14px 20px' }}>
@@ -366,12 +368,12 @@ export default function DashboardPage() {
                         {item.type}
                       </span>
                     </td>
-                    <td style={{ padding: '14px 20px', fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 400, color: '#F5F0E8' }}>
+                    <td style={{ padding: '14px 20px', fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 400, color: '#1C1917' }}>
                       {item.completedBy}
                     </td>
                     <td style={{ padding: '14px 20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', width: '80px' }}>
+                        <div style={{ flex: 1, height: '4px', background: '#E8E3DC', borderRadius: '2px', width: '80px' }}>
                           <div
                             style={{
                               height: '100%',
@@ -417,8 +419,8 @@ export default function DashboardPage() {
         <section>
           <div
             style={{
-              background: 'rgba(217,119,6,0.06)',
-              border: '1px solid rgba(217,119,6,0.15)',
+              background: '#FEF9F0',
+              border: '1px solid rgba(217,119,6,0.2)',
               borderRadius: '8px',
               padding: '24px',
               display: 'flex',
@@ -432,7 +434,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: '#F5F0E8',
+                  color: '#1C1917',
                   marginBottom: '4px',
                 }}
               >
@@ -443,7 +445,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                   fontSize: '13px',
                   fontWeight: 300,
-                  color: '#A89880',
+                  color: '#78716C',
                   lineHeight: 1.6,
                 }}
               >
