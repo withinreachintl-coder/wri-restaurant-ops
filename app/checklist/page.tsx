@@ -155,6 +155,7 @@ export default function ChecklistPage() {
       if (existingChecklists && existingChecklists.length > 0) {
         currentChecklistId = existingChecklists[0].id
         setChecklistId(currentChecklistId)
+        console.log('✅ Loaded existing checklist:', currentChecklistId)
       } else {
         const { data: newChecklist, error: createError } = await supabase
           .from('checklists')
@@ -175,8 +176,10 @@ export default function ChecklistPage() {
 
         currentChecklistId = newChecklist.id
         setChecklistId(currentChecklistId)
+        console.log('✅ Created new checklist:', currentChecklistId)
       }
 
+      console.log('📋 Final checklistId set to:', currentChecklistId)
       await loadTasks(currentChecklistId)
     } catch (err) {
       console.error('Failed to load checklist:', err)
@@ -612,7 +615,7 @@ export default function ChecklistPage() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={handleAddItem}
-                  disabled={!mounted || !checklistId}
+                  disabled={!checklistId || loading}
                   className="hover:opacity-90 transition-opacity"
                   style={{
                     flex: 1,
