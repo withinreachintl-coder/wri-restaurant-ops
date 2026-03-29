@@ -52,7 +52,7 @@ export default function HelpPage() {
 
           <div
             style={{
-              background: '#FFFFFF', border: '1px solid #E8E3DC',
+              background: '#FFFFFF',
               border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: '8px',
               padding: '24px',
@@ -103,7 +103,7 @@ export default function HelpPage() {
 
           <div
             style={{
-              background: '#FFFFFF', border: '1px solid #E8E3DC',
+              background: '#FFFFFF',
               border: '1px solid rgba(255,255,255,0.04)',
               borderRadius: '8px',
               padding: '24px',
@@ -231,7 +231,7 @@ export default function HelpPage() {
           </h2>
           <div
             style={{
-              background: '#FFFFFF', border: '1px solid #E8E3DC',
+              background: '#FFFFFF',
               border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: '8px',
               padding: '24px',
