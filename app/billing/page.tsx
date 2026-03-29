@@ -207,7 +207,7 @@ export default function BillingPage() {
         {/* Current Plan */}
         <div
           style={{
-            background: '#FFFFFF', border: '1px solid #E8E3DC',
+            background: '#FFFFFF',
             border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '8px',
             padding: '28px',
@@ -274,7 +274,7 @@ export default function BillingPage() {
           {subscriptionStatus === 'pro' && nextBillingDate && (
             <div
               style={{
-                background: '#FFFFFF', border: '1px solid #E8E3DC',
+                background: '#FFFFFF',
                 border: '1px solid rgba(255,255,255,0.04)',
                 borderRadius: '4px',
                 padding: '16px',
@@ -336,7 +336,7 @@ export default function BillingPage() {
         {/* Feature Comparison */}
         <div
           style={{
-            background: '#FFFFFF', border: '1px solid #E8E3DC',
+            background: '#FFFFFF',
             border: '1px solid rgba(255,255,255,0.06)',
             borderRadius: '8px',
             padding: '28px',
