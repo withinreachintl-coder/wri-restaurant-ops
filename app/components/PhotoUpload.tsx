@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { supabase } from '@/lib/supabase'
 
 type PhotoUploadProps = {
   taskId: string
@@ -11,26 +12,59 @@ type PhotoUploadProps = {
 export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }: PhotoUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(currentPhotoUrl || null)
+  const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Show preview immediately
     const reader = new FileReader()
     reader.onloadend = () => {
       setPreview(reader.result as string)
     }
     reader.readAsDataURL(file)
 
-    // TODO: Upload to actual storage (S3, Cloudflare R2, etc.)
+    // Upload to Supabase Storage
     setUploading(true)
+    setError(null)
 
-    setTimeout(() => {
-      const fakeUrl = `https://storage.wireach.tools/photos/${taskId}-${Date.now()}.jpg`
-      onPhotoUploaded(taskId, fakeUrl)
+    try {
+      const fileName = `${taskId}-${Date.now()}.jpg`
+      const { data, error: uploadError } = await supabase.storage
+        .from('photos')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false,
+        })
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError)
+        setError('Failed to upload photo. Please try again.')
+        setUploading(false)
+        return
+      }
+
+      // Get public URL
+      const { data: publicData } = supabase.storage
+        .from('photos')
+        .getPublicUrl(fileName)
+
+      const publicUrl = publicData?.publicUrl
+      if (!publicUrl) {
+        setError('Failed to get photo URL. Please try again.')
+        setUploading(false)
+        return
+      }
+
+      onPhotoUploaded(taskId, publicUrl)
       setUploading(false)
-    }, 1000)
+    } catch (err) {
+      console.error('Upload exception:', err)
+      setError('An error occurred while uploading. Please try again.')
+      setUploading(false)
+    }
   }
 
   const handleCapture = () => {
@@ -49,6 +83,33 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
         onChange={handleFileChange}
         className="hidden"
       />
+
+      {error && (
+        <div
+          style={{
+            background: 'rgba(220, 38, 38, 0.1)',
+            border: '1px solid rgba(220, 38, 38, 0.3)',
+            borderRadius: '4px',
+            padding: '12px',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span style={{ color: '#DC2626' }}>⚠</span>
+          <span
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '12px',
+              fontWeight: 400,
+              color: '#DC2626',
+            }}
+          >
+            {error}
+          </span>
+        </div>
+      )}
 
       {preview ? (
         <div>
@@ -71,6 +132,7 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
             <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
               <button
                 onClick={handleCapture}
+                disabled={uploading}
                 className="hover:opacity-80 transition-opacity"
                 style={{
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
@@ -81,27 +143,30 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
                   border: 'none',
                   borderRadius: '4px',
                   padding: '6px 12px',
-                  cursor: 'pointer',
+                  cursor: uploading ? 'not-allowed' : 'pointer',
+                  opacity: uploading ? 0.5 : 1,
                 }}
               >
-                Retake
+                {uploading ? 'Uploading...' : 'Retake'}
               </button>
             </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
-              fontSize: '12px',
-              fontWeight: 400,
-              color: '#D97706',
-            }}
-          >
-            <span>&#10003;</span>
-            <span>Photo attached</span>
-          </div>
+          {!uploading && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontSize: '12px',
+                fontWeight: 400,
+                color: '#D97706',
+              }}
+            >
+              <span>&#10003;</span>
+              <span>Photo attached</span>
+            </div>
+          )}
         </div>
       ) : (
         <button
