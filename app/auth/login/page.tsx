@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signInWithMagicLink } from '@/lib/supabase'
+import { signInWithMagicLink } from '../../../lib/supabase'
 import Link from 'next/link'
 
 export default function LoginPage() {

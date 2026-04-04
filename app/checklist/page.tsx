@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { supabase, ChecklistItem } from '@/lib/supabase'
+import { supabase, ChecklistItem } from '../../lib/supabase'
 import PhotoUpload from '../components/PhotoUpload'
 
 type DisplayTask = {
