@@ -11,6 +11,7 @@ All text on cream backgrounds must be:
 - ✅ **Darker** - anything darker than #1C1917 is acceptable
 
 **Forbidden colors on cream backgrounds:**
+- ❌ #F5F0E8 (cream/white - nearly invisible on cream bg)
 - ❌ #A89880 (light taupe)
 - ❌ #78716C (muted gray)
 - ❌ #6B5B4E (medium taupe)
