@@ -65,7 +65,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-playfair), "Playfair Display", serif',
                   fontSize: '28px',
                   fontWeight: 700,
-                  color: '#F5F0E8',
+                  color: '#1C1917',
                   marginBottom: '4px',
                 }}
               >
