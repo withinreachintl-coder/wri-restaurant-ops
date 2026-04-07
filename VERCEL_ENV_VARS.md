@@ -23,6 +23,21 @@ sb_publishable_cylgtsKx89xJo52ONQhmgg_HAip7DxU
 your_resend_api_key_here
 ```
 
+### Audit Schedule Automation (Required for auto-run creation)
+
+**SUPABASE_SERVICE_ROLE_KEY**
+```
+get from Supabase Dashboard → Settings → API → service_role key (keep secret — server-only)
+```
+
+**CRON_SECRET**
+```
+generate a random 32-char string, e.g.: openssl rand -hex 16
+```
+> Used by `vercel.json` cron job (`/api/audit-schedule-trigger`) to auto-create pending audit runs
+> each hour based on configured schedules. The cron fires hourly; runs are only created when the
+> schedule's `time_of_day` hour matches and the cadence/day conditions are met.
+
 ### Stripe Configuration (Required for billing)
 
 **STRIPE_SECRET_KEY**

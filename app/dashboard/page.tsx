@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getAllRecentRuns, getOpenExceptions } from '@/lib/audits'
+import { getAllRecentRuns, getOpenExceptions, getPendingScheduledRuns } from '@/lib/audits'
 import { getRMSummary, type RMSummary } from '@/lib/maintenance'
 
 type ChecklistStatus = {
@@ -54,17 +54,18 @@ export default function DashboardPage() {
     inProgressBy: 'Mike T.',
     startedAt: '9:05 AM',
   })
-  const [auditSummary, setAuditSummary] = useState<{ lastScore: number | null; openExceptions: number; recentFormName: string } | null>(null)
+  const [auditSummary, setAuditSummary] = useState<{ lastScore: number | null; openExceptions: number; recentFormName: string; pendingRuns: number } | null>(null)
   const [rmSummary, setRmSummary] = useState<RMSummary | null>(null)
 
   useEffect(() => {
-    Promise.all([getAllRecentRuns(1), getOpenExceptions()])
-      .then(([runs, exceptions]) => {
+    Promise.all([getAllRecentRuns(1), getOpenExceptions(), getPendingScheduledRuns()])
+      .then(([runs, exceptions, pending]) => {
         const lastRun = runs[0]
         setAuditSummary({
           lastScore: lastRun?.score ?? null,
           openExceptions: exceptions.length,
           recentFormName: lastRun?.audit_forms?.name ?? 'LP Audit',
+          pendingRuns: pending.length,
         })
       })
       .catch(() => {/* silently skip — user may not have audits yet */})
@@ -478,6 +479,11 @@ export default function DashboardPage() {
                     {auditSummary.lastScore !== null
                       ? `Last audit: ${auditSummary.lastScore}% — ${auditSummary.recentFormName}`
                       : 'No audits run yet'}
+                    {auditSummary.pendingRuns > 0 && (
+                      <span style={{ marginLeft: '8px', color: '#D97706', fontWeight: 500 }}>
+                        · {auditSummary.pendingRuns} scheduled audit{auditSummary.pendingRuns !== 1 ? 's' : ''} due today
+                      </span>
+                    )}
                     {auditSummary.openExceptions > 0 && (
                       <span style={{ marginLeft: '8px', color: '#EF4444', fontWeight: 500 }}>
                         · {auditSummary.openExceptions} open exception{auditSummary.openExceptions !== 1 ? 's' : ''}

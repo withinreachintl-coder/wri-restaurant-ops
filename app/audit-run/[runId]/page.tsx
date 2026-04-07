@@ -63,6 +63,16 @@ export default function AuditRunPage() {
 
       if (runData.status === 'completed') {
         setSubmitted(true)
+      } else if (runData.status === 'pending') {
+        // Transition scheduled run to in_progress when opened
+        await supabase
+          .from('audit_runs')
+          .update({
+            status: 'in_progress',
+            started_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', runId)
       }
 
       const formData = await getAuditFormWithItems(runData.form_id)

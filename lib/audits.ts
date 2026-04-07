@@ -318,6 +318,20 @@ export async function createAuditRun(
   return data as AuditRun
 }
 
+// Returns pending scheduled runs for today (created by cron, not yet started by staff)
+export async function getPendingScheduledRuns(): Promise<(AuditRun & { audit_forms: Pick<AuditForm, 'name' | 'category'> })[]> {
+  const today = new Date().toISOString().split('T')[0]
+  const { data, error } = await supabase
+    .from('audit_runs')
+    .select('*, audit_forms(name, category)')
+    .eq('status', 'pending')
+    .eq('audit_date', today)
+    .order('created_at', { ascending: true })
+
+  if (error) throw error
+  return (data ?? []) as (AuditRun & { audit_forms: Pick<AuditForm, 'name' | 'category'> })[]
+}
+
 export async function getAuditRun(runId: string): Promise<AuditRun | null> {
   const { data, error } = await supabase
     .from('audit_runs')
