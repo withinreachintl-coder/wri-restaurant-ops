@@ -395,9 +395,24 @@ export async function getRMSummary(): Promise<RMSummary> {
 // Photo Upload
 // ============================================
 
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'])
+const MAX_PHOTO_BYTES = 10 * 1024 * 1024 // 10 MB hard limit; compress client-side to <500 KB first
+
 export async function uploadTicketPhoto(file: File): Promise<string> {
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    throw new Error('Only JPEG, PNG, WebP, and HEIC images are allowed')
+  }
+  if (file.size > MAX_PHOTO_BYTES) {
+    throw new Error('Photo must be under 10 MB. Please compress before uploading.')
+  }
+
   const { data: { user } } = await supabase.auth.getUser()
-  const ext = file.name.split('.').pop() ?? 'jpg'
+  // Use a safe extension derived from MIME type, never from user-supplied filename
+  const extMap: Record<string, string> = {
+    'image/jpeg': 'jpg', 'image/jpg': 'jpg',
+    'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic',
+  }
+  const ext = extMap[file.type] ?? 'jpg'
   const path = `maintenance/${user?.id ?? 'anon'}/${Date.now()}.${ext}`
 
   const { error } = await supabase.storage

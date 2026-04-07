@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Playfair_Display, DM_Sans } from 'next/font/google'
 import './globals.css'
+import BottomNav from './components/BottomNav'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -43,7 +44,10 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body className={`${playfair.variable} ${dmSans.variable}`}>{children}</body>
+      <body className={`${playfair.variable} ${dmSans.variable}`}>
+        {children}
+        <BottomNav />
+      </body>
     </html>
   )
 }
