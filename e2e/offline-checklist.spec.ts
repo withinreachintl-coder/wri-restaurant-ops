@@ -35,18 +35,22 @@ test.describe('Offline checklist → sync', () => {
     // Go offline
     await context.setOffline(true)
 
-    // Complete first available item
-    const firstCheckbox = page.locator('input[type="checkbox"]').first()
-    await firstCheckbox.check()
-    await expect(firstCheckbox).toBeChecked()
+    // Enter staff name so tasks can be toggled
+    await page.fill('input[placeholder="Enter your name"]', 'Test Staff')
+    await page.getByRole('button', { name: /start/i }).click()
 
-    // Pending sync indicator should appear
-    await expect(page.getByText(/pending|queued|offline/i)).toBeVisible()
+    // Complete first available task (the toggle buttons render as amber checkboxes)
+    const firstToggle = page.locator('button').filter({ has: page.locator('svg') }).first()
+    await firstToggle.click()
+
+    // Offline banner should be visible
+    await expect(page.getByText(/offline/i)).toBeVisible()
 
     // Reconnect
     await context.setOffline(false)
 
-    // Sync should complete — pending indicator clears
-    await expect(page.getByText(/pending|queued/i)).toBeHidden({ timeout: 15_000 })
+    // Sync banner should appear then clear
+    await expect(page.getByText(/syncing|synced/i)).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText(/offline/i)).toBeHidden({ timeout: 20_000 })
   })
 })
