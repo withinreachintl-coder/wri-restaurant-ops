@@ -219,6 +219,46 @@ These pages **keep the dark aesthetic**:
 | `organizations` | Org records |
 | `users` | User profiles |
 | `checklist_completions` | Completion tracking |
+| `audit_forms` | LP audit form definitions |
+| `audit_items` | Items within an LP audit form |
+| `audit_schedules` | Recurring LP audit schedules |
+| `audit_runs` | Individual LP audit run instances |
+| `audit_responses` | Per-item responses for an audit run |
+| `audit_exceptions` | Auto-flagged items outside threshold |
+| `r_m_tickets` | R&M repair/maintenance request tickets |
+| `r_m_categories` | Equipment categories for R&M tickets |
+| `r_m_vendors` | Vendor contact book |
+| `feature_flags` | Global feature flags (rollout_pct canary control) |
+| `feature_flag_overrides` | Per-org force-enable/disable overrides |
+
+---
+
+## Phase 3 Status (as of April 2026)
+
+Phase 3 features are **live and canary-gating to 10% of accounts** via `feature_flags` table in Supabase:
+- `phase3` flag: `enabled=true`, `rollout_pct=10`
+- To promote to 100%: run `UPDATE feature_flags SET rollout_pct=100 WHERE name='phase3';` after confirming error rates
+- To force-enable for a specific org: insert into `feature_flag_overrides(flag_name, org_id, enabled)`
+
+### Phase 3 Feature Areas
+| Feature | Route | Status |
+|---|---|---|
+| PWA Offline Checklists | `/checklist` | Live (Phase 3 Week 1) |
+| LP Audit Forms | `/audit-forms` | Live, canary-gated |
+| LP Audit Exceptions | `/audit-exceptions` | Live, canary-gated |
+| LP Audit Trends | `/audit-trends` | Live, canary-gated |
+| R&M Ticket Tracking | `/maintenance` | Live, canary-gated |
+| R&M Submit | `/maintenance/submit` | Live, canary-gated |
+
+### File Upload Limits (enforced)
+- R&M ticket photos: images only (JPEG/PNG/WebP/HEIC), max **5 MB** per file
+- Checklist photos: images only, no hard size limit client-side (compress recommended)
+
+### E2E Tests
+- `e2e/offline-checklist.spec.ts` — offline + sync flow
+- `e2e/lp-audit.spec.ts` — LP audit create/submit lifecycle
+- `e2e/rm-ticket.spec.ts` — R&M ticket submit → assign → complete
+- `e2e/cross-feature.spec.ts` — cross-feature integration (offline + LP + R&M)
 
 ---
 
