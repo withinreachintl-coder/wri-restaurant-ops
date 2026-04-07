@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {
   getTickets,
   getCategories,
+  bulkUpdateTicketStatus,
   type RMTicketWithRelations,
   type RMCategory,
   type TicketStatus,
@@ -52,6 +53,8 @@ export default function MaintenancePage() {
   const [urgencyFilter, setUrgencyFilter] = useState<TicketUrgency | 'all'>('all')
   const [sortBy, setSortBy] = useState<'age' | 'priority' | 'status'>('age')
   const [staleOnly, setStaleOnly] = useState(false)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [bulkSaving, setBulkSaving] = useState(false)
 
   const loadTickets = useCallback(async () => {
     try {
@@ -94,6 +97,37 @@ export default function MaintenancePage() {
 
   const openCount = tickets.filter(t => t.status === 'open').length
   const staleCount = tickets.filter(t => t.is_stale && t.status !== 'completed' && t.status !== 'cancelled').length
+
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selected.size === sortedTickets.length) {
+      setSelected(new Set())
+    } else {
+      setSelected(new Set(sortedTickets.map(t => t.id)))
+    }
+  }
+
+  const handleBulkAction = async (newStatus: TicketStatus) => {
+    if (selected.size === 0) return
+    setBulkSaving(true)
+    try {
+      await bulkUpdateTicketStatus(Array.from(selected), newStatus)
+      setSelected(new Set())
+      setLoading(true)
+      await loadTickets()
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setBulkSaving(false)
+    }
+  }
 
   return (
     <main className="min-h-screen" style={{ background: '#FAFAF9', color: '#1C1917' }}>
@@ -241,6 +275,42 @@ export default function MaintenancePage() {
           </div>
         </div>
 
+        {/* Bulk action bar */}
+        {selected.size > 0 && (
+          <div style={{ background: '#1C1917', borderRadius: '8px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '13px', color: '#F5F0E8', flex: 1 }}>
+              {selected.size} ticket{selected.size !== 1 ? 's' : ''} selected
+            </span>
+            <button
+              onClick={() => handleBulkAction('in_progress')}
+              disabled={bulkSaving}
+              style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', fontWeight: 500, color: '#1C1917', background: '#D97706', borderRadius: '4px', padding: '8px 14px', border: 'none', cursor: 'pointer', opacity: bulkSaving ? 0.7 : 1 }}
+            >
+              Mark In Progress
+            </button>
+            <button
+              onClick={() => handleBulkAction('completed')}
+              disabled={bulkSaving}
+              style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', fontWeight: 500, color: '#FFFFFF', background: '#16A34A', borderRadius: '4px', padding: '8px 14px', border: 'none', cursor: 'pointer', opacity: bulkSaving ? 0.7 : 1 }}
+            >
+              Mark Complete
+            </button>
+            <button
+              onClick={() => handleBulkAction('cancelled')}
+              disabled={bulkSaving}
+              style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#9CA3AF', background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', padding: '8px 14px', cursor: 'pointer', opacity: bulkSaving ? 0.7 : 1 }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => setSelected(new Set())}
+              style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#78716C', background: 'none', border: 'none', cursor: 'pointer', padding: '8px' }}
+            >
+              ✕ Clear
+            </button>
+          </div>
+        )}
+
         {/* Ticket list */}
         {loading ? (
           <div style={{ fontFamily: 'var(--font-dmsans)', fontSize: '14px', color: '#6B5B4E', padding: '48px', textAlign: 'center' }}>Loading tickets...</div>
@@ -258,101 +328,132 @@ export default function MaintenancePage() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Select-all header when tickets exist */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '4px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={sortedTickets.length > 0 && selected.size === sortedTickets.length}
+                  onChange={toggleSelectAll}
+                  style={{ accentColor: '#D97706', width: '15px', height: '15px' }}
+                />
+                <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E' }}>
+                  Select all ({sortedTickets.length})
+                </span>
+              </label>
+            </div>
+
             {sortedTickets.map((ticket) => {
               const age = daysSince(ticket.created_at)
               const urgency = URGENCY_COLORS[ticket.urgency]
               const statusColor = STATUS_COLORS[ticket.status]
+              const isSelected = selected.has(ticket.id)
               return (
-                <Link
+                <div
                   key={ticket.id}
-                  href={`/maintenance/${ticket.id}`}
-                  style={{ textDecoration: 'none' }}
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}
                 >
-                  <div
-                    style={{
-                      background: '#FFFFFF',
-                      border: ticket.is_stale ? '1px solid rgba(220,38,38,0.3)' : '1px solid #E8E3DC',
-                      borderLeft: ticket.urgency === 'safety' ? '3px solid #DC2626' : ticket.urgency === 'urgent' ? '3px solid #EA580C' : '3px solid #E8E3DC',
-                      borderRadius: '8px',
-                      padding: '16px 20px',
-                      cursor: 'pointer',
-                    }}
-                    className="hover:border-amber-300 transition-colors"
-                  >
-                    <div className="flex items-start justify-between" style={{ gap: '12px' }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                          <span
-                            style={{
-                              fontFamily: 'var(--font-dmsans)',
-                              fontSize: '11px',
-                              fontWeight: 500,
-                              color: urgency.text,
-                              background: urgency.bg,
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            {URGENCY_LABELS[ticket.urgency]}
-                          </span>
-                          <span
-                            style={{
-                              fontFamily: 'var(--font-dmsans)',
-                              fontSize: '11px',
-                              fontWeight: 500,
-                              color: statusColor.text,
-                              background: statusColor.bg,
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            {STATUS_LABELS[ticket.status]}
-                          </span>
-                          {ticket.is_stale && (
-                            <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '11px', fontWeight: 500, color: '#DC2626', background: 'rgba(220,38,38,0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                              Stale
-                            </span>
-                          )}
-                          {ticket.r_m_categories && (
-                            <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '11px', color: '#6B5B4E', background: '#F5F0E8', padding: '2px 8px', borderRadius: '4px' }}>
-                              {ticket.r_m_categories.name}
-                            </span>
-                          )}
-                        </div>
-                        <div style={{ fontFamily: 'var(--font-dmsans)', fontSize: '15px', fontWeight: 500, color: '#1C1917', marginBottom: '4px' }}>
-                          {ticket.title}
-                        </div>
-                        {ticket.description && (
-                          <div style={{ fontFamily: 'var(--font-dmsans)', fontSize: '13px', color: '#78716C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '480px' }}>
-                            {ticket.description}
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', gap: '16px', marginTop: '8px', flexWrap: 'wrap' }}>
-                          <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: age > 14 ? '#DC2626' : '#6B5B4E' }}>
-                            {age === 0 ? 'Today' : `${age}d ago`}
-                          </span>
-                          {ticket.location_name && (
-                            <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E' }}>
-                              {ticket.location_name}
-                            </span>
-                          )}
-                          {ticket.vendor_contacts && (
-                            <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E' }}>
-                              Vendor: {ticket.vendor_contacts.name}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      {ticket.photo_url && (
-                        <img
-                          src={ticket.photo_url}
-                          alt="Ticket photo"
-                          style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #E8E3DC', flexShrink: 0 }}
-                        />
-                      )}
-                    </div>
+                  {/* Checkbox */}
+                  <div style={{ paddingTop: '18px', flexShrink: 0 }}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelect(ticket.id)}
+                      onClick={e => e.stopPropagation()}
+                      style={{ accentColor: '#D97706', width: '15px', height: '15px', cursor: 'pointer' }}
+                    />
                   </div>
-                </Link>
+
+                  <Link
+                    href={`/maintenance/${ticket.id}`}
+                    style={{ textDecoration: 'none', flex: 1, minWidth: 0 }}
+                  >
+                    <div
+                      style={{
+                        background: isSelected ? '#FFFBF0' : '#FFFFFF',
+                        border: isSelected ? '1px solid rgba(217,119,6,0.4)' : ticket.is_stale ? '1px solid rgba(220,38,38,0.3)' : '1px solid #E8E3DC',
+                        borderLeft: ticket.urgency === 'safety' ? '3px solid #DC2626' : ticket.urgency === 'urgent' ? '3px solid #EA580C' : '3px solid #E8E3DC',
+                        borderRadius: '8px',
+                        padding: '16px 20px',
+                        cursor: 'pointer',
+                      }}
+                      className="hover:border-amber-300 transition-colors"
+                    >
+                      <div className="flex items-start justify-between" style={{ gap: '12px' }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                            <span
+                              style={{
+                                fontFamily: 'var(--font-dmsans)',
+                                fontSize: '11px',
+                                fontWeight: 500,
+                                color: urgency.text,
+                                background: urgency.bg,
+                                padding: '2px 8px',
+                                borderRadius: '4px',
+                              }}
+                            >
+                              {URGENCY_LABELS[ticket.urgency]}
+                            </span>
+                            <span
+                              style={{
+                                fontFamily: 'var(--font-dmsans)',
+                                fontSize: '11px',
+                                fontWeight: 500,
+                                color: statusColor.text,
+                                background: statusColor.bg,
+                                padding: '2px 8px',
+                                borderRadius: '4px',
+                              }}
+                            >
+                              {STATUS_LABELS[ticket.status]}
+                            </span>
+                            {ticket.is_stale && (
+                              <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '11px', fontWeight: 500, color: '#DC2626', background: 'rgba(220,38,38,0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                                Stale
+                              </span>
+                            )}
+                            {ticket.r_m_categories && (
+                              <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '11px', color: '#6B5B4E', background: '#F5F0E8', padding: '2px 8px', borderRadius: '4px' }}>
+                                {ticket.r_m_categories.name}
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ fontFamily: 'var(--font-dmsans)', fontSize: '15px', fontWeight: 500, color: '#1C1917', marginBottom: '4px' }}>
+                            {ticket.title}
+                          </div>
+                          {ticket.description && (
+                            <div style={{ fontFamily: 'var(--font-dmsans)', fontSize: '13px', color: '#78716C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '480px' }}>
+                              {ticket.description}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', gap: '16px', marginTop: '8px', flexWrap: 'wrap' }}>
+                            <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: age > 14 ? '#DC2626' : '#6B5B4E' }}>
+                              {age === 0 ? 'Today' : `${age}d ago`}
+                            </span>
+                            {ticket.location_name && (
+                              <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E' }}>
+                                {ticket.location_name}
+                              </span>
+                            )}
+                            {ticket.vendor_contacts && (
+                              <span style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E' }}>
+                                Vendor: {ticket.vendor_contacts.name}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {ticket.photo_url && (
+                          <img
+                            src={ticket.photo_url}
+                            alt="Ticket photo"
+                            style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #E8E3DC', flexShrink: 0 }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </div>
               )
             })}
           </div>

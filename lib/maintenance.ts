@@ -363,6 +363,57 @@ export async function assignTicketVendor(
 }
 
 // ============================================
+// Bulk Ticket Operations
+// ============================================
+
+export async function bulkUpdateTicketStatus(
+  ticketIds: string[],
+  newStatus: TicketStatus,
+  note?: string
+): Promise<void> {
+  if (ticketIds.length === 0) return
+
+  const { data: { user } } = await supabase.auth.getUser()
+  const orgId = await getOrgId()
+
+  // Fetch current statuses for history
+  const { data: current } = await supabase
+    .from('r_m_tickets')
+    .select('id, status')
+    .in('id', ticketIds)
+
+  const updatePayload: Record<string, unknown> = {
+    status: newStatus,
+    updated_at: new Date().toISOString(),
+  }
+  if (newStatus === 'completed') {
+    updatePayload.completed_by = user?.id ?? null
+    updatePayload.completed_at = new Date().toISOString()
+  }
+
+  const { error } = await supabase
+    .from('r_m_tickets')
+    .update(updatePayload)
+    .in('id', ticketIds)
+
+  if (error) throw error
+
+  // Record history entries
+  const historyRows = (current ?? []).map((t) => ({
+    ticket_id: t.id,
+    org_id: orgId,
+    previous_status: t.status ?? null,
+    new_status: newStatus,
+    changed_by: user?.id ?? null,
+    note: note ?? `Bulk update to ${newStatus}`,
+  }))
+
+  if (historyRows.length > 0) {
+    await supabase.from('ticket_history').insert(historyRows)
+  }
+}
+
+// ============================================
 // Dashboard / Summary Stats
 // ============================================
 
