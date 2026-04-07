@@ -1,9 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { supabase, ChecklistItem } from '@/lib/supabase'
 import PhotoUpload from '../components/PhotoUpload'
+import OfflineBanner from '../components/OfflineBanner'
+import PwaInstallPrompt from '../components/PwaInstallPrompt'
+import {
+  getCachedTemplate,
+  cacheTemplate,
+  templateKey,
+  queueSubmission,
+  queuePhoto,
+  photoKey,
+  type OfflineTask,
+} from '@/lib/offline-store'
 
 type DisplayTask = {
   id: string
@@ -49,18 +60,66 @@ export default function ChecklistPage() {
   const [newItemPhotoRequired, setNewItemPhotoRequired] = useState(false)
   const [loading, setLoading] = useState(true)
   const [checklistId, setChecklistId] = useState<string | null>(null)
+  const [orgId, setOrgId] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [isOnline, setIsOnline] = useState(true)
+  const [offlineSubmissionId] = useState<string>(() =>
+    typeof crypto !== 'undefined' ? crypto.randomUUID() : `offline-${Date.now()}`
+  )
 
   useEffect(() => {
     setMounted(true)
+    setIsOnline(navigator.onLine)
+    const onOnline = () => setIsOnline(true)
+    const onOffline = () => setIsOnline(false)
+    window.addEventListener('online', onOnline)
+    window.addEventListener('offline', onOffline)
+    return () => {
+      window.removeEventListener('online', onOnline)
+      window.removeEventListener('offline', onOffline)
+    }
   }, [])
 
   useEffect(() => {
     loadOrCreateChecklist()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checklistType])
 
   const loadOrCreateChecklist = async () => {
     setLoading(true)
+
+    // ── Offline path: serve from IndexedDB cache ──────────────────────────
+    if (!navigator.onLine) {
+      // Try to find a cached org/checklist for offline rendering
+      // We scan both opening and closing keys using a stored orgId
+      const storedOrgId = typeof window !== 'undefined' ? localStorage.getItem('wri_org_id') : null
+      if (storedOrgId) {
+        const key = templateKey(storedOrgId, checklistType)
+        const cached = await getCachedTemplate(key)
+        if (cached) {
+          setChecklistId(cached.checklistId)
+          setOrgId(storedOrgId)
+          setTasks(
+            cached.tasks
+              .sort((a, b) => a.orderIndex - b.orderIndex)
+              .map((t) => ({
+                id: t.id,
+                text: t.text,
+                photoRequired: t.photoRequired,
+                completed: false,
+              }))
+          )
+          setLoading(false)
+          return
+        }
+      }
+      // No cache available — use hardcoded defaults
+      setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
+      setLoading(false)
+      return
+    }
+
+    // ── Online path ───────────────────────────────────────────────────────
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -71,7 +130,7 @@ export default function ChecklistPage() {
         return
       }
 
-      let orgId: string
+      let resolvedOrgId: string
 
       const { data: userData, error: userError } = await supabase
         .from('users')
@@ -107,7 +166,7 @@ export default function ChecklistPage() {
 
         console.log('Org created successfully:', newOrg.id)
 
-        orgId = newOrg.id
+        resolvedOrgId = newOrg.id
 
         const { error: userUpsertError } = await supabase
           .from('users')
@@ -115,7 +174,7 @@ export default function ChecklistPage() {
             id: user.id,
             email: user.email,
             name: user.email?.split('@')[0] || 'User',
-            org_id: orgId,
+            org_id: resolvedOrgId,
             role: 'admin'
           }], {
             onConflict: 'id'
@@ -133,14 +192,18 @@ export default function ChecklistPage() {
         setLoading(false)
         return
       } else {
-        orgId = userData.org_id
+        resolvedOrgId = userData.org_id
       }
+
+      // Persist orgId for offline use
+      localStorage.setItem('wri_org_id', resolvedOrgId)
+      setOrgId(resolvedOrgId)
 
       const { data: existingChecklists, error: fetchError } = await supabase
         .from('checklists')
         .select('id, org_id, type')
         .eq('type', checklistType)
-        .eq('org_id', orgId)
+        .eq('org_id', resolvedOrgId)
         .limit(1)
 
       if (fetchError) {
@@ -160,7 +223,7 @@ export default function ChecklistPage() {
         const { data: newChecklist, error: createError } = await supabase
           .from('checklists')
           .insert([{
-            org_id: orgId,
+            org_id: resolvedOrgId,
             name: `${checklistType.charAt(0).toUpperCase() + checklistType.slice(1)} Checklist`,
             type: checklistType
           }])
@@ -180,7 +243,7 @@ export default function ChecklistPage() {
       }
 
       console.log('📋 Final checklistId set to:', currentChecklistId)
-      await loadTasks(currentChecklistId)
+      await loadTasks(currentChecklistId, resolvedOrgId)
     } catch (err) {
       console.error('Failed to load checklist:', err)
       setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
@@ -188,7 +251,7 @@ export default function ChecklistPage() {
     }
   }
 
-  const loadTasks = async (currentChecklistId: string) => {
+  const loadTasks = async (currentChecklistId: string, resolvedOrgId: string) => {
     try {
       const { data, error } = await supabase
         .from('checklist_items')
@@ -207,6 +270,21 @@ export default function ChecklistPage() {
           completed: false,
         }))
         setTasks(displayTasks)
+
+        // Cache template for offline use
+        const key = templateKey(resolvedOrgId, checklistType)
+        await cacheTemplate(key, {
+          checklistId: currentChecklistId,
+          orgId: resolvedOrgId,
+          checklistType,
+          tasks: data.map((item: ChecklistItem) => ({
+            id: item.id,
+            text: item.text,
+            photoRequired: item.photo_required,
+            orderIndex: item.order_index,
+          })),
+          cachedAt: new Date().toISOString(),
+        })
       } else {
         setTasks(checklistType === 'opening' ? OPENING_TASKS : CLOSING_TASKS)
       }
@@ -251,6 +329,48 @@ export default function ChecklistPage() {
       )
     )
   }
+
+  const handlePhotoOffline = useCallback(
+    async (taskId: string, blob: Blob, mimeType: string) => {
+      const key = photoKey(offlineSubmissionId, taskId)
+      await queuePhoto(key, {
+        taskId,
+        submissionId: offlineSubmissionId,
+        blob,
+        mimeType,
+        capturedAt: new Date().toISOString(),
+      })
+      // Show a local object URL preview
+      const localUrl = URL.createObjectURL(blob)
+      setTasks(prev =>
+        prev.map(t => (t.id === taskId ? { ...t, photoUrl: localUrl } : t))
+      )
+    },
+    [offlineSubmissionId]
+  )
+
+  const handleCompleteOffline = useCallback(async () => {
+    if (!checklistId || !orgId) return
+    const offlineTasks: OfflineTask[] = tasks.map(t => ({
+      id: t.id,
+      text: t.text,
+      completed: t.completed,
+      completedBy: t.completedBy,
+      completedAt: t.completedAt,
+      photoRequired: t.photoRequired,
+      photoKey: t.photoUrl?.startsWith('blob:') ? photoKey(offlineSubmissionId, t.id) : undefined,
+    }))
+    await queueSubmission({
+      id: offlineSubmissionId,
+      checklistId,
+      orgId,
+      staffName,
+      checklistType,
+      tasks: offlineTasks,
+      clientTimestamp: new Date().toISOString(),
+      syncAttempts: 0,
+    })
+  }, [checklistId, orgId, tasks, staffName, checklistType, offlineSubmissionId])
 
   const handleAddItem = async () => {
     if (!newItemText.trim()) {
@@ -352,6 +472,8 @@ export default function ChecklistPage() {
 
   return (
     <main className="min-h-screen" style={{ background: '#FAFAF9', color: '#1C1917', paddingBottom: '100px' }}>
+      <OfflineBanner />
+      <PwaInstallPrompt />
       {/* Header */}
       <div
         className="sticky top-0 z-10"
@@ -817,26 +939,53 @@ export default function ChecklistPage() {
           }}
         >
           <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px' }}>
-            <Link
-              href="/dashboard"
-              className="hover:opacity-90 transition-opacity"
-              style={{
-                display: 'block',
-                width: '100%',
-                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
-                fontSize: '15px',
-                fontWeight: 500,
-                color: '#1C1917',
-                background: '#D97706',
-                borderRadius: '4px',
-                padding: '14px 24px',
-                textDecoration: 'none',
-                textAlign: 'center',
-                boxSizing: 'border-box',
-              }}
-            >
-              &#10003; All Done — Go to Dashboard
-            </Link>
+            {isOnline ? (
+              <Link
+                href="/dashboard"
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  color: '#1C1917',
+                  background: '#D97706',
+                  borderRadius: '4px',
+                  padding: '14px 24px',
+                  textDecoration: 'none',
+                  textAlign: 'center',
+                  boxSizing: 'border-box',
+                }}
+              >
+                &#10003; All Done — Go to Dashboard
+              </Link>
+            ) : (
+              <button
+                onClick={async () => {
+                  await handleCompleteOffline()
+                  alert('Checklist saved locally. It will sync when you\'re back online.')
+                }}
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  color: '#1C1917',
+                  background: '#D97706',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '14px 24px',
+                  textAlign: 'center',
+                  boxSizing: 'border-box',
+                  cursor: 'pointer',
+                }}
+              >
+                &#10003; All Done — Saved Offline
+              </button>
+            )}
           </div>
         </div>
       )}

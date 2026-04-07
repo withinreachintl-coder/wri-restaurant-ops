@@ -18,6 +18,19 @@ export const metadata: Metadata = {
   title: 'Daily Ops Checklist - Restaurant Operations Made Simple',
   description:
     'Browser-based app for independent restaurant managers to run opening and closing checklists with digital sign-off',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Ops Checklist',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
+}
+
+export const viewport = {
+  themeColor: '#D97706',
 }
 
 export default function RootLayout({
@@ -27,6 +40,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+      </head>
       <body className={`${playfair.variable} ${dmSans.variable}`}>{children}</body>
     </html>
   )
