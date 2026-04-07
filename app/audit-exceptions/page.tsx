@@ -24,7 +24,7 @@ export default function AuditExceptionsPage() {
   const load = useCallback(async () => {
     try {
       const data = await getOpenExceptions()
-      setExceptions(data as EnrichedException[])
+      setExceptions(data as unknown as EnrichedException[])
     } catch (e: any) {
       setError(e.message)
     } finally {
