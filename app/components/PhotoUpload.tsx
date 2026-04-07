@@ -6,10 +6,11 @@ import { supabase } from '@/lib/supabase'
 type PhotoUploadProps = {
   taskId: string
   onPhotoUploaded: (taskId: string, photoUrl: string) => void
+  onPhotoOffline?: (taskId: string, blob: Blob, mimeType: string) => Promise<void>
   currentPhotoUrl?: string
 }
 
-export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }: PhotoUploadProps) {
+export default function PhotoUpload({ taskId, onPhotoUploaded, onPhotoOffline, currentPhotoUrl }: PhotoUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(currentPhotoUrl || null)
   const [error, setError] = useState<string | null>(null)
@@ -25,6 +26,12 @@ export default function PhotoUpload({ taskId, onPhotoUploaded, currentPhotoUrl }
       setPreview(reader.result as string)
     }
     reader.readAsDataURL(file)
+
+    // ── Offline path: queue to IndexedDB ──────────────────────────────────
+    if (!navigator.onLine && onPhotoOffline) {
+      await onPhotoOffline(taskId, file, file.type || 'image/jpeg')
+      return
+    }
 
     // Upload to Supabase Storage
     setUploading(true)

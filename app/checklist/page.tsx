@@ -880,6 +880,7 @@ export default function ChecklistPage() {
                     <PhotoUpload
                       taskId={task.id}
                       onPhotoUploaded={handlePhotoUploaded}
+                      onPhotoOffline={handlePhotoOffline}
                       currentPhotoUrl={task.photoUrl}
                     />
                   )}

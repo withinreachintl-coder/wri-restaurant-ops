@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { getAllRecentRuns, getOpenExceptions, getPendingScheduledRuns } from '@/lib/audits'
+import { getRMSummary, type RMSummary } from '@/lib/maintenance'
 
 type ChecklistStatus = {
   type: 'opening' | 'closing'
@@ -52,6 +54,26 @@ export default function DashboardPage() {
     inProgressBy: 'Mike T.',
     startedAt: '9:05 AM',
   })
+  const [auditSummary, setAuditSummary] = useState<{ lastScore: number | null; openExceptions: number; recentFormName: string; pendingRuns: number } | null>(null)
+  const [rmSummary, setRmSummary] = useState<RMSummary | null>(null)
+
+  useEffect(() => {
+    Promise.all([getAllRecentRuns(1), getOpenExceptions(), getPendingScheduledRuns()])
+      .then(([runs, exceptions, pending]) => {
+        const lastRun = runs[0]
+        setAuditSummary({
+          lastScore: lastRun?.score ?? null,
+          openExceptions: exceptions.length,
+          recentFormName: lastRun?.audit_forms?.name ?? 'LP Audit',
+          pendingRuns: pending.length,
+        })
+      })
+      .catch(() => {/* silently skip — user may not have audits yet */})
+
+    getRMSummary()
+      .then(setRmSummary)
+      .catch(() => {/* silently skip — user may not have R&M tickets yet */})
+  }, [])
 
   return (
     <main className="min-h-screen" style={{ background: '#FAFAF9', color: '#1C1917' }}>
@@ -411,6 +433,183 @@ export default function DashboardPage() {
                 ))}
               </tbody>
             </table>
+            </div>
+          </div>
+        </section>
+
+        {/* LP Audit Summary */}
+        <section>
+          <h2
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#6B5B4E',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '16px',
+            }}
+          >
+            Loss Prevention
+          </h2>
+          <div
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E8E3DC',
+              borderLeft: '3px solid #D97706',
+              borderRadius: '8px',
+              padding: '24px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+              <div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                    fontSize: '18px',
+                    fontWeight: 600,
+                    color: '#1C1917',
+                    marginBottom: '4px',
+                  }}
+                >
+                  LP Audit Forms
+                </div>
+                {auditSummary ? (
+                  <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 300, color: '#78716C' }}>
+                    {auditSummary.lastScore !== null
+                      ? `Last audit: ${auditSummary.lastScore}% — ${auditSummary.recentFormName}`
+                      : 'No audits run yet'}
+                    {auditSummary.pendingRuns > 0 && (
+                      <span style={{ marginLeft: '8px', color: '#D97706', fontWeight: 500 }}>
+                        · {auditSummary.pendingRuns} scheduled audit{auditSummary.pendingRuns !== 1 ? 's' : ''} due today
+                      </span>
+                    )}
+                    {auditSummary.openExceptions > 0 && (
+                      <span style={{ marginLeft: '8px', color: '#EF4444', fontWeight: 500 }}>
+                        · {auditSummary.openExceptions} open exception{auditSummary.openExceptions !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </p>
+                ) : (
+                  <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 300, color: '#78716C' }}>
+                    Configure and run LP audits for your location
+                  </p>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                {auditSummary?.openExceptions ? (
+                  <Link
+                    href="/audit-exceptions"
+                    className="hover:opacity-80 transition-opacity"
+                    style={{
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '12px', fontWeight: 500,
+                      color: '#EF4444', background: 'rgba(239,68,68,0.08)',
+                      border: '1px solid rgba(239,68,68,0.3)',
+                      borderRadius: '4px', padding: '8px 14px', textDecoration: 'none',
+                    }}
+                  >
+                    ⚠ Exceptions
+                  </Link>
+                ) : null}
+                <Link
+                  href="/audit-forms"
+                  className="hover:opacity-80 transition-opacity"
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '13px', fontWeight: 500,
+                    color: '#D97706', textDecoration: 'none',
+                  }}
+                >
+                  View Audits →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* R&M Ticket Summary */}
+        <section>
+          <h2
+            style={{
+              fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#6B5B4E',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase' as const,
+              marginBottom: '16px',
+            }}
+          >
+            Repair &amp; Maintenance
+          </h2>
+          <div
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E8E3DC',
+              borderLeft: rmSummary && rmSummary.staleCount > 0 ? '3px solid #DC2626' : '3px solid #D97706',
+              borderRadius: '8px',
+              padding: '24px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+              <div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                    fontSize: '18px',
+                    fontWeight: 600,
+                    color: '#1C1917',
+                    marginBottom: '4px',
+                  }}
+                >
+                  R&amp;M Tickets
+                </div>
+                {rmSummary ? (
+                  <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 300, color: '#78716C' }}>
+                    {rmSummary.openCount} open
+                    {rmSummary.assignedCount > 0 && ` · ${rmSummary.assignedCount} in progress`}
+                    {rmSummary.completedThisWeek > 0 && ` · ${rmSummary.completedThisWeek} closed this week`}
+                    {rmSummary.staleCount > 0 && (
+                      <span style={{ marginLeft: '8px', color: '#DC2626', fontWeight: 500 }}>
+                        · {rmSummary.staleCount} stale (&gt;14d)
+                      </span>
+                    )}
+                  </p>
+                ) : (
+                  <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '13px', fontWeight: 300, color: '#78716C' }}>
+                    Track and resolve equipment issues
+                  </p>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                {rmSummary && rmSummary.staleCount > 0 ? (
+                  <Link
+                    href="/maintenance?stale=1"
+                    className="hover:opacity-80 transition-opacity"
+                    style={{
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '12px', fontWeight: 500,
+                      color: '#DC2626', background: 'rgba(220,38,38,0.08)',
+                      border: '1px solid rgba(220,38,38,0.3)',
+                      borderRadius: '4px', padding: '8px 14px', textDecoration: 'none',
+                    }}
+                  >
+                    ⚠ Stale
+                  </Link>
+                ) : null}
+                <Link
+                  href="/maintenance"
+                  className="hover:opacity-80 transition-opacity"
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '13px', fontWeight: 500,
+                    color: '#D97706', textDecoration: 'none',
+                  }}
+                >
+                  View Tickets →
+                </Link>
+              </div>
             </div>
           </div>
         </section>

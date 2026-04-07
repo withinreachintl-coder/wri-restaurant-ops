@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/audit-schedule-trigger",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
