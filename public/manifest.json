@@ -1,0 +1,50 @@
+{
+  "name": "Daily Ops Checklist",
+  "short_name": "Daily Ops",
+  "description": "Digital checklists with offline support for restaurant operations",
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#1C1917",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["productivity"],
+  "screenshots": [
+    {
+      "src": "/screenshot-1.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    },
+    {
+      "src": "/screenshot-2.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ]
+}

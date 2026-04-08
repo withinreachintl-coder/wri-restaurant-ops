@@ -18,6 +18,16 @@ export const metadata: Metadata = {
   title: 'Daily Ops Checklist - Restaurant Operations Made Simple',
   description:
     'Browser-based app for independent restaurant managers to run opening and closing checklists with digital sign-off',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Daily Ops',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  themeColor: '#1C1917',
 }
 
 export default function RootLayout({
