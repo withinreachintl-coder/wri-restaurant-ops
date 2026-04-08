@@ -447,14 +447,14 @@ export async function getRMSummary(): Promise<RMSummary> {
 // ============================================
 
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'])
-const MAX_PHOTO_BYTES = 10 * 1024 * 1024 // 10 MB hard limit; compress client-side to <500 KB first
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024 // 5 MB limit per acceptance criteria
 
 export async function uploadTicketPhoto(file: File): Promise<string> {
   if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
     throw new Error('Only JPEG, PNG, WebP, and HEIC images are allowed')
   }
   if (file.size > MAX_PHOTO_BYTES) {
-    throw new Error('Photo must be under 10 MB. Please compress before uploading.')
+    throw new Error('Photo must be under 5 MB. Please compress before uploading.')
   }
 
   const { data: { user } } = await supabase.auth.getUser()

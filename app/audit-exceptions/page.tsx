@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { getOpenExceptions, resolveException, type AuditException, type AuditItem, type AuditRun, type AuditForm } from '@/lib/audits'
+import { usePhase3Flag } from '@/lib/use-phase3-flag'
 
 type EnrichedException = AuditException & {
   audit_items: AuditItem
@@ -14,6 +15,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function AuditExceptionsPage() {
+  const { enabled: phase3Enabled, loading: flagLoading } = usePhase3Flag()
   const [exceptions, setExceptions] = useState<EnrichedException[]>([])
   const [loading, setLoading] = useState(true)
   const [resolving, setResolving] = useState<string | null>(null)
@@ -63,6 +65,32 @@ export default function AuditExceptionsPage() {
       return 'Required item marked as Fail'
     }
     return 'Exception flagged'
+  }
+
+  if (flagLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
+        <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', color: '#6B5B4E', fontSize: '14px' }}>
+          Loading…
+        </div>
+      </main>
+    )
+  }
+
+  if (!phase3Enabled) {
+    return (
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
+        <div style={{ maxWidth: '480px', textAlign: 'center', padding: '48px 24px' }}>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>⚑</div>
+          <h2 style={{ fontFamily: 'var(--font-playfair), "Playfair Display", serif', fontSize: '22px', fontWeight: 600, color: '#1C1917', marginBottom: '12px' }}>
+            LP Audit Exceptions — Coming Soon
+          </h2>
+          <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '14px', color: '#78716C', lineHeight: 1.6 }}>
+            This feature is rolling out to accounts now. You'll be notified when it's available.
+          </p>
+        </div>
+      </main>
+    )
   }
 
   return (

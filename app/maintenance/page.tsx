@@ -11,6 +11,7 @@ import {
   type TicketStatus,
   type TicketUrgency,
 } from '@/lib/maintenance'
+import { usePhase3Flag } from '@/lib/use-phase3-flag'
 
 const URGENCY_LABELS: Record<TicketUrgency, string> = {
   safety: 'Safety',
@@ -45,6 +46,7 @@ function daysSince(dateStr: string): number {
 }
 
 export default function MaintenancePage() {
+  const { enabled: phase3Enabled, loading: flagLoading } = usePhase3Flag()
   const [tickets, setTickets] = useState<RMTicketWithRelations[]>([])
   const [categories, setCategories] = useState<RMCategory[]>([])
   const [loading, setLoading] = useState(true)
@@ -127,6 +129,32 @@ export default function MaintenancePage() {
     } finally {
       setBulkSaving(false)
     }
+  }
+
+  if (flagLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
+        <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', color: '#6B5B4E', fontSize: '14px' }}>
+          Loading…
+        </div>
+      </main>
+    )
+  }
+
+  if (!phase3Enabled) {
+    return (
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
+        <div style={{ maxWidth: '480px', textAlign: 'center', padding: '48px 24px' }}>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>⚙</div>
+          <h2 style={{ fontFamily: 'var(--font-playfair), "Playfair Display", serif', fontSize: '22px', fontWeight: 600, color: '#1C1917', marginBottom: '12px' }}>
+            R&amp;M Tracking — Coming Soon
+          </h2>
+          <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '14px', color: '#78716C', lineHeight: 1.6 }}>
+            This feature is rolling out to accounts now. You'll be notified when it's available for your location.
+          </p>
+        </div>
+      </main>
+    )
   }
 
   return (

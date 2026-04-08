@@ -18,6 +18,7 @@ import {
   type AuditCategory,
   type AuditFieldType,
 } from '@/lib/audits'
+import { usePhase3Flag } from '@/lib/use-phase3-flag'
 
 const CATEGORY_LABELS: Record<AuditCategory, string> = {
   cash_handling: 'Cash Handling',
@@ -62,6 +63,7 @@ const SELECT_STYLE = { ...INPUT_STYLE, cursor: 'pointer' }
 type EditingItem = Partial<AuditItem> & { _new?: boolean }
 
 export default function AuditFormsPage() {
+  const { enabled: phase3Enabled, loading: flagLoading } = usePhase3Flag()
   const [forms, setForms] = useState<AuditForm[]>([])
   const [selectedForm, setSelectedForm] = useState<AuditFormWithItems | null>(null)
   const [loading, setLoading] = useState(true)
@@ -176,6 +178,32 @@ export default function AuditFormsPage() {
       setError(e.message)
       setStartingRun(false)
     }
+  }
+
+  if (flagLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
+        <div style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', color: '#6B5B4E', fontSize: '14px' }}>
+          Loading…
+        </div>
+      </main>
+    )
+  }
+
+  if (!phase3Enabled) {
+    return (
+      <main className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
+        <div style={{ maxWidth: '480px', textAlign: 'center', padding: '48px 24px' }}>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>⚑</div>
+          <h2 style={{ fontFamily: 'var(--font-playfair), "Playfair Display", serif', fontSize: '22px', fontWeight: 600, color: '#1C1917', marginBottom: '12px' }}>
+            LP Audit Forms — Coming Soon
+          </h2>
+          <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '14px', color: '#78716C', lineHeight: 1.6 }}>
+            This feature is rolling out to accounts now. You'll be notified when it's available for your location.
+          </p>
+        </div>
+      </main>
+    )
   }
 
   return (

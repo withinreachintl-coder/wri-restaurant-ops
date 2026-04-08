@@ -64,6 +64,11 @@ export default function SubmitTicketPage() {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Photo must be under 5 MB. Please compress before uploading.')
+      e.target.value = ''
+      return
+    }
     setPhotoFile(file)
     const url = URL.createObjectURL(file)
     setPhotoPreview(url)
