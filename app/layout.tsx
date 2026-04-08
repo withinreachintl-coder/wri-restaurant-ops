@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'Ops Checklist',
   },
+  formatDetection: {
+    telephone: false,
+  },
   other: {
     'mobile-web-app-capable': 'yes',
   },

@@ -87,7 +87,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-playfair), "Playfair Display", serif',
                   fontSize: '28px',
                   fontWeight: 700,
-                  color: '#F5F0E8',
+                  color: '#1C1917',
                   marginBottom: '4px',
                 }}
               >
@@ -125,6 +125,43 @@ export default function DashboardPage() {
       </div>
 
       <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '32px', paddingTop: '32px' }}>
+        {/* Quick Actions */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+          <Link
+            href="/lp-audit"
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E5E0D8',
+              borderRadius: '8px',
+              padding: '20px',
+              textDecoration: 'none',
+              color: '#1C1917',
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontSize: '28px', marginBottom: '8px' }}>📋</div>
+            <h3 style={{ fontFamily: 'var(--font-playfair)', fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0' }}>LP Audit</h3>
+            <p style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E', margin: 0 }}>Daily safety check</p>
+          </Link>
+
+          <Link
+            href="/rm-requests"
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E5E0D8',
+              borderRadius: '8px',
+              padding: '20px',
+              textDecoration: 'none',
+              color: '#1C1917',
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔧</div>
+            <h3 style={{ fontFamily: 'var(--font-playfair)', fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0' }}>R&M Requests</h3>
+            <p style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E', margin: 0 }}>Track repairs</p>
+          </Link>
+        </div>
+
         {/* Live Status */}
         <section>
           <h2

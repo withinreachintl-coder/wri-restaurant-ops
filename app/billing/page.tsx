@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '../../lib/supabase'
 
 export default function BillingPage() {
   const [loading, setLoading] = useState(true)

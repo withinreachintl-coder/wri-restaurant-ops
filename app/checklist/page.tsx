@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { supabase, ChecklistItem } from '@/lib/supabase'
+import { supabase, ChecklistItem } from '../../lib/supabase'
 import PhotoUpload from '../components/PhotoUpload'
 import OfflineBanner from '../components/OfflineBanner'
 import PwaInstallPrompt from '../components/PwaInstallPrompt'
