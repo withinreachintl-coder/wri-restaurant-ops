@@ -33,45 +33,66 @@ export default function LPAuditPage() {
         setUser(authUser)
 
         // Get user's org
-        const { data: userData } = await supabase
+        const { data: userData, error: userError } = await supabase
           .from('users')
           .select('org_id')
           .eq('auth_id', authUser.id)
           .single()
 
-        if (!userData) throw new Error('User org not found')
+        if (userError || !userData) {
+          console.error('User org not found:', userError)
+          throw new Error('User org not found')
+        }
 
-        // Load today's audit
+        // Initialize with default items
         const today = new Date().toISOString().split('T')[0]
-        const { data: existingAudit } = await supabase
+        const defaultItems = STANDARD_AUDIT_ITEMS.map((item) => ({
+          id: `new-${item.id}`,
+          org_id: userData.org_id,
+          audit_form_id: '',
+          task_id: item.id,
+          task_text: item.text,
+          completed: false,
+          completed_date: today,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          category: item.category,
+        } as any))
+
+        // Try to load today's existing audit data to pre-populate
+        const { data: existingAudit, error: auditError } = await supabase
           .from('audit_exceptions')
           .select('*')
           .eq('org_id', userData.org_id)
-          .gte('completed_date', today)
-          .order('created_at', { ascending: false })
-          .limit(9)
+          .eq('completed_date', today)
 
         if (existingAudit && existingAudit.length > 0) {
-          setItems(existingAudit.map((item: any) => ({
-            ...item,
-            category: STANDARD_AUDIT_ITEMS.find(x => x.id === item.task_id)?.category || 'Other'
-          })))
+          // Merge existing data with defaults
+          const mergedItems = defaultItems.map(defaultItem => {
+            const existing = existingAudit.find(ex => ex.task_id === defaultItem.task_id)
+            return existing ? { ...defaultItem, ...existing, category: defaultItem.category } : defaultItem
+          })
+          setItems(mergedItems)
         } else {
-          setItems(STANDARD_AUDIT_ITEMS.map((item) => ({
-            id: `new-${item.id}`,
-            org_id: userData.org_id,
-            audit_form_id: '',
-            task_id: item.id,
-            task_text: item.text,
-            completed: false,
-            completed_date: today,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            category: item.category,
-          } as any)))
+          // No existing audit for today, use defaults
+          setItems(defaultItems)
         }
       } catch (err) {
         console.error('Failed to load audit:', err)
+        // Fallback: always show default items even on error
+        const today = new Date().toISOString().split('T')[0]
+        setItems(STANDARD_AUDIT_ITEMS.map((item) => ({
+          id: `new-${item.id}`,
+          org_id: '',
+          audit_form_id: '',
+          task_id: item.id,
+          task_text: item.text,
+          completed: false,
+          completed_date: today,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          category: item.category,
+        } as any)))
       } finally {
         setLoading(false)
       }
