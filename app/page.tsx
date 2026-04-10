@@ -129,7 +129,7 @@ export default function LandingPage() {
       </div>
 
       {/* Features */}
-      <section className="max-w-5xl mx-auto px-6 py-20 md:py-24">
+      <section style={{ padding: '80px 24px', maxWidth: '768px', margin: '0 auto' }}>
         <p
           style={{
             fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
@@ -314,7 +314,7 @@ export default function LandingPage() {
       </div>
 
       {/* Pricing */}
-      <section className="max-w-5xl mx-auto px-6 py-20 md:py-24">
+      <section style={{ padding: '80px 24px', maxWidth: '768px', margin: '0 auto' }}>
         <p
           style={{
             fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
@@ -534,7 +534,7 @@ export default function LandingPage() {
       </div>
 
       {/* Final CTA */}
-      <section className="max-w-5xl mx-auto px-6 py-20 md:py-24 text-center">
+      <section style={{ padding: '80px 24px', maxWidth: '768px', margin: '0 auto', textAlign: 'center' }}>
         <h2
           style={{
             fontFamily: 'var(--font-playfair), "Playfair Display", serif',
@@ -577,7 +577,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="max-w-5xl mx-auto px-6 py-10" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <footer style={{ padding: '80px 24px', maxWidth: '768px', margin: '0 auto', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p
             style={{
