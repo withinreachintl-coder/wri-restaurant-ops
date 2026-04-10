@@ -87,7 +87,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-playfair), "Playfair Display", serif',
                   fontSize: '28px',
                   fontWeight: 700,
-                  color: '#1C1917',
+                  color: '#F5F0E8',
                   marginBottom: '4px',
                 }}
               >
@@ -98,7 +98,7 @@ export default function DashboardPage() {
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                   fontSize: '14px',
                   fontWeight: 300,
-                  color: '#A89880',
+                  color: '#A8A29E',
                 }}
               >
                 Real-time checklist tracking
