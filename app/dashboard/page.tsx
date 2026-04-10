@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { createBrowserClient } from '@supabase/ssr'
 import { getAllRecentRuns, getOpenExceptions, getPendingScheduledRuns } from '@/lib/audits'
 import { getRMSummary, type RMSummary } from '@/lib/maintenance'
 
@@ -56,9 +57,43 @@ export default function DashboardPage() {
   })
   const [auditSummary, setAuditSummary] = useState<{ lastScore: number | null; openExceptions: number; recentFormName: string; pendingRuns: number } | null>(null)
   const [rmSummary, setRmSummary] = useState<RMSummary | null>(null)
+  const [isProTier, setIsProTier] = useState(false)
 
   useEffect(() => {
-    Promise.all([getAllRecentRuns(1), getOpenExceptions(), getPendingScheduledRuns()])
+    // Fetch subscription tier
+    const fetchSubscriptionTier = async () => {
+      try {
+        const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+        
+        // Get current user
+        const { data: userData } = await supabase.auth.getUser()
+        if (!userData.user) return
+        
+        // Get user's org
+        const { data: userRecord } = await supabase
+          .from('users')
+          .select('org_id')
+          .eq('id', userData.user.id)
+          .single()
+        
+        if (!userRecord?.org_id) return
+        
+        // Get org subscription
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('subscription_status, subscription_tier')
+          .eq('id', userRecord.org_id)
+          .single()
+        
+        // Check both conditions: active status AND pro tier
+        const isPro = org?.subscription_status === 'active' && org?.subscription_tier === 'pro'
+        setIsProTier(isPro)
+      } catch (err) {
+        console.error('Failed to fetch subscription tier:', err)
+      }
+    }
+
+    Promise.all([getAllRecentRuns(1), getOpenExceptions(), getPendingScheduledRuns(), fetchSubscriptionTier()])
       .then(([runs, exceptions, pending]) => {
         const lastRun = runs[0]
         setAuditSummary({
@@ -127,39 +162,79 @@ export default function DashboardPage() {
       <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '32px', paddingTop: '32px' }}>
         {/* Quick Actions */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-          <Link
-            href="/lp-audit"
-            style={{
-              background: '#FFFFFF',
-              border: '1px solid #E5E0D8',
-              borderRadius: '8px',
-              padding: '20px',
-              textDecoration: 'none',
-              color: '#1C1917',
-              textAlign: 'center',
-            }}
-          >
-            <div style={{ fontSize: '28px', marginBottom: '8px' }}>📋</div>
-            <h3 style={{ fontFamily: 'var(--font-playfair)', fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0' }}>LP Audit</h3>
-            <p style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E', margin: 0 }}>Daily safety check</p>
-          </Link>
+          {/* LP Audit Tile */}
+          {isProTier ? (
+            <Link
+              href="/lp-audit"
+              style={{
+                background: '#FFFFFF',
+                border: '1px solid #E5E0D8',
+                borderRadius: '8px',
+                padding: '20px',
+                textDecoration: 'none',
+                color: '#1C1917',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>📋</div>
+              <h3 style={{ fontFamily: 'var(--font-playfair)', fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0' }}>LP Audit</h3>
+              <p style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E', margin: 0 }}>Daily safety check</p>
+            </Link>
+          ) : (
+            <div style={{
+              background: '#292524', borderRadius: '12px', padding: '24px',
+              opacity: 0.5, position: 'relative', cursor: 'not-allowed'
+            }}>
+              <div style={{
+                position: 'absolute', top: '12px', right: '12px',
+                fontSize: '16px'
+              }}>🔒</div>
+              <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', fontWeight: 600, color: '#F5F0E8', marginBottom: '6px' }}>LP Audit</p>
+              <p style={{ color: '#A8A29E', fontSize: '13px', marginBottom: '16px' }}>Daily safety check</p>
+              <a href="https://buy.stripe.com/5kQ6oG1X3fbD7Mz3Ut9k408" style={{
+                display: 'block', textAlign: 'center',
+                background: '#D97706', color: '#fff', padding: '8px 16px',
+                borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
+              }}>Upgrade to Pro — $99/mo</a>
+            </div>
+          )}
 
-          <Link
-            href="/rm-requests"
-            style={{
-              background: '#FFFFFF',
-              border: '1px solid #E5E0D8',
-              borderRadius: '8px',
-              padding: '20px',
-              textDecoration: 'none',
-              color: '#1C1917',
-              textAlign: 'center',
-            }}
-          >
-            <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔧</div>
-            <h3 style={{ fontFamily: 'var(--font-playfair)', fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0' }}>R&M Requests</h3>
-            <p style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E', margin: 0 }}>Track repairs</p>
-          </Link>
+          {/* R&M Requests Tile */}
+          {isProTier ? (
+            <Link
+              href="/rm-requests"
+              style={{
+                background: '#FFFFFF',
+                border: '1px solid #E5E0D8',
+                borderRadius: '8px',
+                padding: '20px',
+                textDecoration: 'none',
+                color: '#1C1917',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔧</div>
+              <h3 style={{ fontFamily: 'var(--font-playfair)', fontSize: '16px', fontWeight: 600, margin: '0 0 4px 0' }}>R&M Requests</h3>
+              <p style={{ fontFamily: 'var(--font-dmsans)', fontSize: '12px', color: '#6B5B4E', margin: 0 }}>Track repairs</p>
+            </Link>
+          ) : (
+            <div style={{
+              background: '#292524', borderRadius: '12px', padding: '24px',
+              opacity: 0.5, position: 'relative', cursor: 'not-allowed'
+            }}>
+              <div style={{
+                position: 'absolute', top: '12px', right: '12px',
+                fontSize: '16px'
+              }}>🔒</div>
+              <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', fontWeight: 600, color: '#F5F0E8', marginBottom: '6px' }}>R&M Requests</p>
+              <p style={{ color: '#A8A29E', fontSize: '13px', marginBottom: '16px' }}>Track repairs</p>
+              <a href="https://buy.stripe.com/5kQ6oG1X3fbD7Mz3Ut9k408" style={{
+                display: 'block', textAlign: 'center',
+                background: '#D97706', color: '#fff', padding: '8px 16px',
+                borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
+              }}>Upgrade to Pro — $99/mo</a>
+            </div>
+          )}
         </div>
 
         {/* Live Status */}
