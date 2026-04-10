@@ -4,7 +4,7 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
       {/* Nav */}
-      <nav className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(28,25,23,0.95)', backdropFilter: 'blur(10px)', height: '64px', display: 'flex', alignItems: 'center', padding: '0 24px', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
             width: '32px', height: '32px', background: '#D97706',
@@ -13,7 +13,7 @@ export default function LandingPage() {
           }}>✓</div>
           <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: 700 }}>Daily Ops</span>
         </div>
-        <div className="flex items-center gap-6">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link
             href="/help"
             className="hidden sm:inline hover:opacity-80 transition-opacity"
@@ -47,7 +47,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="max-w-5xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28">
+      <section style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px', paddingTop: '160px', paddingBottom: '80px' }}>
         <div className="max-w-3xl">
           <p
             style={{
