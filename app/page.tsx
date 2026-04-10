@@ -5,34 +5,13 @@ export default function LandingPage() {
     <main className="min-h-screen" style={{ background: '#1C1917', color: '#F5F0E8' }}>
       {/* Nav */}
       <nav className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div
-            style={{
-              width: '32px',
-              height: '32px',
-              background: 'rgba(217,119,6,0.15)',
-              border: '1px solid rgba(217,119,6,0.3)',
-              borderRadius: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#D97706',
-              fontSize: '16px',
-              fontWeight: 700,
-            }}
-          >
-            &#10003;
-          </div>
-          <span
-            style={{
-              fontFamily: 'var(--font-playfair), "Playfair Display", serif',
-              fontSize: '18px',
-              fontWeight: 600,
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Daily Ops
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '32px', height: '32px', background: '#D97706',
+            borderRadius: '6px', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: '16px', color: '#fff'
+          }}>✓</div>
+          <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: 700 }}>Daily Ops</span>
         </div>
         <div className="flex items-center gap-6">
           <Link
