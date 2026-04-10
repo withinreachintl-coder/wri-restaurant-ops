@@ -245,7 +245,7 @@ export default function LoginPage() {
         >
           Don&apos;t have an account?{' '}
           <Link
-            href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+            href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
             style={{ color: '#D97706', textDecoration: 'none', fontWeight: 500 }}
             className="hover:opacity-80 transition-opacity"
           >

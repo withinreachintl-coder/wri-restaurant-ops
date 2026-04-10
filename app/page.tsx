@@ -92,7 +92,7 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <a
-              href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+              href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
               className="hover:opacity-90 transition-opacity"
               style={{
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
@@ -505,7 +505,7 @@ export default function LandingPage() {
               ))}
             </ul>
             <a
-              href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+              href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
               className="hover:opacity-90 transition-opacity"
               style={{
                 display: 'block',
@@ -555,7 +555,7 @@ export default function LandingPage() {
           Start your free trial. No credit card. Cancel anytime.
         </p>
         <a
-          href="https://buy.stripe.com/7sYdR859f5B37Mz2Qp9k404"
+          href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
           className="hover:opacity-90 transition-opacity"
           style={{
             fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',

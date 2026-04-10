@@ -160,6 +160,26 @@ export default function DashboardPage() {
       </div>
 
       <div style={{ maxWidth: '768px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '32px', paddingTop: '32px' }}>
+        {/* Upgrade Banner for Free Users */}
+        {!isProTier && (
+          <div style={{
+            background: '#292524', borderRadius: '8px', padding: '12px 16px',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: '16px'
+          }}>
+            <span style={{ color: '#A8A29E', fontSize: '14px' }}>
+              You're on the free plan — unlock LP Audits, R&M Tracking, and more.
+            </span>
+            <a href="https://buy.stripe.com/5kQ6oGX3fbD7Mz3Ut9k408" target="_blank"
+              style={{
+                background: '#D97706', color: '#fff', padding: '8px 16px',
+                borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
+              }}>
+              Upgrade to Pro
+            </a>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
           {/* LP Audit Tile */}
@@ -191,7 +211,7 @@ export default function DashboardPage() {
               }}>🔒</div>
               <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', fontWeight: 600, color: '#F5F0E8', marginBottom: '6px' }}>LP Audit</p>
               <p style={{ color: '#A8A29E', fontSize: '13px', marginBottom: '16px' }}>Daily safety check</p>
-              <a href="https://buy.stripe.com/5kQ6oG1X3fbD7Mz3Ut9k408" style={{
+              <a href="https://buy.stripe.com/5kQ6oGX3fbD7Mz3Ut9k408" target="_blank" style={{
                 display: 'block', textAlign: 'center',
                 background: '#D97706', color: '#fff', padding: '8px 16px',
                 borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
@@ -228,7 +248,7 @@ export default function DashboardPage() {
               }}>🔒</div>
               <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', fontWeight: 600, color: '#F5F0E8', marginBottom: '6px' }}>R&M Requests</p>
               <p style={{ color: '#A8A29E', fontSize: '13px', marginBottom: '16px' }}>Track repairs</p>
-              <a href="https://buy.stripe.com/5kQ6oG1X3fbD7Mz3Ut9k408" style={{
+              <a href="https://buy.stripe.com/5kQ6oGX3fbD7Mz3Ut9k408" target="_blank" style={{
                 display: 'block', textAlign: 'center',
                 background: '#D97706', color: '#fff', padding: '8px 16px',
                 borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
