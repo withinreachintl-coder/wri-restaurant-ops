@@ -93,6 +93,7 @@ export default function LandingPage() {
           <div className="flex flex-wrap items-center gap-4">
             <a
               href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
+              target="_blank"
               className="hover:opacity-90 transition-opacity"
               style={{
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
@@ -506,6 +507,7 @@ export default function LandingPage() {
             </ul>
             <a
               href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
+              target="_blank"
               className="hover:opacity-90 transition-opacity"
               style={{
                 display: 'block',
@@ -556,6 +558,7 @@ export default function LandingPage() {
         </p>
         <a
           href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403"
+          target="_blank"
           className="hover:opacity-90 transition-opacity"
           style={{
             fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
