@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
 import {
   getTickets,
   getCategories,
@@ -46,6 +48,7 @@ function daysSince(dateStr: string): number {
 }
 
 export default function MaintenancePage() {
+  const router = useRouter()
   const { enabled: phase3Enabled, loading: flagLoading } = usePhase3Flag()
   const [tickets, setTickets] = useState<RMTicketWithRelations[]>([])
   const [categories, setCategories] = useState<RMCategory[]>([])
@@ -55,6 +58,40 @@ export default function MaintenancePage() {
   const [urgencyFilter, setUrgencyFilter] = useState<TicketUrgency | 'all'>('all')
   const [sortBy, setSortBy] = useState<'age' | 'priority' | 'status'>('age')
   const [staleOnly, setStaleOnly] = useState(false)
+
+  // Check subscription tier on mount
+  useEffect(() => {
+    const checkTier = async () => {
+      try {
+        const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+        
+        const { data: userData } = await supabase.auth.getUser()
+        if (!userData.user) return
+        
+        const { data: userRecord } = await supabase
+          .from('users')
+          .select('org_id')
+          .eq('id', userData.user.id)
+          .single()
+        
+        if (!userRecord?.org_id) return
+        
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('subscription_status, subscription_tier')
+          .eq('id', userRecord.org_id)
+          .single()
+        
+        if (org?.subscription_tier !== 'pro' || org?.subscription_status !== 'active') {
+          router.replace('/dashboard')
+        }
+      } catch (err) {
+        console.error('Failed to check subscription tier:', err)
+      }
+    }
+
+    checkTier()
+  }, [router])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [bulkSaving, setBulkSaving] = useState(false)
 

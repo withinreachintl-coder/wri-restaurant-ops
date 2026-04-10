@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
 import {
   getAuditForms,
   getAuditFormWithItems,
@@ -63,6 +65,7 @@ const SELECT_STYLE = { ...INPUT_STYLE, cursor: 'pointer' }
 type EditingItem = Partial<AuditItem> & { _new?: boolean }
 
 export default function AuditFormsPage() {
+  const router = useRouter()
   const { enabled: phase3Enabled, loading: flagLoading } = usePhase3Flag()
   const [forms, setForms] = useState<AuditForm[]>([])
   const [selectedForm, setSelectedForm] = useState<AuditFormWithItems | null>(null)
@@ -73,6 +76,40 @@ export default function AuditFormsPage() {
   const [editingItem, setEditingItem] = useState<EditingItem | null>(null)
   const [newFormData, setNewFormData] = useState({ name: '', description: '', category: 'general' as AuditCategory })
   const [startingRun, setStartingRun] = useState(false)
+
+  // Check subscription tier on mount
+  useEffect(() => {
+    const checkTier = async () => {
+      try {
+        const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+        
+        const { data: userData } = await supabase.auth.getUser()
+        if (!userData.user) return
+        
+        const { data: userRecord } = await supabase
+          .from('users')
+          .select('org_id')
+          .eq('id', userData.user.id)
+          .single()
+        
+        if (!userRecord?.org_id) return
+        
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('subscription_status, subscription_tier')
+          .eq('id', userRecord.org_id)
+          .single()
+        
+        if (org?.subscription_tier !== 'pro' || org?.subscription_status !== 'active') {
+          router.replace('/dashboard')
+        }
+      } catch (err) {
+        console.error('Failed to check subscription tier:', err)
+      }
+    }
+
+    checkTier()
+  }, [router])
 
   const loadForms = useCallback(async () => {
     try {

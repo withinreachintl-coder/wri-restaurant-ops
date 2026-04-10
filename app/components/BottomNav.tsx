@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
 
 type NavItem = {
   href: string
@@ -19,6 +21,39 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function BottomNav() {
   const pathname = usePathname()
+  const [isProTier, setIsProTier] = useState(false)
+
+  useEffect(() => {
+    const fetchSubscriptionTier = async () => {
+      try {
+        const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+        
+        const { data: userData } = await supabase.auth.getUser()
+        if (!userData.user) return
+        
+        const { data: userRecord } = await supabase
+          .from('users')
+          .select('org_id')
+          .eq('id', userData.user.id)
+          .single()
+        
+        if (!userRecord?.org_id) return
+        
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('subscription_status, subscription_tier')
+          .eq('id', userRecord.org_id)
+          .single()
+        
+        const isPro = org?.subscription_status === 'active' && org?.subscription_tier === 'pro'
+        setIsProTier(isPro)
+      } catch (err) {
+        console.error('Failed to fetch subscription tier:', err)
+      }
+    }
+
+    fetchSubscriptionTier()
+  }, [])
 
   // Don't render on auth/welcome/billing pages
   if (/^\/(auth|welcome|billing)/.test(pathname)) return null
@@ -43,6 +78,45 @@ export default function BottomNav() {
         const isActive = item.activePattern
           ? item.activePattern.test(pathname)
           : pathname === item.href
+
+        // Check if this item should be disabled (Pro tier only)
+        const isProOnly = item.label === 'LP Audit' || item.label === 'R&M'
+        const isDisabled = isProOnly && !isProTier
+
+        if (isDisabled) {
+          return (
+            <div
+              key={item.href}
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px 4px 12px',
+                gap: '4px',
+                color: '#78716C',
+                minHeight: '60px',
+                minWidth: '44px',
+                opacity: 0.4,
+                cursor: 'not-allowed',
+                pointerEvents: 'none',
+              }}
+            >
+              <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '10px',
+                  fontWeight: 400,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {item.label}
+              </span>
+            </div>
+          )
+        }
 
         return (
           <Link
