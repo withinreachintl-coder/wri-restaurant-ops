@@ -212,7 +212,7 @@ export default function MaintenancePage() {
               >
                 R&amp;M Tickets
               </h1>
-              <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '14px', fontWeight: 300, color: '#A89880' }}>
+              <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '14px', fontWeight: 300, color: '#A8A29E' }}>
                 Repair &amp; Maintenance — track requests, assign vendors, close tickets
               </p>
             </div>

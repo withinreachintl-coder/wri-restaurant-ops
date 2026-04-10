@@ -261,7 +261,7 @@ export default function AuditFormsPage() {
               >
                 LP Audit Forms
               </h1>
-              <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '14px', fontWeight: 300, color: '#A89880' }}>
+              <p style={{ fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif', fontSize: '14px', fontWeight: 300, color: '#A8A29E' }}>
                 Loss prevention — configure, schedule, and run audits
               </p>
             </div>
