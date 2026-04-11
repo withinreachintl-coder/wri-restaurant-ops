@@ -300,10 +300,11 @@ export default function BillingPage() {
           >
             <div
               style={{
-                fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
                 fontSize: '32px',
                 fontWeight: 700,
                 color: '#F5F0E8',
+                fontVariantNumeric: 'tabular-nums',
               }}
             >
               {itemCount}
@@ -327,6 +328,7 @@ export default function BillingPage() {
               background: '#3F3935',
               borderRadius: '4px',
               overflow: 'hidden',
+              border: '1px solid #57534E',
             }}
           >
             <div
@@ -335,7 +337,7 @@ export default function BillingPage() {
                 background: '#D97706',
                 width: `${usagePercent}%`,
                 transition: 'width 0.3s ease',
-                borderRadius: '4px',
+                borderRadius: '3px',
               }}
             />
           </div>
