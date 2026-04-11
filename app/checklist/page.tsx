@@ -486,6 +486,7 @@ export default function ChecklistPage() {
                 fontFamily: 'var(--font-playfair), "Playfair Display", serif',
                 fontSize: '22px',
                 fontWeight: 700,
+                color: '#F5F0E8',
               }}
             >
               Daily Ops Checklist

@@ -164,7 +164,7 @@ export default function LPAuditPage() {
   return (
     <main style={{ background: '#FAFAF9', minHeight: '100vh' }}>
       <header style={{ background: '#1C1917', padding: '16px 24px', borderBottom: '1px solid #E5E0D8' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ maxWidth: '768px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link href="/dashboard" style={{ textDecoration: 'none', color: '#F5F0E8', fontWeight: 500 }}>
             ← Dashboard
           </Link>

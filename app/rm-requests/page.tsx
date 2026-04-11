@@ -141,7 +141,7 @@ export default function RMRequestsPage() {
   return (
     <main style={{ background: '#FAFAF9', minHeight: '100vh' }}>
       <header style={{ background: '#1C1917', padding: '16px 24px', borderBottom: '1px solid #E5E0D8' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ maxWidth: '768px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link href="/dashboard" style={{ textDecoration: 'none', color: '#F5F0E8', fontWeight: 500 }}>
             ← Dashboard
           </Link>
@@ -167,7 +167,7 @@ export default function RMRequestsPage() {
         </div>
       </header>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
+      <div style={{ maxWidth: '768px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }}>
           {[
             { label: 'Open', count: openCount, color: '#EF4444' },
