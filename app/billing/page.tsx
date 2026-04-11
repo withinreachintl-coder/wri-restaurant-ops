@@ -298,9 +298,9 @@ export default function BillingPage() {
               marginBottom: '16px',
             }}
           >
-            <div
+            <span
               style={{
-                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
                 fontSize: '32px',
                 fontWeight: 700,
                 color: '#F5F0E8',
@@ -308,7 +308,7 @@ export default function BillingPage() {
               }}
             >
               {itemCount}
-            </div>
+            </span>
             <div
               style={{
                 fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
