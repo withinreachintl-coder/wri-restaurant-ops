@@ -58,9 +58,12 @@ export default function DashboardPage() {
   const [auditSummary, setAuditSummary] = useState<{ lastScore: number | null; openExceptions: number; recentFormName: string; pendingRuns: number } | null>(null)
   const [rmSummary, setRmSummary] = useState<RMSummary | null>(null)
   const [isProTier, setIsProTier] = useState(false)
+  const [orgName, setOrgName] = useState('Manager Dashboard')
+  const [editingOrgName, setEditingOrgName] = useState(false)
+  const [orgNameInput, setOrgNameInput] = useState('')
 
   useEffect(() => {
-    // Fetch subscription tier
+    // Fetch subscription tier and org name
     const fetchSubscriptionTier = async () => {
       try {
         const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
@@ -78,16 +81,22 @@ export default function DashboardPage() {
         
         if (!userRecord?.org_id) return
         
-        // Get org subscription
+        // Get org subscription and name
         const { data: org } = await supabase
           .from('organizations')
-          .select('subscription_status, subscription_tier')
+          .select('subscription_status, subscription_tier, name')
           .eq('id', userRecord.org_id)
           .single()
         
         // Check both conditions: active status AND pro tier
         const isPro = org?.subscription_status === 'active' && org?.subscription_tier === 'pro'
         setIsProTier(isPro)
+        
+        // Set org name
+        if (org?.name) {
+          setOrgName(org.name)
+          setOrgNameInput(org.name)
+        }
       } catch (err) {
         console.error('Failed to fetch subscription tier:', err)
       }
@@ -110,24 +119,133 @@ export default function DashboardPage() {
       .catch(() => {/* silently skip — user may not have R&M tickets yet */})
   }, [])
 
+  const handleSaveOrgName = async () => {
+    if (!orgNameInput.trim()) return
+
+    try {
+      const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+      
+      // Get current user
+      const { data: userData } = await supabase.auth.getUser()
+      if (!userData.user) return
+      
+      // Get user's org
+      const { data: userRecord } = await supabase
+        .from('users')
+        .select('org_id')
+        .eq('id', userData.user.id)
+        .single()
+      
+      if (!userRecord?.org_id) return
+      
+      // Update org name
+      const { error } = await supabase
+        .from('organizations')
+        .update({ name: orgNameInput })
+        .eq('id', userRecord.org_id)
+
+      if (error) {
+        console.error('Failed to update org name:', error)
+        return
+      }
+
+      setOrgName(orgNameInput)
+      setEditingOrgName(false)
+    } catch (err) {
+      console.error('Error saving org name:', err)
+    }
+  }
+
   return (
     <main className="min-h-screen" style={{ background: '#FAFAF9', color: '#1C1917' }}>
       {/* Header */}
       <div style={{ background: '#1C1917', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: '768px', margin: '0 auto', padding: '24px 24px' }}>
           <div className="flex items-center justify-between">
-            <div>
-              <h1
-                style={{
-                  fontFamily: 'var(--font-playfair), "Playfair Display", serif',
-                  fontSize: '28px',
-                  fontWeight: 700,
-                  color: '#F5F0E8',
-                  marginBottom: '4px',
-                }}
-              >
-                Manager Dashboard
-              </h1>
+            <div style={{ flex: 1 }}>
+              {editingOrgName ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <input
+                    type="text"
+                    value={orgNameInput}
+                    onChange={(e) => setOrgNameInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveOrgName()
+                      if (e.key === 'Escape') {
+                        setEditingOrgName(false)
+                        setOrgNameInput(orgName)
+                      }
+                    }}
+                    autoFocus
+                    style={{
+                      fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                      fontSize: '28px',
+                      fontWeight: 700,
+                      color: '#F5F0E8',
+                      background: 'rgba(255,255,255,0.08)',
+                      border: '1px solid #D97706',
+                      borderRadius: '4px',
+                      padding: '8px 12px',
+                      outline: 'none',
+                    }}
+                  />
+                  <button
+                    onClick={handleSaveOrgName}
+                    style={{
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      color: '#1C1917',
+                      background: '#D97706',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '6px 12px',
+                      cursor: 'pointer',
+                    }}
+                    className="hover:opacity-90 transition-opacity"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingOrgName(false)
+                      setOrgNameInput(orgName)
+                    }}
+                    style={{
+                      fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      color: '#F5F0E8',
+                      background: 'transparent',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '4px',
+                      padding: '6px 12px',
+                      cursor: 'pointer',
+                    }}
+                    className="hover:opacity-80 transition-opacity"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <h1
+                  style={{
+                    fontFamily: 'var(--font-playfair), "Playfair Display", serif',
+                    fontSize: '28px',
+                    fontWeight: 700,
+                    color: '#F5F0E8',
+                    marginBottom: '4px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                  onClick={() => setEditingOrgName(true)}
+                >
+                  {orgName}
+                  <span style={{ fontSize: '18px', opacity: 0.6 }}>✎</span>
+                </h1>
+              )}
               <p
                 style={{
                   fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
