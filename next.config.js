@@ -51,6 +51,18 @@ const withPWA = require('next-pwa')({
 
 const nextConfig = {
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        // PWA static assets must be publicly accessible (no auth redirect)
+        source: '/:file(manifest.json|favicon.ico|icon-192.png|icon-512.png|sw.js|workbox-:hash.js)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+          { key: 'X-Robots-Tag', value: 'noindex' },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = withPWA(nextConfig)

@@ -61,6 +61,32 @@ export default function DashboardPage() {
   const [orgName, setOrgName] = useState('Manager Dashboard')
   const [editingOrgName, setEditingOrgName] = useState(false)
   const [orgNameInput, setOrgNameInput] = useState('')
+  const [installPrompt, setInstallPrompt] = useState<Event & { prompt: () => Promise<void> } | null>(null)
+  const [showIosHint, setShowIosHint] = useState(false)
+
+  useEffect(() => {
+    // PWA install prompt (Android/Chrome/Edge)
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault()
+      setInstallPrompt(e as Event & { prompt: () => Promise<void> })
+    }
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+
+    // iOS Safari hint (no beforeinstallprompt support)
+    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent)
+    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as Navigator & { standalone?: boolean }).standalone
+    if (isIos && !isInStandaloneMode) {
+      setShowIosHint(true)
+    }
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (!installPrompt) return
+    await installPrompt.prompt()
+    setInstallPrompt(null)
+  }
 
   useEffect(() => {
     // Fetch subscription tier and org name
@@ -257,24 +283,55 @@ export default function DashboardPage() {
                 Real-time checklist tracking
               </p>
             </div>
-            <Link
-              href="/checklist"
-              className="hover:opacity-90 transition-opacity"
-              style={{
-                fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
-                fontSize: '14px',
-                fontWeight: 500,
-                color: '#1C1917',
-                background: '#D97706',
-                borderRadius: '4px',
-                padding: '10px 20px',
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
-              + Start Checklist
-            </Link>
+            <div style={{ display: 'flex', gap: '8px', flexShrink: 0, alignItems: 'center' }}>
+              {installPrompt && (
+                <button
+                  onClick={handleInstallClick}
+                  className="hover:opacity-90 transition-opacity"
+                  style={{
+                    fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: '#D97706',
+                    background: 'transparent',
+                    border: '1px solid #D97706',
+                    borderRadius: '4px',
+                    padding: '10px 16px',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  📲 Install App
+                </button>
+              )}
+              {showIosHint && !installPrompt && (
+                <span style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '12px',
+                  color: '#A8A29E',
+                  whiteSpace: 'nowrap',
+                }}>
+                  Tap Share → Add to Home Screen
+                </span>
+              )}
+              <Link
+                href="/checklist"
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  fontFamily: 'var(--font-dmsans), "DM Sans", sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#1C1917',
+                  background: '#D97706',
+                  borderRadius: '4px',
+                  padding: '10px 20px',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                + Start Checklist
+              </Link>
+            </div>
           </div>
         </div>
       </div>
