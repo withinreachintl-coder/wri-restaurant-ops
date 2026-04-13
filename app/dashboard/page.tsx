@@ -80,8 +80,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div style={{ background: '#1C1917', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: '768px', margin: '0 auto', padding: '24px 24px' }}>
-          <div className="flex items-center justify-between">
-            <div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '32px' }}>
+            <div style={{ flex: 1 }}>
               <h1
                 style={{
                   fontFamily: 'var(--font-playfair), "Playfair Display", serif',
@@ -116,6 +116,8 @@ export default function DashboardPage() {
                 borderRadius: '4px',
                 padding: '10px 20px',
                 textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               + Start Checklist
