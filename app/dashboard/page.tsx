@@ -161,8 +161,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div style={{ background: '#1C1917', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: '768px', margin: '0 auto', padding: '24px 24px' }}>
-          <div className="flex items-center justify-between">
-            <div style={{ flex: 1 }}>
+          <div className="flex items-start justify-between gap-8">
+            <div style={{ flex: 1, minWidth: 0 }}>
               {editingOrgName ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <input
@@ -269,6 +269,8 @@ export default function DashboardPage() {
                 borderRadius: '4px',
                 padding: '10px 20px',
                 textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               + Start Checklist
