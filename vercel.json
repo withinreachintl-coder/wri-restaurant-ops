@@ -9,7 +9,6 @@
       "schedule": "0 8 * * *"
     }
   ],
-  "bypassToken": "",
   "headers": [
     {
       "source": "/manifest.json",
