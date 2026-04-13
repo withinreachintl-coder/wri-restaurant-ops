@@ -5,7 +5,7 @@
   "start_url": "/checklist",
   "display": "standalone",
   "background_color": "#1C1917",
-  "theme_color": "#D97706",
+  "theme_color": "#1C1917",
   "orientation": "portrait",
   "icons": [
     {
