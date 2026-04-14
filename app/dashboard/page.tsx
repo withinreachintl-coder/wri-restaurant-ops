@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
+import UpgradeModal from '../components/UpgradeModal'
 import { getAllRecentRuns, getOpenExceptions, getPendingScheduledRuns } from '@/lib/audits'
 import { getRMSummary, type RMSummary } from '@/lib/maintenance'
 
@@ -63,6 +64,7 @@ export default function DashboardPage() {
   const [orgNameInput, setOrgNameInput] = useState('')
   const [installPrompt, setInstallPrompt] = useState<Event & { prompt: () => Promise<void> } | null>(null)
   const [showIosHint, setShowIosHint] = useState(false)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   useEffect(() => {
     // PWA install prompt (Android/Chrome/Edge)
@@ -347,13 +349,15 @@ export default function DashboardPage() {
             <span style={{ color: '#A8A29E', fontSize: '14px' }}>
               You're on the free plan — unlock LP Audits, R&M Tracking, and more.
             </span>
-            <a href="https://buy.stripe.com/5kQ6oGX3fbD7Mz3Ut9k408" target="_blank"
+            <button
+              onClick={() => setShowUpgradeModal(true)}
               style={{
-                background: '#D97706', color: '#fff', padding: '8px 16px',
-                borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
+                background: '#D97706', color: '#1C1917', padding: '8px 16px',
+                borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: 600,
+                cursor: 'pointer',
               }}>
               Upgrade to Pro
-            </a>
+            </button>
           </div>
         )}
 
@@ -388,11 +392,14 @@ export default function DashboardPage() {
               }}>🔒</div>
               <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', fontWeight: 600, color: '#F5F0E8', marginBottom: '6px' }}>LP Audit</p>
               <p style={{ color: '#A8A29E', fontSize: '13px', marginBottom: '16px' }}>Daily safety check</p>
-              <a href="https://buy.stripe.com/5kQ6oGX3fbD7Mz3Ut9k408" target="_blank" style={{
-                display: 'block', textAlign: 'center',
-                background: '#D97706', color: '#fff', padding: '8px 16px',
-                borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
-              }}>Upgrade to Pro — $99/mo</a>
+              <button
+                onClick={() => setShowUpgradeModal(true)}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'center',
+                  background: '#D97706', color: '#1C1917', padding: '8px 16px',
+                  borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: 600,
+                  cursor: 'pointer',
+                }}>Upgrade to Pro — $99/mo</button>
             </div>
           )}
 
@@ -425,11 +432,14 @@ export default function DashboardPage() {
               }}>🔒</div>
               <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', fontWeight: 600, color: '#F5F0E8', marginBottom: '6px' }}>R&M Requests</p>
               <p style={{ color: '#A8A29E', fontSize: '13px', marginBottom: '16px' }}>Track repairs</p>
-              <a href="https://buy.stripe.com/5kQ6oGX3fbD7Mz3Ut9k408" target="_blank" style={{
-                display: 'block', textAlign: 'center',
-                background: '#D97706', color: '#fff', padding: '8px 16px',
-                borderRadius: '6px', textDecoration: 'none', fontSize: '13px', fontWeight: 600
-              }}>Upgrade to Pro — $99/mo</a>
+              <button
+                onClick={() => setShowUpgradeModal(true)}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'center',
+                  background: '#D97706', color: '#1C1917', padding: '8px 16px',
+                  borderRadius: '6px', border: 'none', fontSize: '13px', fontWeight: 600,
+                  cursor: 'pointer',
+                }}>Upgrade to Pro — $99/mo</button>
             </div>
           )}
         </div>
@@ -964,6 +974,7 @@ export default function DashboardPage() {
           </div>
         </section>
       </div>
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
     </main>
   )
 }
