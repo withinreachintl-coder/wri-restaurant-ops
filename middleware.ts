@@ -1,18 +1,14 @@
+import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
 // ---------------------------------------------------------------------------
 // Simple edge-compatible rate limiter (in-memory, per-edge-worker instance)
-// For production scale: replace with @upstash/ratelimit + Upstash Redis.
 // ---------------------------------------------------------------------------
-
 type RateEntry = { count: number; resetAt: number }
-
-// Store up to 1000 unique IPs; oldest entries evicted when full.
 const STORE = new Map<string, RateEntry>()
 const MAX_STORE_SIZE = 1000
-const WINDOW_MS = 60_000 // 1-minute sliding window
+const WINDOW_MS = 60_000
 
-// Per-route limits: requests per minute
 const LIMITS: Record<string, number> = {
   '/api/send-summary': 10,
   '/api/create-checkout-session': 20,
@@ -26,7 +22,6 @@ function rateLimit(ip: string, limit: number): { allowed: boolean; remaining: nu
   const entry = STORE.get(ip)
 
   if (!entry || now >= entry.resetAt) {
-    // Evict oldest if at capacity
     if (!entry && STORE.size >= MAX_STORE_SIZE) {
       const oldest = STORE.keys().next().value
       if (oldest) STORE.delete(oldest)
@@ -41,32 +36,61 @@ function rateLimit(ip: string, limit: number): { allowed: boolean; remaining: nu
 }
 
 // ---------------------------------------------------------------------------
-// Allowed file extensions for uploads
+// Public routes — no auth required
 // ---------------------------------------------------------------------------
-const ALLOWED_IMAGE_TYPES = new Set([
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-  'image/heic',
-])
+const PUBLIC_PATHS = new Set(['/', '/auth/login', '/auth/callback', '/auth/error'])
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.has(pathname)) return true
+  if (pathname.startsWith('/api/')) return true
+  if (pathname.startsWith('/_next/')) return true
+  if (pathname.startsWith('/icon-')) return true
+  if (pathname === '/manifest.json') return true
+  if (pathname === '/sw.js') return true
+  if (pathname.startsWith('/workbox-')) return true
+  return false
+}
 
 // ---------------------------------------------------------------------------
 // Middleware
 // ---------------------------------------------------------------------------
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Only apply to API routes
+  // ── Auth guard for protected page routes ────────────────────────────────
+  if (!isPublicPath(pathname)) {
+    const res = NextResponse.next()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return req.cookies.getAll() },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              res.cookies.set(name, value, options))
+          },
+        },
+      }
+    )
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.redirect(new URL('/auth/login', req.url))
+    }
+
+    return res
+  }
+
+  // ── API rate limiting (API routes only) ──────────────────────────────────
   if (!pathname.startsWith('/api/')) {
     return NextResponse.next()
   }
 
-  // Derive client IP (Vercel sets x-forwarded-for)
   const forwarded = req.headers.get('x-forwarded-for')
   const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown'
 
-  // Route-specific or default limit
   let limit = DEFAULT_LIMIT
   for (const [route, routeLimit] of Object.entries(LIMITS)) {
     if (pathname.startsWith(route)) {
@@ -94,8 +118,6 @@ export function middleware(req: NextRequest) {
   const res = NextResponse.next()
   res.headers.set('X-RateLimit-Limit', String(limit))
   res.headers.set('X-RateLimit-Remaining', String(remaining))
-
-  // Security headers on all responses
   res.headers.set('X-Content-Type-Options', 'nosniff')
   res.headers.set('X-Frame-Options', 'DENY')
   res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
@@ -104,5 +126,8 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: '/api/:path*',
+  matcher: [
+    '/api/:path*',
+    '/((?!_next/static|_next/image|favicon.ico|icon-|manifest.json|sw.js|workbox-).*)',
+  ],
 }
