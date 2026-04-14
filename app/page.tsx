@@ -21,7 +21,7 @@ export default function LandingPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <a href="#features" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>How It Works</a>
-          <a href="/login" style={{
+          <a href="/auth/login" style={{
             border: '1px solid #F5F0E8', padding: '8px 20px',
             borderRadius: '6px', color: '#F5F0E8', textDecoration: 'none', fontSize: '15px'
           }}>Log In</a>
