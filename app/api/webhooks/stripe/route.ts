@@ -36,8 +36,25 @@ export async function POST(request: NextRequest) {
 
   const supabase = getSupabaseAdmin()
 
+  // Guard: only process events for Daily Ops Checklist price IDs
+  const DAILY_OPS_PRICE_IDS = ['price_1TEToWCf8hgLWfNiVfjDE7Ie']
+
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
+
+    // Exit early if this checkout is for a different product
+    const lineItems = session.line_items?.data ?? []
+    const sessionPriceId = lineItems[0]?.price?.id
+    if (sessionPriceId && !DAILY_OPS_PRICE_IDS.includes(sessionPriceId)) {
+      console.log(`[daily-ops webhook] Skipping checkout for unrelated price ${sessionPriceId}`)
+      return NextResponse.json({ received: true })
+    }
+    // If line_items not expanded, check amount as fallback (Daily Ops is $19 = 1900 cents)
+    if (!sessionPriceId && session.amount_total && session.amount_total !== 1900) {
+      console.log(`[daily-ops webhook] Skipping checkout with amount ${session.amount_total}`)
+      return NextResponse.json({ received: true })
+    }
+
     const orgId = session.metadata?.orgId
 
     if (!orgId || orgId === 'unknown') {
@@ -84,6 +101,14 @@ export async function POST(request: NextRequest) {
 
   if (event.type === 'customer.subscription.deleted') {
     const subscription = event.data.object as Stripe.Subscription
+
+    // Exit early if this subscription is for a different product
+    const subPriceId = subscription.items?.data?.[0]?.price?.id
+    if (subPriceId && !DAILY_OPS_PRICE_IDS.includes(subPriceId)) {
+      console.log(`[daily-ops webhook] Skipping subscription.deleted for unrelated price ${subPriceId}`)
+      return NextResponse.json({ received: true })
+    }
+
     const customerId = typeof subscription.customer === 'string'
       ? subscription.customer
       : subscription.customer.id
