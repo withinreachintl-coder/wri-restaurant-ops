@@ -21,10 +21,11 @@ export default function LandingPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <a href="#features" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>How It Works</a>
-          <a href="/login" style={{
-            border: '1px solid #F5F0E8', padding: '8px 20px',
-            borderRadius: '6px', color: '#F5F0E8', textDecoration: 'none', fontSize: '15px'
-          }}>Log In</a>
+          <span style={{ color: '#A8A29E', fontSize: '15px', fontWeight: 700 }}>Daily Ops</span>
+          <a href="https://staff.wireach.tools" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Staff Comms</a>
+          <a href="https://toolkit.wireach.tools" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Toolkit</a>
+          <a href="#pricing" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Pricing</a>
+          <a href="/auth/login" style={{ border: '1px solid #F5F0E8', padding: '8px 20px', borderRadius: '6px', color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Sign In</a>
         </div>
       </nav>
 
@@ -82,7 +83,7 @@ export default function LandingPage() {
           Pricing
         </p>
         <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: 700, marginBottom: '48px' }}>
-          Simple. Honest. No surprises.
+          Simple, honest pricing.
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
           {/* Free */}
