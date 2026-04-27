@@ -16,15 +16,15 @@ export default function LandingPage() {
             width: '32px', height: '32px', background: '#D97706',
             borderRadius: '6px', display: 'flex', alignItems: 'center',
             justifyContent: 'center', fontSize: '16px', color: '#fff'
-          }}>✓</div>
+          }}>â</div>
           <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: 700 }}>Daily Ops</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <a href="#features" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>How It Works</a>
-          <a href="/login" style={{
-            border: '1px solid #F5F0E8', padding: '8px 20px',
-            borderRadius: '6px', color: '#F5F0E8', textDecoration: 'none', fontSize: '15px'
-          }}>Log In</a>
+          <span style={{ color: '#A8A29E', fontSize: '15px', fontWeight: 700 }}>Daily Ops</span>
+          <a href="https://staff.wireach.tools" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Staff Comms</a>
+          <a href="https://toolkit.wireach.tools" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Toolkit</a>
+          <a href="#pricing" style={{ color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Pricing</a>
+          <a href="/auth/login" style={{ border: '1px solid #F5F0E8', padding: '8px 20px', borderRadius: '6px', color: '#F5F0E8', textDecoration: 'none', fontSize: '15px' }}>Sign In</a>
         </div>
       </nav>
 
@@ -45,7 +45,7 @@ export default function LandingPage() {
             background: '#D97706', color: '#fff', padding: '14px 28px',
             borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '16px'
           }}>Start 14-Day Free Trial</a>
-          <span style={{ color: '#78716C', fontSize: '14px' }}>No credit card required · $19/mo after trial</span>
+          <span style={{ color: '#78716C', fontSize: '14px' }}>No credit card required Â· $19/mo after trial</span>
         </div>
       </section>
 
@@ -59,9 +59,9 @@ export default function LandingPage() {
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
           {[
-            { icon: '✓', title: 'Opening & Closing Checklists', desc: 'Digital checklists with timestamps and staff sign-off. Every task tracked, every shift accounted for.' },
-            { icon: '📸', title: 'Photo Proof Built In', desc: 'Snap fridge temps, line checks, cleanliness. When the health inspector walks in, you\'re ready.' },
-            { icon: '👤', title: 'Staff Accountability', desc: 'See who completed what and when. Auto-timestamped records that hold your team to the standard.' },
+            { icon: 'â', title: 'Opening & Closing Checklists', desc: 'Digital checklists with timestamps and staff sign-off. Every task tracked, every shift accounted for.' },
+            { icon: 'ð¸', title: 'Photo Proof Built In', desc: 'Snap fridge temps, line checks, cleanliness. When the health inspector walks in, you\'re ready.' },
+            { icon: 'ð¤', title: 'Staff Accountability', desc: 'See who completed what and when. Auto-timestamped records that hold your team to the standard.' },
           ].map((f) => (
             <div key={f.title} style={{ background: '#292524', borderRadius: '12px', padding: '28px' }}>
               <div style={{
@@ -82,7 +82,7 @@ export default function LandingPage() {
           Pricing
         </p>
         <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: 700, marginBottom: '48px' }}>
-          Simple. Honest. No surprises.
+          Simple, honest pricing.
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
           {/* Free */}
@@ -92,7 +92,7 @@ export default function LandingPage() {
               $0<span style={{ fontSize: '16px', color: '#A8A29E', fontFamily: 'DM Sans, sans-serif' }}>/month</span>
             </p>
             {['Up to 5 locations', 'Basic opening/closing checklists', 'Timestamp records'].map(item => (
-              <p key={item} style={{ color: '#A8A29E', fontSize: '14px', marginBottom: '12px' }}>✓ {item}</p>
+              <p key={item} style={{ color: '#A8A29E', fontSize: '14px', marginBottom: '12px' }}>â {item}</p>
             ))}
             <a href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403" target="_blank" style={{
               display: 'block', textAlign: 'center', marginTop: '32px',
@@ -107,7 +107,7 @@ export default function LandingPage() {
               $19<span style={{ fontSize: '16px', color: '#A8A29E', fontFamily: 'DM Sans, sans-serif' }}>/month</span>
             </p>
             {['Unlimited locations', 'Unlimited checklists', 'Photo uploads', 'Email summaries', 'Priority support'].map(item => (
-              <p key={item} style={{ color: '#A8A29E', fontSize: '14px', marginBottom: '12px' }}>✓ {item}</p>
+              <p key={item} style={{ color: '#A8A29E', fontSize: '14px', marginBottom: '12px' }}>â {item}</p>
             ))}
             <a href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403" target="_blank" style={{
               display: 'block', textAlign: 'center', marginTop: '32px',
