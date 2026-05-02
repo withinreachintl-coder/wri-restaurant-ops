@@ -55,8 +55,8 @@ export default function BottomNav() {
     fetchSubscriptionTier()
   }, [])
 
-  // Don't render on auth/welcome/billing pages
-  if (/^\/(auth|welcome|billing)/.test(pathname)) return null
+  // Don't render on auth/welcome/billing pages or the public marketing landing
+  if (/^\/(auth|welcome|billing)/.test(pathname) || pathname === '/') return null
 
   return (
     <nav
