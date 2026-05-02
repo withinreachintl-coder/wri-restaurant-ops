@@ -41,6 +41,28 @@ export default function LandingPage() {
         <p style={{ fontSize: '18px', color: '#A8A29E', lineHeight: 1.6, marginBottom: '40px', maxWidth: '560px' }}>
           Digital opening and closing checklists with timestamps, photo proof, and staff sign-off. Built for restaurant operators who are done with paper logs and guesswork.
         </p>
+
+        <div style={{
+          width: '100%',
+          maxWidth: '720px',
+          margin: '0 auto 40px',
+          aspectRatio: '16 / 9',
+          background: '#1C1917',
+          border: '1px solid #3D3832',
+          borderRadius: '12px',
+          overflow: 'hidden',
+        }}>
+          <video
+            src="/videos/daily-ops.mp4"
+            poster="/videos/daily-ops-poster.png"
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <a href="https://buy.stripe.com/28E5kC8lr0gJaYLcqZ9k403" target="_blank" style={{
             background: '#D97706', color: '#fff', padding: '14px 28px',
@@ -132,15 +154,6 @@ export default function LandingPage() {
           borderRadius: '8px', textDecoration: 'none', fontWeight: 600, fontSize: '16px'
         }}>Start 14-Day Free Trial</a>
       </section>
-
-      {/* Footer */}
-      <footer style={{ padding: '80px 24px', maxWidth: '768px', margin: '0 auto', borderTop: '1px solid #292524', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-        <span style={{ color: '#78716C', fontSize: '13px' }}>Built for independent restaurants, by an independent restaurant owner.</span>
-        <div style={{ display: 'flex', gap: '24px' }}>
-          <a href="#features" style={{ color: '#78716C', fontSize: '13px', textDecoration: 'none' }}>How It Works</a>
-          <a href="mailto:support@wireach.tools" style={{ color: '#78716C', fontSize: '13px', textDecoration: 'none' }}>support@wireach.tools</a>
-        </div>
-      </footer>
 
     </main>
   )
