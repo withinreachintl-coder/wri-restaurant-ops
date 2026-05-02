@@ -98,3 +98,7 @@ html {
 .link-underline:hover::after {
   width: 100%;
 }
+
+.wri-suite-link:hover {
+  color: #D97706;
+}

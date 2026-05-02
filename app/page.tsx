@@ -155,15 +155,6 @@ export default function LandingPage() {
         }}>Start 14-Day Free Trial</a>
       </section>
 
-      {/* Footer */}
-      <footer style={{ padding: '80px 24px', maxWidth: '768px', margin: '0 auto', borderTop: '1px solid #292524', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-        <span style={{ color: '#78716C', fontSize: '13px' }}>Built for independent restaurants, by an independent restaurant owner.</span>
-        <div style={{ display: 'flex', gap: '24px' }}>
-          <a href="#features" style={{ color: '#78716C', fontSize: '13px', textDecoration: 'none' }}>How It Works</a>
-          <a href="mailto:support@wireach.tools" style={{ color: '#78716C', fontSize: '13px', textDecoration: 'none' }}>support@wireach.tools</a>
-        </div>
-      </footer>
-
     </main>
   )
 }
