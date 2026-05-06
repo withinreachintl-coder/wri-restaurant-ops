@@ -1,8 +1,18 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 // Vercel cron: runs daily at 8 AM UTC
 // vercel.json: { "path": "/api/rm-daily-digest", "schedule": "0 8 * * *" }
+//
+// Service-role is required because this iterates ALL orgs to send each
+// owner their own digest — no single user has cross-org visibility.
+// The endpoint is gated by CRON_SECRET (Vercel auto-sets the bearer
+// header on cron-triggered requests). Pattern copied from
+// app/api/audit-schedule-trigger/route.ts.
+//
+// Required env vars:
+//   SUPABASE_SERVICE_ROLE_KEY  — bypasses RLS to read all orgs' tickets
+//   CRON_SECRET                — shared secret; Vercel sends Authorization: Bearer <secret>
 
 const STATUS_LABELS: Record<string, string> = {
   open: 'Open',
@@ -30,14 +40,15 @@ function getServiceClient() {
   return createClient(url, key)
 }
 
-export async function POST(request: Request) {
-  // Allow both Vercel cron (no body) and manual trigger (with orgId override)
-  let manualOrgId: string | null = null
-  try {
-    const body = await request.json().catch(() => ({}))
-    manualOrgId = body?.orgId ?? null
-  } catch {
-    // no body
+async function runDigest(request: NextRequest) {
+  // Verify Vercel Cron secret (prevents unauthorized triggering / cross-tenant leak)
+  const authHeader = request.headers.get('authorization')
+  if (
+    process.env.CRON_SECRET &&
+    authHeader !== `Bearer ${process.env.CRON_SECRET}`
+  ) {
+    console.warn('[rm-daily-digest] unauthorized request rejected', { hasHeader: !!authHeader })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -49,16 +60,12 @@ export async function POST(request: Request) {
 
   const supabase = getServiceClient()
 
-  // Fetch all active orgs (or a single one for manual trigger)
-  let orgsQuery = supabase
+  // Iterate ALL active orgs server-side — no caller-supplied org override
+  // (per AUDIT-ops.md RLS finding #3: orgId override allowed open-endpoint
+  //  ticket-data leak to any owner email)
+  const { data: orgs, error: orgsError } = await supabase
     .from('organizations')
     .select('id, name, owner_email')
-
-  if (manualOrgId) {
-    orgsQuery = orgsQuery.eq('id', manualOrgId)
-  }
-
-  const { data: orgs, error: orgsError } = await orgsQuery
   if (orgsError || !orgs || orgs.length === 0) {
     return NextResponse.json({ sent: 0, skipped: 'no orgs' })
   }
@@ -126,6 +133,17 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ sent, orgs: orgs.length })
+}
+
+// Vercel Cron uses GET by default; keep POST for parity with the prior
+// route shape so any historical manual-invocation tooling still works
+// (it will now be subject to CRON_SECRET like the cron path).
+export async function GET(request: NextRequest) {
+  return runDigest(request)
+}
+
+export async function POST(request: NextRequest) {
+  return runDigest(request)
 }
 
 type DigestTicket = {

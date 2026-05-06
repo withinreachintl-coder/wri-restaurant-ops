@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server'
 import { resend } from '@/lib/resend'
 import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+// User-triggered: fires from the in-app shift-summary action.
+// Service-role is used ONLY for cross-tenant Phase-3 count aggregations
+// where the user's anon-client RLS view is correct but a single trusted
+// read keeps the email handler simple. orgId is derived from the
+// authenticated session — body-supplied orgId/ownerEmail are ignored
+// (per AUDIT-ops.md RLS finding #2: the previous shape allowed arbitrary
+// branded emails to arbitrary recipients with arbitrary org metadata).
 
 // Server-side Supabase (service role) for reading org data in API route
 function getServiceClient() {
@@ -14,19 +24,74 @@ type SummaryPayload = {
   completedTasks: number
   totalTasks: number
   completedBy: string
-  restaurantName: string
-  ownerEmail: string
-  orgId?: string
 }
 
 export async function POST(request: Request) {
   try {
-    const body: SummaryPayload = await request.json()
-    const { checklistType, completedTasks, totalTasks, completedBy, restaurantName, ownerEmail, orgId } = body
+    // ── 1. Require authenticated session ────────────────────────────────
+    const cookieStore = await cookies()
+    const authedClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // Silently fail in static context
+            }
+          },
+        },
+      }
+    )
 
-    if (!ownerEmail || !restaurantName) {
+    const { data: { user }, error: authError } = await authedClient.auth.getUser()
+    if (authError || !user) {
+      console.warn('[send-summary] unauthenticated request rejected')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // ── 2. Derive orgId from session (NOT request body) ─────────────────
+    const { data: callerRow } = await authedClient
+      .from('users')
+      .select('org_id')
+      .eq('id', user.id)
+      .single()
+
+    const orgId = callerRow?.org_id
+    if (!orgId) {
+      console.warn('[send-summary] caller has no org_id', { userId: user.id })
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const body: SummaryPayload = await request.json()
+    const { checklistType, completedTasks, totalTasks, completedBy } = body
+
+    if (!checklistType || typeof completedTasks !== 'number' || typeof totalTasks !== 'number') {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    // ── 3. Authoritative org lookup (name + owner_email come from DB) ───
+    const supabase = getServiceClient()
+    const { data: orgRow, error: orgErr } = await supabase
+      .from('organizations')
+      .select('name, owner_email')
+      .eq('id', orgId)
+      .single()
+
+    if (orgErr || !orgRow?.owner_email || !orgRow?.name) {
+      console.error('[send-summary] org lookup failed', { orgId, err: orgErr })
+      return NextResponse.json({ error: 'Org not found' }, { status: 404 })
+    }
+
+    const restaurantName = orgRow.name
+    const ownerEmail = orgRow.owner_email
 
     const completionRate = Math.round((completedTasks / totalTasks) * 100)
 
@@ -36,11 +101,8 @@ export async function POST(request: Request) {
     let openRMTickets = 0
     let staleRMTickets = 0
 
-    if (orgId) {
-      try {
-        const supabase = getServiceClient()
-
-        const [auditRes, exceptionsRes, rmOpenRes, rmStaleRes] = await Promise.allSettled([
+    try {
+      const [auditRes, exceptionsRes, rmOpenRes, rmStaleRes] = await Promise.allSettled([
           supabase
             .from('audit_schedules')
             .select('id', { count: 'exact', head: true })
@@ -65,13 +127,12 @@ export async function POST(request: Request) {
             .not('status', 'in', '("completed","cancelled")'),
         ])
 
-        if (auditRes.status === 'fulfilled') pendingAudits = auditRes.value.count ?? 0
-        if (exceptionsRes.status === 'fulfilled') openExceptions = exceptionsRes.value.count ?? 0
-        if (rmOpenRes.status === 'fulfilled') openRMTickets = rmOpenRes.value.count ?? 0
-        if (rmStaleRes.status === 'fulfilled') staleRMTickets = rmStaleRes.value.count ?? 0
-      } catch {
-        // Non-fatal: email still sends without Phase 3 data
-      }
+      if (auditRes.status === 'fulfilled') pendingAudits = auditRes.value.count ?? 0
+      if (exceptionsRes.status === 'fulfilled') openExceptions = exceptionsRes.value.count ?? 0
+      if (rmOpenRes.status === 'fulfilled') openRMTickets = rmOpenRes.value.count ?? 0
+      if (rmStaleRes.status === 'fulfilled') staleRMTickets = rmStaleRes.value.count ?? 0
+    } catch {
+      // Non-fatal: email still sends without Phase 3 data
     }
 
     const emailHtml = generateEmailHTML({
