@@ -1,5 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+// User-triggered: fires from the in-app R&M ticket flow on status change.
+// Service-role is justified here because we need to look up the submitter's
+// email (auth.users via public.users) and the org owner_email — both are
+// scoped reads that we still want gated by org isolation. We enforce that
+// gate explicitly: the authed user's org_id MUST equal ticket.org_id, and
+// the organizations row is fetched with .eq('id', ticket.org_id) — never
+// .limit(1).single() (the bug AUDIT-ops.md flagged at 18,67-71).
 
 const STATUS_LABELS: Record<string, string> = {
   open: 'Open',
@@ -23,7 +33,49 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ticketId and action are required' }, { status: 400 })
     }
 
-    // Use service role key server-side to bypass RLS for notification lookups
+    // ── 1. Require an authenticated session ─────────────────────────────
+    const cookieStore = await cookies()
+    const authedClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // Silently fail in static context
+            }
+          },
+        },
+      }
+    )
+
+    const { data: { user }, error: authError } = await authedClient.auth.getUser()
+    if (authError || !user) {
+      console.warn('[maintenance-notifications] unauthenticated request rejected')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // ── 2. Resolve caller's org_id ──────────────────────────────────────
+    const { data: callerRow } = await authedClient
+      .from('users')
+      .select('org_id')
+      .eq('id', user.id)
+      .single()
+
+    const callerOrgId = callerRow?.org_id
+    if (!callerOrgId) {
+      console.warn('[maintenance-notifications] caller has no org_id', { userId: user.id })
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // ── 3. Service-role client for notification lookups (RLS bypass) ────
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -34,11 +86,11 @@ export async function POST(request: Request) {
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Fetch ticket with submitter user info
+    // Fetch ticket with submitter + ORG_ID (org_id required for tenant gate)
     const { data: ticket, error: ticketError } = await supabase
       .from('r_m_tickets')
       .select(`
-        id, title, description, urgency, status, location_name,
+        id, org_id, title, description, urgency, status, location_name,
         equipment_tag, follow_up_date,
         submitted_by,
         r_m_categories(name),
@@ -52,6 +104,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, skipped: true })
     }
 
+    // ── 4. Tenant gate: caller's org MUST match ticket.org_id ───────────
+    if (ticket.org_id !== callerOrgId) {
+      console.warn('[maintenance-notifications] cross-tenant attempt blocked', {
+        userId: user.id,
+        callerOrgId,
+        ticketOrgId: ticket.org_id,
+        ticketId,
+      })
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     // Fetch submitter email
     let submitterEmail: string | null = null
     if (ticket.submitted_by) {
@@ -63,11 +126,13 @@ export async function POST(request: Request) {
       submitterEmail = userData?.email ?? null
     }
 
-    // Fetch org manager email (org owner)
+    // Fetch THIS ticket's org owner — filter by ticket.org_id
+    // (was previously .limit(1).single() which returned a random org —
+    //  cross-tenant data leak per AUDIT-ops.md RLS finding #1)
     const { data: orgData } = await supabase
       .from('organizations')
       .select('owner_email, name')
-      .limit(1)
+      .eq('id', ticket.org_id)
       .single()
 
     const managerEmail = orgData?.owner_email ?? null
